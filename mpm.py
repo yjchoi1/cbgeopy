@@ -1,8 +1,10 @@
 import numpy as np
-import math
+import plotly.graph_objects as go
 import pandas as pd
 import os
 import json
+import trimesh
+import utils
 import random
 import argparse
 
@@ -150,6 +152,43 @@ class MPMConfig:
         df = pd.read_csv(path)
         # Convert the DataFrame to a NumPy array
         particles = df.to_numpy()
+
+        # Store
+        self.particle_groups[self.particle_group_id] = particles
+
+        # Set config
+        self.mpm_json["particles"].append(
+            {
+                "generator": {
+                    "check_duplicates": True,
+                    "location": f"particles_{self.particle_group_id}.txt",
+                    "io_type": "Ascii3D" if self.ndims == 3 else "Ascii2D",
+                    "pset_id": self.particle_group_id,
+                    "particle_type": "P3D" if self.ndims == 3 else "P2D",
+                    "material_id": material_id,
+                    "type": "file"
+                }
+            }
+        )
+
+    def add_particles_from_topology(
+            self,
+            lower_topology: trimesh.Trimesh,
+            upper_topology: trimesh.Trimesh,
+            n_particle_per_cell: int,
+            material_id: int,
+            particle_group_id: int = None
+    ):
+
+        # Assign a particle group id
+        if particle_group_id is None:
+            self.particle_group_id += 1
+        else:
+            self.particle_group_id = particle_group_id
+
+        # Fill particles between two meshes
+        particles = utils.fill_particles_between_mesh(
+            lower_topology, upper_topology, self.cell_size, n_particle_per_cell)
 
         # Store
         self.particle_groups[self.particle_group_id] = particles
