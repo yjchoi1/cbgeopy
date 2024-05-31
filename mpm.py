@@ -450,8 +450,112 @@ class MPMConfig:
         with open(f"{save_dir}/mpm.json", "w") as f:
             json.dump(self.mpm_json, f, indent=2)
 
-    def visualize_config(self):
-        pass
+    def visualize_mesh(
+            self,
+            save_path,
+            node_indices=False
+    ):
+        """
+        Visualize current configuration
+
+        Args:
+            save_path (str):
+            nodes (bool):
+            node_indices (bool):
+
+        Returns:
+
+        """
+        # Extract the x, y, and z coordinates
+        x = self.mesh_info["node_coords"][:, 0]
+        y = self.mesh_info["node_coords"][:, 1]
+        z = self.mesh_info["node_coords"][:, 2]
+
+        # Calculate the min and max values for each axis
+        x_min, x_max = min(x), max(x)
+        y_min, y_max = min(y), max(y)
+        z_min, z_max = min(z), max(z)
+
+        # Create a scatter plot
+        fig = go.Figure(data=[go.Scatter3d(
+            x=x,
+            y=y,
+            z=z,
+            mode='markers+text' if node_indices else 'markers',
+            marker=dict(
+                size=3,
+                opacity=0.8
+            ),
+            text=[str(i) for i in range(len(x))] if node_indices else None,
+            textposition='top center'
+        )])
+
+        # Set plot titles and labels
+        fig.update_layout(
+            title='3D Mesh Plot',
+            scene=dict(
+                xaxis=dict(title='X Axis', range=[x_min, x_max]),
+                yaxis=dict(title='Y Axis', range=[y_min, y_max]),
+                zaxis=dict(title='Z Axis', range=[z_min, z_max]),
+                aspectmode='cube'  # Ensures equal scaling for all axes
+            )
+        )
+
+        fig.write_html(save_path)
+        print(f"Plot saved to {save_path}")
+
+    def visualize_particles(
+            self,
+            save_path
+    ):
+        """
+
+        Args:
+            save_path (str):
+
+        Returns:
+
+        """
+
+        # Create a figure
+        fig = go.Figure()
+
+        # Define color palette
+        # colors = ['Viridis', 'Cividis', 'Plasma', 'Inferno', 'Magma', 'Turbo']
+
+        for i, particles in self.particle_groups.items():
+            # Extract the x, y, and z coordinates
+            x = particles[:, 0]
+            y = particles[:, 1]
+            z = particles[:, 2]
+
+            # Create a scatter plot for each group
+            fig.add_trace(go.Scatter3d(
+                x=x,
+                y=y,
+                z=z,
+                mode='markers',
+                marker=dict(
+                    size=3,
+                    # color=colors[i],
+                    opacity=0.8
+                ),
+                name=f'Group-{i}'
+            ))
+
+        # Set plot titles and labels
+        fig.update_layout(
+            title='3D Particles Plot',
+            scene=dict(
+                xaxis=dict(title='X Axis', range=self.domain_ranges[0]),
+                yaxis=dict(title='Y Axis', range=self.domain_ranges[1]),
+                zaxis=dict(title='Z Axis', range=self.domain_ranges[2]),
+                aspectmode='data'  # Ensures equal scaling for all axes
+            )
+        )
+
+        fig.write_html(save_path)
+        print(f"Plot saved to {save_path}")
 
 
 
