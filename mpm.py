@@ -18,6 +18,7 @@ class MPMConfig:
     ):
         # Mesh
         self.cell_size = None
+        self.n_cells_per_dim = None
         self.nnode = None
         self.nele = None
         self.mesh_info = None
@@ -56,28 +57,34 @@ class MPMConfig:
             "particles": []
         }
 
-    def add_mesh(self, cell_size):
+    def add_mesh(self, n_cells_per_dim):
         """
         Make mesh coordinate array & cell group
         Args:
-            cell_size (list): [x_size, y_size, z_size]
+            n_cells_per_dim (list): [nx, ny, nz]
 
         Returns:
 
         """
-        self.cell_size = cell_size
+        self.n_cells_per_dim = n_cells_per_dim
 
-        # Error handling
-        if not all(i == cell_size[0] for i in cell_size):
-            raise NotImplementedError("Current version only support the same element size for all dimension")
+        # # Error handling
+        # if not all(i == n_cells_per_dim[0] for i in n_cells_per_dim):
+        #     raise NotImplementedError("Current version only support the same element size for all dimension")
 
         # Make coordinate base for each axis
         mesh_coord_base = []
+        cell_size = []
         for dim, domain_range in enumerate(self.domain_ranges):
-            coord_base = np.arange(
-                domain_range[0], domain_range[1] + cell_size[dim], cell_size[dim])
+            coord_base = np.linspace(
+                domain_range[0], domain_range[1], n_cells_per_dim[dim] + 1, endpoint=True)
             mesh_coord_base.append(coord_base)
+
+            # Calculate the cell size for the current dimension
+            cell_size_per_dim = (coord_base.max() - coord_base.min()) / n_cells_per_dim[dim]
+            cell_size.append(cell_size_per_dim)
         self.mesh_coord_base = mesh_coord_base
+        self.cell_size = cell_size
 
         # Create node coordinates
         node_coords = []
