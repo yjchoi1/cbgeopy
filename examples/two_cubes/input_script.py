@@ -1,11 +1,24 @@
+import trimesh
+import utils
 from mpm import MPMConfig
+import demo_utils
+from functools import partial
+import numpy as np
+import vis_utils
+import os
+import trimesh
 
+
+save_dir = 'examples/two_cubes/'
 
 # Set config
-mpm = MPMConfig(domain_origin=[0, 0, 0], domain_length=[1.0, 1.0, 1.0])
+lx, ly, lz = 1.0, 1.0, 1.0
+mpm = MPMConfig(domain_origin=[0, 0, 0], domain_length=[lx, ly, lz])
 
 # Mesh
-mpm.add_mesh(cell_size=[0.1, 0.1, 0.1])
+cell_size = 0.2
+mpm.add_mesh(
+    n_cells_per_dim=[int(lx/cell_size), int(ly/cell_size), int(lz/cell_size)])
 
 # Add materials
 mpm.add_materials(
@@ -15,13 +28,13 @@ mpm.add_materials(
             "density": 1800,
             "youngs_modulus": 2000000.0,
             "poisson_ratio": 0.3,
-            "friction": 25.0,
+            "friction": 30.0,
             "dilation": 0.0,
             "cohesion": 100,
             "tension_cutoff": 50,
             "softening": False,
             "peak_pdstrain": 0.0,
-            "residual_friction": 42.0,
+            "residual_friction": 10.0,
             "residual_dilation": 0.0,
             "residual_cohesion": 0.0,
             "residual_pdstrain": 0.0,
@@ -52,14 +65,14 @@ mpm.add_particles_cube(
     cube_origin=[0, 0, 0],
     cube_length=[0.4, 0.4, 0.4],
     material_id=0,
-    n_particle_per_cell=2,
+    n_particle_per_cell=4,
     particle_group_id=0
 )
 mpm.add_particles_cube(
     cube_origin=[0.7, 0.7, 0.0],
     cube_length=[0.3, 0.3, 0.3],
     material_id=1,
-    n_particle_per_cell=2,
+    n_particle_per_cell=4,
     particle_group_id=1
 )
 
@@ -95,7 +108,7 @@ mpm.add_external_loadings(
 mpm.analysis({
     "mpm_scheme": "usf",
     "locate_particles": False,
-    "dt": 1e-06,
+    "dt": 1e-05,
     "damping": {
         "type": "Cundall",
         "damping_factor": 0.05
@@ -106,7 +119,7 @@ mpm.analysis({
         "uuid": "sand3d"
     },
     "velocity_update": False,
-    "nsteps": int(1e6),
+    "nsteps": int(1e7),
     "type": "MPMExplicit3D",
     "uuid": "sand3d"
 })
@@ -114,15 +127,21 @@ mpm.analysis({
 # Post-processing
 mpm.post_processing({
     "path": "results/",
-    "output_steps": 2500,
+    "output_steps": 10000,
     "vtk": [
-      "displacements"
+        "displacements"
     ]
 })
 
-# Write entire mpm input files
-mpm.write(save_dir='outputs')
 
-# Visualize mesh and material point config
-mpm.visualize_mesh(save_path='outputs/mesh_config.html')
-mpm.visualize_particles(save_path='outputs/particle_config.html')
+mpm.write(save_dir=save_dir)
+
+mpm.visualize_mesh(save_path=f'{save_dir}/mesh_config.html', node_indices=True)
+mpm.visualize_particles(save_path=f'{save_dir}/particle_config.html')
+
+# Save the current script
+# Get the path of the currently running script (main.py)
+current_script_path = os.path.abspath(__file__)
+utils.save_script(
+    current_script_path,
+    save_path=f'{save_dir}/input_script.py')
