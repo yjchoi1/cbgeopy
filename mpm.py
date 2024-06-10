@@ -178,12 +178,14 @@ class MPMConfig:
             }
         )
 
-    def add_particles_from_topology(
+    def add_particles_from_topography(
             self,
             lower_topology: trimesh.Trimesh,
             upper_topology: trimesh.Trimesh,
             n_particle_per_cell: int,
             material_id: int,
+            z_find_method: str,
+            base_find_method,
             particle_group_id: int = None
     ):
 
@@ -195,7 +197,12 @@ class MPMConfig:
 
         # Fill particles between two meshes
         particles = utils.fill_particles_between_mesh(
-            lower_topology, upper_topology, self.cell_size, n_particle_per_cell)
+            lower_topology,
+            upper_topology,
+            self.cell_size,
+            n_particle_per_cell,
+            z_find_method,
+            base_find_method)
 
         # Store
         self.particle_groups[self.particle_group_id] = particles
@@ -496,6 +503,7 @@ class MPMConfig:
         with open(f"{save_dir}/mpm.json", "w") as f:
             json.dump(self.mpm_json, f, indent=2)
 
+    # TODO: option to save as img
     def visualize_mesh(
             self,
             save_path,
@@ -543,7 +551,7 @@ class MPMConfig:
                 xaxis=dict(title='X Axis', range=[x_min, x_max]),
                 yaxis=dict(title='Y Axis', range=[y_min, y_max]),
                 zaxis=dict(title='Z Axis', range=[z_min, z_max]),
-                aspectmode='cube'  # Ensures equal scaling for all axes
+                aspectmode='data'  # Ensures equal scaling for all axes
             )
         )
 
