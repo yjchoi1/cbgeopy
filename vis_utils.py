@@ -10,8 +10,9 @@ def plot_surfaces(*meshes, save_path, resolution=1, points=None):
     Parameters:
     meshes (tuple): A tuple of mesh objects, each containing vertices and faces.
     points (dict, optional): A dictionary of points groups, each group with shape (n_points, 3).
-                             Example: {id-1: np.array([...]), id-2: np.array([...])}
+                             Example: {0: {'particles': (n_particles, n_dims), 'id': range(0, 44122)},
     """
+
     # Create the figure
     fig = go.Figure()
 
@@ -45,7 +46,8 @@ def plot_surfaces(*meshes, save_path, resolution=1, points=None):
 
         # Plot each group of points if provided
     if points is not None:
-        for i, particle_group in points.items():
+        for i, values in points.items():
+            particle_group = values['particles']
             # Ensure particle group has the correct shape (n_points, 3)
             if particle_group.shape[1] != 3:
                 raise ValueError("Each group of particles must have shape (n_points, 3)")
@@ -101,7 +103,8 @@ def plot_cross_section(particle_groups, plane, location, tolerance=1e-5):
     plt.figure(figsize=(5, 3.5))
     markers = ['o', 's', '^', 'd', 'v', '<', '>', 'p', '*', 'h', 'H', 'D']  # Marker styles
     colors = ['blue', 'red', 'green', 'purple', 'orange', 'cyan', 'magenta', 'brown', 'gray', 'olive', 'pink', 'teal']  # Marker edge colors
-    for i, (group_name, particles) in enumerate(particle_groups.items()):
+    for i, (group_name, particle_dict) in enumerate(particle_groups.items()):
+        particles = particle_dict['particles']
         marker = markers[i % len(markers)]  # Assign a unique marker style for each group
         color = colors[i % len(colors)]  # Assign a unique edge color for each group
         if plane == 'xy':

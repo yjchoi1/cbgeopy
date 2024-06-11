@@ -25,10 +25,11 @@ class MPMConfig:
         self.mesh_coord_base = None
 
         # Entity
-        self.entity_sets = None
+        self.entity_sets = {}
 
         # Particle
         self.particle_group_id = 0
+        self.particles_count = 0
         self.particle_groups = {}
 
         # General
@@ -161,7 +162,13 @@ class MPMConfig:
         particles = df.to_numpy()
 
         # Store
-        self.particle_groups[self.particle_group_id] = particles
+        self.particle_groups[self.particle_group_id] = {}
+        self.particle_groups[self.particle_group_id]['particles'] = particles
+        self.particle_groups[self.particle_group_id]['id'] = list(
+            range(self.particles_count, self.particles_count + len(particles)))
+
+        # Update current particle count
+        self.particles_count += len(particles)
 
         # Set config
         self.mpm_json["particles"].append(
@@ -205,7 +212,13 @@ class MPMConfig:
             base_find_method)
 
         # Store
-        self.particle_groups[self.particle_group_id] = particles
+        self.particle_groups[self.particle_group_id] = {}
+        self.particle_groups[self.particle_group_id]['particles'] = particles
+        self.particle_groups[self.particle_group_id]['id'] = list(
+            range(self.particles_count, self.particles_count + len(particles)))
+
+        # Update current particle count
+        self.particles_count += len(particles)
 
         # Set config
         self.mpm_json["particles"].append(
@@ -221,6 +234,14 @@ class MPMConfig:
                 }
             }
         )
+
+    def define_particle_entity(self):
+        self.entity_sets['particle_sets'] = []
+        for set_id, particle_dict in self.particle_groups.items():
+            self.entity_sets["particle_sets"].append({
+                "id": set_id,  # index of particle set
+                "set": particle_dict['id'],  # index of particles for current set
+            })
 
     def add_particles_cube(
             self,
@@ -268,7 +289,13 @@ class MPMConfig:
         particles = np.vstack((xx.ravel(), yy.ravel(), zz.ravel())).T
 
         # Store
-        self.particle_groups[self.particle_group_id] = particles
+        self.particle_groups[self.particle_group_id] = {}
+        self.particle_groups[self.particle_group_id]['particles'] = particles
+        self.particle_groups[self.particle_group_id]['id'] = list(
+            range(self.particles_count, self.particles_count + len(particles)))
+
+        # Update current particle count
+        self.particles_count += len(particles)
 
         # Set config
         self.mpm_json["particles"].append(
@@ -300,7 +327,7 @@ class MPMConfig:
                 ...,
             ]
         """
-        self.entity_sets = {"node_sets": []}
+        self.entity_sets['node_sets'] = []
 
         # Define boundary node sets
         boundary_node_ids = {axis: {"start": [], "end": []} for axis in ["x", "y", "z"]}
@@ -488,10 +515,10 @@ class MPMConfig:
                 f.write(f"{coordinates.shape[0]} \n")
                 np.savetxt(f, coordinates, delimiter='\t', fmt='%.4f')
 
-        for pid, particle_coords in self.particle_groups.items():
+        for pid, particle_dict in self.particle_groups.items():
             file_path = os.path.join(save_dir, f"particles_{pid}.txt")
             print(f"Write `particles_{pid}.txt` at {save_dir}")
-            write_coordinates_to_file(file_path, particle_coords)
+            write_coordinates_to_file(file_path, particle_dict['particles'])
 
         # --- Entity
         print(f"Save `entity_sets.json`at {save_dir}")
@@ -577,11 +604,11 @@ class MPMConfig:
         # Define color palette
         # colors = ['Viridis', 'Cividis', 'Plasma', 'Inferno', 'Magma', 'Turbo']
 
-        for i, particles in self.particle_groups.items():
+        for i, particle_dict in self.particle_groups.items():
             # Extract the x, y, and z coordinates
-            x = particles[:, 0]
-            y = particles[:, 1]
-            z = particles[:, 2]
+            x = particle_dict['particles'][:, 0]
+            y = particle_dict['particles'][:, 1]
+            z = particle_dict['particles'][:, 2]
 
             # Create a scatter plot for each group
             fig.add_trace(go.Scatter3d(
