@@ -7,6 +7,7 @@ from scipy.spatial import Delaunay, cKDTree
 from shapely.geometry import Polygon
 from scipy.interpolate import griddata
 import os
+import pandas as pd
 import demo_utils
 
 
@@ -334,3 +335,19 @@ def dxf2points(dxf_file):
             points.append([entity.dxf.vtx2.x, entity.dxf.vtx2.y, entity.dxf.vtx2.z])
             points.append([entity.dxf.vtx3.x, entity.dxf.vtx3.y, entity.dxf.vtx3.z])
     return np.array(points)
+
+
+def get_h5(uuid_dir, timestep, n_mpis):
+    # Create an empty list to store DataFrames
+    dfs = []
+
+    # Iterate over different files from MPI and append to list
+    for i in range(n_mpis):
+        file = f'particles-{i}_{n_mpis}-{timestep}.h5'  # ex) particles-26_32-0120000.h5
+        h5_path = os.path.join(uuid_dir, file)
+        dfs.append(pd.read_hdf(h5_path, 'table'))
+
+        # Concatenate all DataFrames
+        df = pd.concat(dfs, ignore_index=True)
+
+    return df
