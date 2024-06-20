@@ -1,10 +1,69 @@
 import trimesh
-import numpy as np
+import pandas as pd
 import numpy as np
 import trimesh
 from scipy.spatial import Delaunay, cKDTree
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
+
+def trapezoidslope(cell_size, n_particle_per_dim, save_path):
+
+    # Default variables
+    particle_distance = cell_size / n_particle_per_dim
+    particle_offset = particle_distance / 2
+    y_min = 0.0
+    y_max = 1.0
+    y_interval = particle_distance
+
+    def surface(x):
+        if 0 < x < 0.15:
+            z = 0.25
+        elif 0.15 <= x < 0.50:
+            z = -(5 / 7) * x + 5/14
+        else:
+            z = 0
+        return z
+
+    def base(x):
+        if 0 < x < 0.05:
+            z = 0.25
+        elif 0.05 <= x < 0.3:
+            z = -x + 0.30
+        else:
+            z = 0
+        return z
+
+    x_base = np.arange(0 + particle_offset, 0.5, particle_distance)
+    y_values = np.arange(y_min + particle_offset, y_max, y_interval)
+
+    particles = []  # Coordinate of particles with shape=(n_particles, 3)
+    for x in x_base:
+        z_min = 0
+        z_max = surface(x)
+        zs = np.arange(z_min + particle_offset, z_max, particle_distance)
+        for z in zs:
+            for y in y_values:
+                particles.append((x, y, z))
+    particles = np.array(particles)
+
+    pset0 = []
+    pset1 = []
+    for particle in particles:
+        x, y, z = particle[0], particle[1], particle[2]
+        if base(x) <= z < surface(x):
+            pset0.append(particle)
+        else:
+            pset1.append(particle)
+
+    psets = {'0': np.array(pset0), '1': np.array(pset1)}
+
+    # Save the particles to the specified file
+    for key, value in psets.items():
+        df_particles = pd.DataFrame(value, columns=['x', 'y', 'z'])
+        df_particles.to_csv(f'{save_path}/particles_{key}.csv', index=False, header=False)
+
+    return psets
 
 
 def reduce_mesh(input_path, save_path):

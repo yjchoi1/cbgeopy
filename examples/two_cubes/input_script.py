@@ -9,14 +9,14 @@ import os
 import trimesh
 
 
-save_dir = 'examples/two_cubes/'
+save_dir = './'
 
 # Set config
 lx, ly, lz = 1.0, 1.0, 1.0
 mpm = MPMConfig(domain_origin=[0, 0, 0], domain_length=[lx, ly, lz])
 
 # Mesh
-cell_size = 0.2
+cell_size = 0.1
 mpm.add_mesh(
     n_cells_per_dim=[int(lx/cell_size), int(ly/cell_size), int(lz/cell_size)])
 
@@ -34,7 +34,7 @@ mpm.add_materials(
             "tension_cutoff": 50,
             "softening": False,
             "peak_pdstrain": 0.0,
-            "residual_friction": 10.0,
+            "residual_friction": 30.0,
             "residual_dilation": 0.0,
             "residual_cohesion": 0.0,
             "residual_pdstrain": 0.0,
@@ -75,6 +75,7 @@ mpm.add_particles_cube(
     n_particle_per_cell=4,
     particle_group_id=1
 )
+mpm.define_particle_entity()
 
 # Boundary constraints
 mpm.define_boundary_entity()
