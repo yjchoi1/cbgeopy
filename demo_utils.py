@@ -13,14 +13,30 @@ def trapezoidslope(cell_size, n_particle_per_dim, save_path):
     particle_distance = cell_size / n_particle_per_dim
     particle_offset = particle_distance / 2
     y_min = 0.0
-    y_max = 1.0
+    y_max = 0.25
     y_interval = particle_distance
 
     def surface(x):
-        if 0 < x < 0.15:
+        if 0 <= x < 0.15:
             z = 0.25
         elif 0.15 <= x < 0.50:
             z = -(5 / 7) * x + 5/14
+        else:
+            z = 0
+        return z
+
+    def surface2(x):
+        if 0 <= x < 0.50:
+            z = 0.25
+        else:
+            z = 0
+        return z
+
+    def surface3(x):
+        if 0 <= x < 0.3:
+            z = 0.25
+        elif 0.3 <= x < 0.4:
+            z = -(5 / 2) * (x - 0.4)
         else:
             z = 0
         return z
@@ -40,7 +56,7 @@ def trapezoidslope(cell_size, n_particle_per_dim, save_path):
     particles = []  # Coordinate of particles with shape=(n_particles, 3)
     for x in x_base:
         z_min = 0
-        z_max = surface(x)
+        z_max = surface3(x)
         zs = np.arange(z_min + particle_offset, z_max, particle_distance)
         for z in zs:
             for y in y_values:
@@ -51,7 +67,7 @@ def trapezoidslope(cell_size, n_particle_per_dim, save_path):
     pset1 = []
     for particle in particles:
         x, y, z = particle[0], particle[1], particle[2]
-        if base(x) <= z < surface(x):
+        if base(x) <= z < surface3(x):
             pset0.append(particle)
         else:
             pset1.append(particle)

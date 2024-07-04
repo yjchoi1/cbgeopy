@@ -1,4 +1,5 @@
 import numpy as np
+import pandas
 import plotly.graph_objects as go
 import pandas as pd
 import os
@@ -243,6 +244,43 @@ class MPMConfig:
                 "set": particle_dict['id'],  # index of particles for current set
             })
 
+    def add_cell_entity(
+            self,
+            nset_id: int,
+            ranges: list):
+        """
+
+        Args:
+            ranges (list): [[x_min, x_max], [y_min, y_max], [z_min, z_max]].
+
+        Returns:
+
+        """
+        # TODO: set id should be properly considered. Currently, it is first auto created by boundary entity
+        if nset_id <= 5:
+            raise ValueError("`nset_id` should be larger than 5 since 0 to 5 is already occupied by the boundary node sets")
+
+        node_coords = self.mesh_info['node_coords']
+
+        x_min, x_max = ranges[0]
+        y_min, y_max = ranges[1]
+        z_min, z_max = ranges[2]
+
+        nodes = []
+        coords = []
+
+        for i, point in enumerate(node_coords):
+            x, y, z = point
+            if x_min <= x <= x_max and y_min <= y <= y_max and z_min <= z <= z_max:
+                nodes.append(i)
+                coords.append(point)
+
+        self.entity_sets["node_sets"].append({
+            "id": nset_id,  # index of node set
+            "set": nodes,  # index of nodes
+        })
+
+
     def add_particles_cube(
             self,
             cube_origin,
@@ -312,7 +350,42 @@ class MPMConfig:
             }
         )
 
-    # TODO: k0 stress
+    def add_particle_constraints(self, constraints_info):
+        """
+
+        Args:
+            constraints_info (dict): list of dicts
+                Each dict contains:
+                - 'pset_id': particle set id to be constrained
+                - 'axis': str, one of 'x', 'y', 'z'
+                - 'velocity': float, velocity
+
+        Returns:
+
+        """
+        constraints = []
+
+        for constraint in constraints_info:
+            # Get current constraint info
+            pset_id = constraint["pset_id"]
+            axis = constraint["axis"]
+            velocity = constraint["velocity"]
+
+            # For each node entity set,
+            for particle_set in self.entity_sets["particle_sets"]:
+                # Check if current entity set is imposed a constraint by the current constraint info
+                if particle_set["id"] == pset_id:
+                    constraints.append({
+                        "pset_id": particle_set["id"],
+                        "dir": self.direction_mapping[axis],
+                        "velocity": velocity
+                    })
+                    break
+
+        if "boundary_conditions" not in self.mpm_json["mesh"]:
+            self.mpm_json["mesh"]["boundary_conditions"] = {}
+
+        self.mpm_json["mesh"]["boundary_conditions"]["particles_velocity_constraints"] = constraints
 
     def define_boundary_entity(self):
         """
@@ -326,7 +399,11 @@ class MPMConfig:
                 },
                 ...,
             ]
+        Note that it is hardcoded to occupy node set id from 0 to 5.
         """
+        # TODO manual association of nset-id considering the
+        #  `add_velocity_constraints` `add_cell_entity` `add_friction_constrains` methods.
+        #   so, all the constraints' id would be better to manually assigned.
         self.entity_sets['node_sets'] = []
 
         # Define boundary node sets
@@ -408,7 +485,7 @@ class MPMConfig:
                 Each dict contains:
                 - 'axis': str, one of 'x', 'y', 'z'
                 - 'bound_loc': str, one of 'start', 'end'
-                - 'dir': int, direction index (0 for x, 1 for y, 2 for z)
+                - 'dir' (depreciated): int, direction index (0 for x, 1 for y, 2 for z)
                 - 'sign_n': int, normal sign (-1 or 1)
                 - 'friction': float
 
@@ -452,6 +529,56 @@ class MPMConfig:
 
         """
         self.mpm_json["materials"] = materials
+
+    def add_geostatic_stress(
+            self, option,
+            k0=None,
+            undeformed_data=None):
+        """
+
+        Args:
+            k0 (float):
+            option (str): `k0` or `stabilized_stress_data`
+            undeformed_data ():
+
+        Returns:
+
+        """
+
+        if option == 'k0':
+
+            raise NotImplementedError("This feature is not yet implemented")
+
+            # if k0 is None:
+            #     raise ValueError("k0 should be specified")
+            #
+            # gravity = self.mpm_json["external_loading_conditions"][-1]
+            #
+            # all_particles = []
+            # for pinfo in self.mpm_json['particles']:
+            #     pset_id, material_id = pinfo['generator']['pset_id'], pinfo['generator']['pset_id']
+            #
+            #     # Find the material associated with `material_id` and its unit weight
+            #     for material_info in self.mpm_json['materials']:
+            #         if material_id == material_info['id']:
+            #             density = material_info['density']
+            #             unit_weight = gravity * density
+            #
+            #     # Get the particles associated with the current `pset_id`.
+            #     current_particles = self.particle_groups[pset_id]['particles']
+            #
+            #     # Compute stress
+            #     TODO: the following won't be correct approach if the surface height is not flat but varies
+            #     particle_stress = np.zeros((np.shape(current_particles)[0], 3))  # second axis is for stress xx, yy, zz
+            #     particle_stress[:, 0] = k0 * (y_range[1] - particles[:, 1]) * unit_weight  # K0*H*Unit_Weight
+            #     particle_stress[:, 1] = (y_range[1] - particles[:, 1]) * unit_weight  # H*Unit_Weight
+            #     particle_stress[:, 2] = (y_range[1] - particles[:, 1]) * unit_weight  # H*Unit_Weight
+
+        elif option == 'stabilized_stress_data':
+            raise NotImplementedError("This feature is not yet implemented")
+
+        else:
+            raise NotImplementedError(f"Option `{option}` is invalid")
 
     def add_external_loadings(self, loadings):
         """
@@ -639,8 +766,31 @@ class MPMConfig:
         print(f"Plot saved to {save_path}")
 
 
+class GeostaticStress:
+    def __init__(
+            self,
+            undeformed_data: pd.DataFrame
+    ):
+        """
+
+        Args:
+            undeformed_data (pan):
+        """
+        # Get h5 file the corresponds to the undeformed data.
+        # self.df_undeformed = get_h5(undeformed_data_dir, )
 
 
+def get_h5(directory, timestep, mpi):
+    # Create an empty list to store DataFrames
+    dfs = []
 
+    # Iterate over different files from MPI and append to list
+    for i in range(mpi):
+        file = f'particles-{i}_{mpi}-{timestep}.h5'  # ex) particles-26_32-0120000.h5
+        h5_path = os.path.join(directory, file)
+        dfs.append(pd.read_hdf(h5_path, 'table'))
 
+    # Concatenate all DataFrames
+    df = pd.concat(dfs, ignore_index=True)
 
+    return df

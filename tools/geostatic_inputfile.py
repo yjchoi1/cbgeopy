@@ -6,14 +6,11 @@ import json
 
 
 # Number of MPI tasks
-mpi = 32
-result_dir = '/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand_layers_geostatic/results/'
-uuid_stress_equilibrium = 'sand3d-le'
-uuid_save = 'sand3d-resume'
+mpi = 16
+result_dir = '/work2/08264/baagee/frontera/cbgeopy/simulations/fundao_2d-2/results/'
+uuid_stress_equilibrium = 'sand2d-le'
 timestep_undeform = '0000000'
-timestep_stress_equilibrium = '0200000'
-results_stress_equilibrium = f'{result_dir}/{uuid_stress_equilibrium}/'
-entity_set_path = '/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand_layers_geostatic/entity_sets.json'
+timestep_stress_equilibrium = '0700000'
 
 
 def get_h5(uuid_dir, timestep, n_mpis):
@@ -52,8 +49,8 @@ df_geostatic[stress_columns] = merged_df[stress_columns]
 df_geostatic_sorted = df_geostatic.sort_values(by='id').reset_index(drop=True)
 
 # Write the number of stressed particles
-with open(f"{result_dir}/particles-stresses.txt", "w") as f:
+with open(f"{result_dir}/particles_stresses.txt", "w") as f:
     f.write(f"{len(df_stress_equilibrium)} \n")
 # Append the dataframe to the file with tab separation
 df_geostatic_sorted[stress_columns].to_csv(
-    f"{result_dir}/particles-stresses.txt", mode='a', sep='\t', index=False,  header=False)
+    f"{result_dir}/particles_stresses.txt", mode='a', sep='\t', index=False,  header=False)

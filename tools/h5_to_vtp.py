@@ -124,7 +124,8 @@ def process_time_step(t, h5s_at_t, result_dir, save_path, vtk_type):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Convert hdf5 trajectories to vtk.')
     parser.add_argument('--result_dir',
-                        default='/work2/08264/baagee/frontera/cbgeopy/simulations/column_geostatic/results/sand3d-small_dt-N16n32/', help="Path to hdf5 files to consume.")
+                        default='/work2/08264/baagee/frontera/cbgeopy/simulations/fundao-2d/results/sand2d/',
+                        help="Path to hdf5 files to consume.")
     parser.add_argument('--vtk', type=str,
                         default=['stresses', 'strains'],
                         nargs='+',
@@ -133,13 +134,13 @@ if __name__ == "__main__":
                         default=None,
                         help="Max timestep to convert")
     parser.add_argument('--mpi', type=int,
-                        default=32,
+                        default=8,
                         help="Number of MPI used for mpm runtime")
     parser.add_argument('--write_workers', type=int,
-                        default=8,
+                        default=16,
                         help="Number of workers for vtk writing")
     parser.add_argument('--save_path',
-                        default='/work2/08264/baagee/frontera/cbgeopy/debug/',
+                        default='/work2/08264/baagee/frontera/cbgeopy/simulations/fundao-2d/results/sand2d/',
                         help="Save path")
     args = parser.parse_args()
 
