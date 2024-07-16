@@ -98,7 +98,7 @@ def fill_particles_between_mesh(
     particle_distance = cell_size[0] / n_particles_per_dim
     particle_offset_distance = particle_distance / 2
 
-    # Project the topology mesh to xy plain
+    # Project the topography mesh to xy plain
     projected_vertices = upper_mesh.vertices[:, :2]
 
     # Define candidate base points
@@ -281,8 +281,6 @@ def generate_points(
     return points
 
 
-
-
 def obj2mesh(file_path):
     vertices = []
     faces = []
@@ -310,7 +308,6 @@ def obj2mesh(file_path):
 
 # Extracting points from various entities in the DXF file
 def dxf2points(dxf_file):
-    
     # Read the DXF file
     dxf_file = 'topo_surface_Fundao.dxf'
     doc = ezdxf.readfile(dxf_file)

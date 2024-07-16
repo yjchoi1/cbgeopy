@@ -161,7 +161,7 @@ def gen_surface_mesh(x_range, y_range, grid_distance, height_function, plot=Fals
         fig = plt.figure(figsize=(10, 7))
         ax = fig.add_subplot(111, projection='3d')
         ax.plot_trisurf(vertices[:, 0], vertices[:, 1], vertices[:, 2], triangles=faces, cmap='viridis', edgecolor='none')
-        ax.set_title('3D Topology of Underground Layer')
+        ax.set_title('3D topography of Underground Layer')
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
         ax.set_zlabel('Z axis')

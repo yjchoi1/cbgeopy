@@ -91,8 +91,8 @@ mpm.add_materials(
 #     particle_group_id=1
 # )
 mpm.add_particles_from_topography(
-    lower_topology=layer0,
-    upper_topology=layer1,
+    lower_topography=layer0,
+    upper_topography=layer1,
     n_particle_per_cell=4,
     material_id=1,
     particle_group_id=0,
@@ -100,8 +100,8 @@ mpm.add_particles_from_topography(
     base_find_method='simple'
 )
 mpm.add_particles_from_topography(
-    lower_topology=layer1,
-    upper_topology=layer2,
+    lower_topography=layer1,
+    upper_topography=layer2,
     n_particle_per_cell=4,
     material_id=0,
     particle_group_id=1,

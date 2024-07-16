@@ -188,8 +188,8 @@ class MPMConfig:
 
     def add_particles_from_topography(
             self,
-            lower_topology: trimesh.Trimesh,
-            upper_topology: trimesh.Trimesh,
+            lower_topography: trimesh.Trimesh,
+            upper_topography: trimesh.Trimesh,
             n_particle_per_cell: int,
             material_id: int,
             z_find_method: str,
@@ -205,8 +205,8 @@ class MPMConfig:
 
         # Fill particles between two meshes
         particles = utils.fill_particles_between_mesh(
-            lower_topology,
-            upper_topology,
+            lower_topography,
+            upper_topography,
             self.cell_size,
             n_particle_per_cell,
             z_find_method,
