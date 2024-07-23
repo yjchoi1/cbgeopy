@@ -72,6 +72,7 @@ def fill_particles_between_mesh(
         n_particles_per_dim: int,
         z_find_method: str,
         base_find_method: str,
+        z_fill_method: str = 'simple',
         initial_alpha: float = 0.1,
         alpha_decay: float = 1
 ):
@@ -80,6 +81,7 @@ def fill_particles_between_mesh(
     Args:
         base_find_method (str): method to find the base of the area where two surfaces overlap ('alphashape' or 'simple')
         z_find_method (str): method to find z-coordinate of mesh
+        z_fill_method (str): method to fill between lower and upper z-coordinates
         lower_mesh (trimesh.Trimesh):
         upper_mesh (trimesh.Trimesh):
         cell_size (list):
@@ -122,13 +124,12 @@ def fill_particles_between_mesh(
         # Create a 2D polygon encompassing the projected vertices
         max_iterations = 100
         for i in range(max_iterations):
-            alpha = initial_alpha / (alpha_decay*(i+1))
+            alpha = initial_alpha / (alpha_decay * (i + 1))
             alpha_shape = alphashape.alphashape(projected_vertices, alpha=alpha)
             if isinstance(alpha_shape, Polygon):
                 break
         else:
             raise ValueError("Could not find a Polygon for projected base in alpha shape")
-
 
         # Check which grid points fall inside the projected polygon
         inside_check = [alpha_shape.contains(Point(point)) for point in candidate_points]
@@ -151,7 +152,7 @@ def fill_particles_between_mesh(
     z_ranges = np.column_stack(
         (lower_z_processed, upper_z_processed))
     material_points = fill_particles_inbetween(
-        base_particles, z_ranges, particle_distance)
+        base_particles, z_ranges, particle_distance, method=z_fill_method)
 
     # ----------------------------------------
     # # Populate particles between two surfaces
@@ -182,7 +183,9 @@ def fill_particles_between_mesh(
 def fill_particles_inbetween(
         xy_coords: np.array,
         z_ranges: np.array,
-        particle_distance: float):
+        particle_distance: float,
+        method: str = "simple"
+):
     """
 
     Args:
@@ -190,26 +193,33 @@ def fill_particles_inbetween(
         z_ranges (np.array): shape=(n_xy_coords, 2) where z_ranges[:, 0] is the lower bound & z_ranges[:, 1] is upper bound
         cell_size (list): [x_len, y_len, z_len]
         particle_distance (float): default distance between particles
+        method (str): method to fill particles between z_ranges: "simple", "round"
+            If `simple`, it uses the exact z-coordinate of mesh.
+            If `round`, it uses the nearest particle grid points for particle generation.
 
     Returns:
 
     """
     # particle_distance_offset
-    particle_offset_distance = particle_distance/2
+    particle_offset_distance = particle_distance / 2
 
     # Initialize an empty list to store particles
     particles_list = []
 
     for i in range(len(xy_coords)):
-        lower_z = z_ranges[i, 0]
-        upper_z = z_ranges[i, 1]
-        inside_z_points = np.arange(lower_z + particle_offset_distance, upper_z, particle_distance)
+        if method == "simple":
+            lower_z = z_ranges[i, 0]
+            upper_z = z_ranges[i, 1]
+            inside_z_points = np.arange(lower_z + particle_offset_distance, upper_z, particle_distance)
+        elif method == "round":
+            lower_z = np.round(
+                (z_ranges[i, 0] - particle_offset_distance) / particle_distance) * particle_distance + particle_offset_distance
+            upper_z = np.round(
+                (z_ranges[i, 1] - particle_offset_distance) / particle_distance) * particle_distance + particle_offset_distance
+            inside_z_points = np.arange(lower_z, upper_z, particle_distance)
+        else:
+            raise ValueError(f"Method `{method}` is not valid option")
 
-        # inside_z_points = np.unique(
-        #     np.concatenate(
-        #         (main_particles, [upper_z])
-        #     )
-        # )
 
         num_z_points = len(inside_z_points)
 
@@ -222,11 +232,9 @@ def fill_particles_inbetween(
         # Append to the list
         particles_list.append(particles)
 
-
         # TODO: potential improvements
         # - If `lower_z` is 0, don't concatenate
         # - Only concatenate `upper_z` if the distance between the last element of `main_particles` exceeds a certain threshold
-
 
         # ----------------------------------------
         # # Create z values for the current point

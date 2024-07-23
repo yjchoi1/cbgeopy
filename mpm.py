@@ -193,9 +193,29 @@ class MPMConfig:
             n_particle_per_cell: int,
             material_id: int,
             z_find_method: str,
-            base_find_method,
+            base_find_method: str,
+            z_fill_method: str = 'simple',
             particle_group_id: int = None
     ):
+        """
+
+        Args:
+            lower_topography (trimesh.Trimesh): mesh that defines the surface of the upper layer topography
+            upper_topography (trimesh.Trimesh):  mesh that defines the surface of the upper layer topography
+            n_particle_per_cell (int): number of particles per cell per dimension
+            material_id (int): id of material that you want to assign to this particle set
+            z_find_method (str): method to find z-coordinate of mesh ('' or '')
+            base_find_method (str): method to find the base of the area where two surfaces overlap ('alphashape' or 'simple')
+                If 'alphashape', it defines base by trying to estimate the x-y plane projection area using alphashape.
+                if 'simple, it defines base using max and min x, y values. The base will be restricted to square shape.
+            z_fill_method (str): method to fill between lower and upper z-coordinates ('simple' or 'round')
+                If 'simple', it uses the exact z-coordinate of mesh.
+                If 'round', it uses the nearest particle grid points for particle generation.
+            particle_group_id (int):
+
+        Returns:
+
+        """
 
         # Assign a particle group id
         if particle_group_id is None:
@@ -210,7 +230,9 @@ class MPMConfig:
             self.cell_size,
             n_particle_per_cell,
             z_find_method,
-            base_find_method)
+            base_find_method,
+            z_fill_method
+        )
 
         # Store
         self.particle_groups[self.particle_group_id] = {}
