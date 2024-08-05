@@ -1,3 +1,8 @@
+### Note ###
+# This code gathers distributed `.h5` files at the estimated stress equilibrium timestep, and
+# creates `particles_stresses.txt` so that we can start simulation with this stress state.
+############
+
 import numpy as np
 import pandas as pd
 import os
@@ -6,11 +11,11 @@ import json
 
 
 # Number of MPI tasks
-mpi = 16
-result_dir = '/work2/08264/baagee/frontera/cbgeopy/simulations/fundao_2d-2/results/'
-uuid_stress_equilibrium = 'sand2d-le'
+mpi = 32
+result_dir = '/scratch1/08264/baagee/cbgeopy-scratch/simulations/fundao3d-8-2/results/'
+uuid_stress_equilibrium = 'sand3d'
 timestep_undeform = '0000000'
-timestep_stress_equilibrium = '0700000'
+timestep_stress_equilibrium = '0188000'
 
 
 def get_h5(uuid_dir, timestep, n_mpis):

@@ -8,6 +8,8 @@ import trimesh
 import utils
 import random
 import argparse
+from scipy.spatial import cKDTree, KDTree
+
 
 
 class MPMConfig:
@@ -18,6 +20,8 @@ class MPMConfig:
             title="mpm_input_config"
     ):
         # Mesh
+        self.initial_stresses = None
+        self.materials = None
         self.cell_size = None
         self.n_cells_per_dim = None
         self.nnode = None
@@ -195,11 +199,13 @@ class MPMConfig:
             z_find_method: str,
             base_find_method: str,
             z_fill_method: str = 'simple',
+            overlap_tolerance: float = None,
             particle_group_id: int = None
     ):
         """
 
         Args:
+            overlap_tolerance (float):
             lower_topography (trimesh.Trimesh): mesh that defines the surface of the upper layer topography
             upper_topography (trimesh.Trimesh):  mesh that defines the surface of the upper layer topography
             n_particle_per_cell (int): number of particles per cell per dimension
@@ -224,7 +230,7 @@ class MPMConfig:
             self.particle_group_id = particle_group_id
 
         # Fill particles between two meshes
-        particles = utils.fill_particles_between_mesh(
+        new_particles = utils.fill_particles_between_mesh(
             lower_topography,
             upper_topography,
             self.cell_size,
@@ -234,14 +240,43 @@ class MPMConfig:
             z_fill_method
         )
 
+        overlap_count = 0
+
+        if len(self.particle_groups) > 0 and overlap_tolerance is not None:
+            print(f"Overlap checking for particle group {particle_group_id}")
+            # Collect all existing particles into a single array for KDTree
+            all_existing_particles = np.vstack(
+                [group['particles'] for group in self.particle_groups.values()]
+            )
+
+            # Build KDTree with existing particles
+            tree = KDTree(all_existing_particles)
+
+            # Check for overlapping particles
+            non_overlapping_particles = []
+            for particle in new_particles:
+                dist, _ = tree.query(particle, distance_upper_bound=overlap_tolerance)
+                if dist == float('inf'):  # If distance is inf, it means no close neighbor was found
+                    non_overlapping_particles.append(particle)
+                else:
+                    overlap_count += 1
+
+            non_overlapping_particles = np.array(non_overlapping_particles)
+
+        else:
+            # If no existing particles, all new particles are non-overlapping
+            non_overlapping_particles = new_particles
+
         # Store
         self.particle_groups[self.particle_group_id] = {}
-        self.particle_groups[self.particle_group_id]['particles'] = particles
+        self.particle_groups[self.particle_group_id]['particles'] = non_overlapping_particles
         self.particle_groups[self.particle_group_id]['id'] = list(
-            range(self.particles_count, self.particles_count + len(particles)))
+            range(self.particles_count, self.particles_count + len(non_overlapping_particles))
+        )
 
         # Update current particle count
-        self.particles_count += len(particles)
+        self.particles_count += len(non_overlapping_particles)
+        print(f'Number of overlapping particles found: {overlap_count}')
 
         # Set config
         self.mpm_json["particles"].append(
@@ -353,6 +388,7 @@ class MPMConfig:
         self.particle_groups[self.particle_group_id]['particles'] = particles
         self.particle_groups[self.particle_group_id]['id'] = list(
             range(self.particles_count, self.particles_count + len(particles)))
+        self.particle_groups[self.particle_group_id]['material_id'] = material_id
 
         # Update current particle count
         self.particles_count += len(particles)
@@ -371,6 +407,51 @@ class MPMConfig:
                 }
             }
         )
+
+    def remove_overlapping_particles(self, threshold):
+        def process_group_pair(group1_data, group2_data, threshold):
+            particles1, ids1 = group1_data['particles'], group1_data['id']
+            particles2, ids2 = group2_data['particles'], group2_data['id']
+
+            tree1 = cKDTree(particles1)
+            tree2 = cKDTree(particles2)
+
+            pairs = tree1.query_ball_tree(tree2, threshold)
+
+            to_remove1 = set()
+            to_remove2 = set()
+
+            for i, neighbors in enumerate(pairs):
+                if neighbors:
+                    to_remove2.add(neighbors[0])  # Mark the first neighbor for removal
+
+            keep1 = np.array([i for i in range(len(particles1)) if i not in to_remove1])
+            keep2 = np.array([i for i in range(len(particles2)) if i not in to_remove2])
+
+            new_group1 = {
+                'particles': particles1[keep1],
+                'id': ids1[keep1]
+            }
+
+            new_group2 = {
+                'particles': particles2[keep2],
+                'id': ids2[keep2]
+            }
+
+            return new_group1, new_group2
+
+        sorted_groups = sorted(self.particle_groups.keys())
+        for i in range(len(sorted_groups) - 1):
+            group1 = sorted_groups[i]
+            group2 = sorted_groups[i + 1]
+            group1_data = self.particle_groups[group1]
+            group2_data = self.particle_groups[group2]
+
+            new_group1_data, new_group2_data = process_group_pair(group1_data, group2_data, threshold)
+
+            self.particle_groups[group1] = new_group1_data
+            self.particle_groups[group2] = new_group2_data
+
 
     def add_particle_constraints(self, constraints_info):
         """
@@ -550,6 +631,7 @@ class MPMConfig:
         Returns:
 
         """
+        self.materials = materials
         self.mpm_json["materials"] = materials
 
     def add_geostatic_stress(
