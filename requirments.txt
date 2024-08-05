@@ -1,0 +1,11 @@
+table
+pandas
+numpy
+plotly
+trimesh
+matplotlib
+scipy
+alphashape
+ezdxf
+shapely
+vtk
