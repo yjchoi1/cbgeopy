@@ -175,23 +175,23 @@ def plot_cross_section(particle_groups, plane, location, tolerance=1e-5, grid_sp
         tolerance (float): The tolerance range for filtering location (default is 1e-5).
     """
 
-    tolerance = 2.5
+    tolerance = 0.01
     grid_spacing = 10
-    location = 502.5
+    location = 857.5
 
-    plt.figure(figsize=(25, 6))
+    plt.figure(figsize=(40, 8))
     markers = ['o', 's', '^', 'd', 'v', '<', '>', 'p', '*', 'h', 'H', 'D']  # Marker styles
     colors = ['blue', 'red', 'green', 'purple', 'orange', 'cyan', 'magenta', 'brown', 'gray', 'olive', 'pink', 'teal']  # Marker edge colors
     for i, (group_name, particle_dict) in enumerate(particle_groups.items()):
         particles = particle_dict['particles']
-        # marker = markers[i % len(markers)]  # Assign a unique marker style for each group
-        marker = "."
+        marker = markers[i % len(markers)]  # Assign a unique marker style for each group
+        # marker = "."
         color = colors[i % len(colors)]  # Assign a unique edge color for each group
         if plane == 'xy':
             filtered_particles = particles[
                 (particles[:, 2] >= location - tolerance) & (particles[:, 2] <= location + tolerance)]
             if filtered_particles.size > 0:
-                plt.scatter(filtered_particles[:, 0], filtered_particles[:, 1], marker=marker, facecolors=marker, edgecolors=color, label=group_name)
+                plt.scatter(filtered_particles[:, 0], filtered_particles[:, 1], marker=marker, facecolors='none', edgecolors=color, label=group_name)
             plt.xlabel('X')
             plt.ylabel('Y')
             plt.title(f'Particles in X-Y plane at Z = {location}')
@@ -199,7 +199,7 @@ def plot_cross_section(particle_groups, plane, location, tolerance=1e-5, grid_sp
             filtered_particles = particles[
                 (particles[:, 1] >= location - tolerance) & (particles[:, 1] <= location + tolerance)]
             if filtered_particles.size > 0:
-                plt.scatter(filtered_particles[:, 0], filtered_particles[:, 2], marker=marker, facecolors=color, edgecolors=color, label=group_name)
+                plt.scatter(filtered_particles[:, 0], filtered_particles[:, 2], marker=marker, facecolors='none', edgecolors=color, label=group_name)
             plt.xlabel('X')
             plt.ylabel('Z')
             plt.title(f'Particles in X-Z plane at Y = {location}')
@@ -207,7 +207,7 @@ def plot_cross_section(particle_groups, plane, location, tolerance=1e-5, grid_sp
             filtered_particles = particles[
                 (particles[:, 0] >= location - tolerance) & (particles[:, 0] <= location + tolerance)]
             if filtered_particles.size > 0:
-                plt.scatter(filtered_particles[:, 1], filtered_particles[:, 2], marker=marker, facecolors=color, edgecolors=color, label=group_name)
+                plt.scatter(filtered_particles[:, 1], filtered_particles[:, 2], marker=marker, facecolors='none', edgecolors=color, label=group_name)
             plt.xlabel('Y')
             plt.ylabel('Z')
             plt.title(f'Particles in Y-Z plane at X = {location}')
@@ -222,6 +222,6 @@ def plot_cross_section(particle_groups, plane, location, tolerance=1e-5, grid_sp
         # Set the grid interval to 10
         # plt.gca().set_xticks(np.arange(plt.gca().get_xlim()[0], plt.gca().get_xlim()[1], grid_spacing))
         # plt.gca().set_yticks(np.arange(plt.gca().get_ylim()[0], plt.gca().get_ylim()[1], grid_spacing))
-        plt.gca().set_xticks(np.arange(-300, 460, grid_spacing))
-        plt.gca().set_yticks(np.arange(780, 910, grid_spacing))
+        plt.gca().set_xticks(np.arange(-850, 460, grid_spacing))
+        plt.gca().set_yticks(np.arange(740, 950, grid_spacing))
     plt.show()
