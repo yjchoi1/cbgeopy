@@ -108,16 +108,21 @@ def fill_particles_between_mesh(
     # min_grid_values = np.floor(np.min(projected_vertices, axis=0) / cell_size[0]) * cell_size[0]
     # max_grid_values = np.ceil(np.max(projected_vertices, axis=0) / cell_size[0]) * cell_size[0]
 
-    # define min and mix particle coord
+    # define min and max particle coord
     min_particle_values = np.min(projected_vertices, axis=0) + particle_offset_distance
     max_particle_values = np.max(projected_vertices, axis=0) - particle_offset_distance
 
     # define range
     candidate_point_range = list(zip(min_particle_values, max_particle_values))
+    rounded_array_processed = []
+    for x, y in candidate_point_range:
+        x_rounded = round((x - particle_offset_distance) / particle_distance) * particle_distance + particle_offset_distance
+        y_rounded = round((y - particle_offset_distance) / particle_distance) * particle_distance + particle_offset_distance
+        rounded_array_processed.append((x_rounded, y_rounded))
 
     # Generate candidate base particle points
     candidate_points = generate_points(
-        candidate_point_range, distance=particle_distance)
+        rounded_array_processed, distance=particle_distance)
 
     if base_find_method == "alphashape":
         # TODO: add visualization for perimeter check
