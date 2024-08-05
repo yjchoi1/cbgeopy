@@ -9,5 +9,3 @@ alphashape
 ezdxf
 shapely
 vtk
-sphinx
-sphinx-autodoc-typehints
