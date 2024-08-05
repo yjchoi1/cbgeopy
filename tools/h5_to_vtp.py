@@ -194,26 +194,26 @@ def process_time_step(t, h5s_at_t, result_dir, save_path, vtk_type):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Convert hdf5 trajectories to vtk.')
     parser.add_argument('--result_dir',
-                        default='/scratch1/08264/baagee/cbgeopy-scratch/simulations/fundao3d-5-1/results/sand3d/',
+                        default='/scratch1/08264/baagee/cbgeopy-scratch/simulations/fundao3d-8-2/results/sand3d-1/',
                         help="Path to hdf5 files to consume.")
     parser.add_argument('--vtk', type=str,
                         default=['stresses', 'strains'],
                         nargs='+',
                         help="Options to vtk return: ['displacements', 'stresses', 'strains']")
     parser.add_argument('--max_time',
-                        default=60000,
+                        default=200000,
                         help="Max timestep to convert")
     parser.add_argument('--mpi', type=int,
-                        default=16,
+                        default=32,
                         help="Number of MPI used for mpm runtime")
     parser.add_argument('--write_workers', type=int,
-                        default=16,
+                        default=32,
                         help="Number of workers for vtk writing")
     parser.add_argument('--save_path',
-                        default='/scratch1/08264/baagee/cbgeopy-scratch/simulations/fundao3d-5-1/results/sand3d/',
+                        default='/scratch1/08264/baagee/cbgeopy-scratch/simulations/fundao3d-8-2/results/sand3d-1/',
                         help="Save path")
     args = parser.parse_args()
-    stress_plot = False
+    stress_plot = True
 
     result_dir = args.result_dir
     max_time = args.max_time
@@ -263,7 +263,7 @@ if __name__ == "__main__":
             time_steps,
             x_range=(800, 810),  # Replace with your desired x range
             y_range=(400, 410),  # Replace with your desired y range
-            z_range=(780, 790),  # Replace with your desired z range
+            z_range=(740, 750),  # Replace with your desired z range
             stress_type='stress_zz',
             save_path=f'{save_path}/stress_in_region_over_time.png'
         )
