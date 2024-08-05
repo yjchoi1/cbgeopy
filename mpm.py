@@ -634,13 +634,17 @@ class MPMConfig:
         self.materials = materials
         self.mpm_json["materials"] = materials
 
-    def add_geostatic_stress(
-            self, option,
+    def add_initial_stress(
+            self,
+            option: str,
+            top_surface: trimesh.Trimesh,
+            density,
             k0=None,
             undeformed_data=None):
         """
 
         Args:
+            top_surface (trimesh.Trimesh):
             k0 (float):
             option (str): `k0` or `stabilized_stress_data`
             undeformed_data ():
@@ -649,9 +653,25 @@ class MPMConfig:
 
         """
 
+        self.initial_stresses = np.zeros((self.particles_count, self.ndims))
+
         if option == 'k0':
 
-            raise NotImplementedError("This feature is not yet implemented")
+            if k0 is None:
+                raise ValueError("k0 is not specified")
+
+            for pset_id, pdata in self.particle_groups.items():
+
+                # density = find_material_property(pdata['material_id'], 'density', self.materials)
+
+                top_zcoords = utils.get_z_coordinates(top_surface, pdata['particles'][:, [0, 1]], 'linear')
+                vertical_stresses = (top_zcoords - pdata['particles'][:, 2]) * density * 9.81
+                self.initial_stresses[pdata['id'], 0] = - k0 * vertical_stresses
+                self.initial_stresses[pdata['id'], 1] = - k0 * vertical_stresses
+                self.initial_stresses[pdata['id'], 2] = - vertical_stresses
+
+            a = 1
+                # raise NotImplementedError("This feature is not yet implemented")
 
             # if k0 is None:
             #     raise ValueError("k0 should be specified")
@@ -683,6 +703,8 @@ class MPMConfig:
 
         else:
             raise NotImplementedError(f"Option `{option}` is invalid")
+
+        self.mpm_json['mesh']['particles_stresses'] = 'particles_stresses.txt'
 
     def add_external_loadings(self, loadings):
         """
@@ -755,6 +777,14 @@ class MPMConfig:
         print(f"Save `entity_sets.json`at {save_dir}")
         with open(f"{save_dir}/entity_sets.json", "w") as f:
             json.dump(self.entity_sets, f, indent=2)
+
+        # --- particles_stresses.txt
+        if self.initial_stresses is not None:
+            print(f"Save `particles_stresses.txt` at {save_dir}")
+            with open(f"{save_dir}/particles_stresses.txt", "w") as f:
+                f.write(f"{self.initial_stresses.shape[0]}\n")
+                np.savetxt(f, self.initial_stresses, delimiter='\t', fmt='%.4f')
+            print('saved')
 
         # --- `mpm.json` config
         print(f"Save `mpm.json`at {save_dir}")
@@ -882,6 +912,12 @@ class GeostaticStress:
         """
         # Get h5 file the corresponds to the undeformed data.
         # self.df_undeformed = get_h5(undeformed_data_dir, )
+
+
+def find_material_property(id, field, material_list):
+    for item in material_list:
+        if item['id'] == id:
+            return item[field]
 
 
 def get_h5(directory, timestep, mpi):
