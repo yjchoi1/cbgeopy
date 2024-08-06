@@ -1,10 +1,10 @@
-table
-pandas
 numpy
-plotly
-trimesh
+pandas
 matplotlib
 scipy
+table
+plotly
+trimesh
 alphashape
 ezdxf
 shapely
