@@ -2,7 +2,6 @@ numpy
 pandas
 matplotlib
 scipy
-table
 plotly
 trimesh
 alphashape
