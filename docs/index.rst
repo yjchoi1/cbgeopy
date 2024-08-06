@@ -3,13 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-cbgeopy documentation
+`cbgeopy` documentation
 =====================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+Welcome to `cbgeopy`'s documentation.
+`cbgeopy` is a tool to facilitate generating mpm input files for CB-Geo MPM.
 
+.. mdinclude:: ../README.md
 
 .. toctree::
    :maxdepth: 2
