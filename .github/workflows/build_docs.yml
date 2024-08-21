@@ -3,10 +3,10 @@ name: Build Documentation
 on:
   push:
     branches:
-      - main  # or master, depending on your default branch name
+      - main
   pull_request:
     branches:
-      - main  # or master
+      - main
 
 jobs:
   build:

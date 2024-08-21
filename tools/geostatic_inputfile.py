@@ -12,9 +12,9 @@ import json
 
 # Number of MPI tasks
 mpi = 32
-result_dir = '/scratch1/08264/baagee/cbgeopy-scratch/simulations/fundao3d-8-2/results/'
+result_dir = '/scratch1/08264/baagee/cbgeopy-scratch/simulations/fundao3d-8-3/results/'
 uuid_stress_equilibrium = 'sand3d'
-timestep_undeform = '0000000'
+timestep_undeform = '0188000'
 timestep_stress_equilibrium = '0188000'
 
 

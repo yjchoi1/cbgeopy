@@ -2,9 +2,9 @@ import os
 import pandas as pd
 
 
-mpi = 4
-timestep = '0080000'
-result_dir = '/work2/08264/baagee/frontera/cbgeopy/simulations/fundao-2d/results/sand2d/'
+mpi = 32
+timestep = '0070000'
+result_dir = '/scratch1/08264/baagee/cbgeopy-scratch/simulations/fundao3d-8-2/results/sand3d-1/'
 
 # Create an empty list to store DataFrames
 dfs = []
