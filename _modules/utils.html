@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils &mdash; cbgeopy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cbgeopy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../mpm.html">MPM Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">utils Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cbgeopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">ezdxf</span>
+<span class="kn">import</span> <span class="nn">trimesh</span>
+<span class="kn">import</span> <span class="nn">alphashape</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">Delaunay</span><span class="p">,</span> <span class="n">cKDTree</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">griddata</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">demo_utils</span>
+
+
+<div class="viewcode-block" id="save_script">
+<a class="viewcode-back" href="../utils.html#utils.save_script">[docs]</a>
+<span class="k">def</span> <span class="nf">save_script</span><span class="p">(</span><span class="n">current_script_path</span><span class="p">,</span> <span class="n">save_path</span><span class="p">):</span>
+    <span class="c1"># Read the content of the specified script</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">current_script_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">script_file</span><span class="p">:</span>
+        <span class="n">script_content</span> <span class="o">=</span> <span class="n">script_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="c1"># Save the content to the specified path</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">save_file</span><span class="p">:</span>
+        <span class="n">save_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">script_content</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_z_coordinates">
+<a class="viewcode-back" href="../utils.html#utils.get_z_coordinates">[docs]</a>
+<span class="k">def</span> <span class="nf">get_z_coordinates</span><span class="p">(</span>
+        <span class="n">mesh</span><span class="p">:</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">,</span>
+        <span class="n">xy_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+        <span class="n">find_method</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the z-coordinate values on the mesh that correspond to given (x, y) coordinates.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    - mesh_path: trimesh object</span>
+<span class="sd">    - xy_coords: np.array of shape (n, 2), array of (x, y) coordinates to get z-coords</span>
+<span class="sd">    - find_method: &#39;kdtree&#39;, &#39;linear&#39;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - np.array of shape (n,), array of z-coordinate values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Extract the vertices of the mesh</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span>
+
+    <span class="c1"># Create a KDTree for fast nearest-neighbor lookup</span>
+    <span class="n">xy_vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">z_vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">find_method</span> <span class="o">==</span> <span class="s2">&quot;kdtree&quot;</span><span class="p">:</span>
+
+        <span class="n">kdtree</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">xy_vertices</span><span class="p">)</span>
+
+        <span class="c1"># Find the nearest vertex in the mesh for each (x, y) coordinate</span>
+        <span class="n">distances</span><span class="p">,</span> <span class="n">vertex_indices</span> <span class="o">=</span> <span class="n">kdtree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">xy_coords</span><span class="p">)</span>
+
+        <span class="c1"># Get the z-values for the corresponding vertices</span>
+        <span class="n">z_values</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">vertex_indices</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">find_method</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+        <span class="c1"># Use griddata to interpolate the z-values for the given (x, y) coordinates</span>
+        <span class="n">z_values</span> <span class="o">=</span> <span class="n">griddata</span><span class="p">(</span>
+            <span class="n">xy_vertices</span><span class="p">,</span> <span class="n">z_vertices</span><span class="p">,</span> <span class="n">xy_coords</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+
+    <span class="k">return</span> <span class="n">z_values</span></div>
+
+
+
+<div class="viewcode-block" id="fill_particles_between_mesh">
+<a class="viewcode-back" href="../utils.html#utils.fill_particles_between_mesh">[docs]</a>
+<span class="k">def</span> <span class="nf">fill_particles_between_mesh</span><span class="p">(</span>
+        <span class="n">lower_mesh</span><span class="p">:</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">,</span>
+        <span class="n">upper_mesh</span><span class="p">:</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">,</span>
+        <span class="n">cell_size</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">n_particles_per_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">z_find_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">base_find_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">z_fill_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+        <span class="n">initial_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">alpha_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base_find_method (str): method to find the base of the area where two surfaces overlap (&#39;alphashape&#39; or &#39;simple&#39;)</span>
+<span class="sd">        z_find_method (str): method to find z-coordinate of mesh</span>
+<span class="sd">        z_fill_method (str): method to fill between lower and upper z-coordinates</span>
+<span class="sd">        lower_mesh (trimesh.Trimesh):</span>
+<span class="sd">        upper_mesh (trimesh.Trimesh):</span>
+<span class="sd">        cell_size (list):</span>
+<span class="sd">        initial_alpha (float): = 0.1</span>
+<span class="sd">        alpha_decay (float):</span>
+<span class="sd">        n_particles_per_dim (int):</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Error handling</span>
+    <span class="c1"># if not all(i == cell_size[0] for i in cell_size):</span>
+    <span class="c1">#     raise NotImplementedError(&quot;Current version only support the same element size for all dimension&quot;)</span>
+
+    <span class="c1"># Define spacings</span>
+    <span class="n">particle_distance</span> <span class="o">=</span> <span class="n">cell_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">n_particles_per_dim</span>
+    <span class="n">particle_offset_distance</span> <span class="o">=</span> <span class="n">particle_distance</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="c1"># Project the topography mesh to xy plain</span>
+    <span class="n">projected_vertices</span> <span class="o">=</span> <span class="n">upper_mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="c1"># Define candidate base points</span>
+    <span class="c1"># define min anx max grid coord</span>
+    <span class="c1"># min_grid_values = np.floor(np.min(projected_vertices, axis=0) / cell_size[0]) * cell_size[0]</span>
+    <span class="c1"># max_grid_values = np.ceil(np.max(projected_vertices, axis=0) / cell_size[0]) * cell_size[0]</span>
+
+    <span class="c1"># define min and max particle coord</span>
+    <span class="n">min_particle_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">projected_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">particle_offset_distance</span>
+    <span class="n">max_particle_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">projected_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">particle_offset_distance</span>
+
+    <span class="c1"># define range</span>
+    <span class="n">candidate_point_range</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">min_particle_values</span><span class="p">,</span> <span class="n">max_particle_values</span><span class="p">))</span>
+    <span class="n">rounded_array_processed</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">candidate_point_range</span><span class="p">:</span>
+        <span class="n">x_rounded</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">particle_offset_distance</span><span class="p">)</span> <span class="o">/</span> <span class="n">particle_distance</span><span class="p">)</span> <span class="o">*</span> <span class="n">particle_distance</span> <span class="o">+</span> <span class="n">particle_offset_distance</span>
+        <span class="n">y_rounded</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">particle_offset_distance</span><span class="p">)</span> <span class="o">/</span> <span class="n">particle_distance</span><span class="p">)</span> <span class="o">*</span> <span class="n">particle_distance</span> <span class="o">+</span> <span class="n">particle_offset_distance</span>
+        <span class="n">rounded_array_processed</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x_rounded</span><span class="p">,</span> <span class="n">y_rounded</span><span class="p">))</span>
+
+    <span class="c1"># Generate candidate base particle points</span>
+    <span class="n">candidate_points</span> <span class="o">=</span> <span class="n">generate_points</span><span class="p">(</span>
+        <span class="n">rounded_array_processed</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="n">particle_distance</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">base_find_method</span> <span class="o">==</span> <span class="s2">&quot;alphashape&quot;</span><span class="p">:</span>
+        <span class="c1"># TODO: add visualization for perimeter check</span>
+        <span class="c1"># Create a 2D polygon encompassing the projected vertices</span>
+        <span class="n">max_iterations</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">):</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="n">initial_alpha</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha_decay</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">alpha_shape</span> <span class="o">=</span> <span class="n">alphashape</span><span class="o">.</span><span class="n">alphashape</span><span class="p">(</span><span class="n">projected_vertices</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alpha_shape</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">):</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not find a Polygon for projected base in alpha shape&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check which grid points fall inside the projected polygon</span>
+        <span class="n">inside_check</span> <span class="o">=</span> <span class="p">[</span><span class="n">alpha_shape</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">candidate_points</span><span class="p">]</span>
+        <span class="n">base_particles</span> <span class="o">=</span> <span class="n">candidate_points</span><span class="p">[</span><span class="n">inside_check</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">base_find_method</span> <span class="o">==</span> <span class="s2">&quot;simple&quot;</span><span class="p">:</span>
+        <span class="n">base_particles</span> <span class="o">=</span> <span class="n">candidate_points</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Check `base_find_method`&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Define lower and upper z bounds and populate particles inbetween.</span>
+    <span class="n">lower_z</span> <span class="o">=</span> <span class="n">get_z_coordinates</span><span class="p">(</span>
+        <span class="n">lower_mesh</span><span class="p">,</span> <span class="n">base_particles</span><span class="p">,</span> <span class="n">z_find_method</span><span class="p">)</span>
+    <span class="n">upper_z</span> <span class="o">=</span> <span class="n">get_z_coordinates</span><span class="p">(</span>
+        <span class="n">upper_mesh</span><span class="p">,</span> <span class="n">base_particles</span><span class="p">,</span> <span class="n">z_find_method</span><span class="p">)</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="n">upper_z</span> <span class="o">-</span> <span class="n">lower_z</span>
+    <span class="n">lower_z_processed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">criteria</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lower_z</span><span class="p">)</span>
+    <span class="n">upper_z_processed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">criteria</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper_z</span><span class="p">)</span>
+    <span class="n">z_ranges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">lower_z_processed</span><span class="p">,</span> <span class="n">upper_z_processed</span><span class="p">))</span>
+    <span class="n">material_points</span> <span class="o">=</span> <span class="n">fill_particles_inbetween</span><span class="p">(</span>
+        <span class="n">base_particles</span><span class="p">,</span> <span class="n">z_ranges</span><span class="p">,</span> <span class="n">particle_distance</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">)</span>
+
+    <span class="c1"># ----------------------------------------</span>
+    <span class="c1"># # Populate particles between two surfaces</span>
+    <span class="c1"># lower_z = get_z_coordinates(</span>
+    <span class="c1">#     lower_mesh, base_particles, z_find_method)</span>
+    <span class="c1"># lower_zgrid = np.floor(lower_z / cell_size[0]) * cell_size[0]</span>
+    <span class="c1"># lower_zparticle = lower_zgrid + particle_offset_distance</span>
+    <span class="c1">#</span>
+    <span class="c1"># upper_z = get_z_coordinates(</span>
+    <span class="c1">#     upper_mesh, base_particles, z_find_method)</span>
+    <span class="c1"># upper_zgrid = np.round(upper_z / cell_size[0]) * cell_size[0]</span>
+    <span class="c1"># upper_zparticle = upper_zgrid - particle_offset_distance</span>
+    <span class="c1">#</span>
+    <span class="c1"># criteria = upper_zgrid - lower_zgrid</span>
+    <span class="c1">#</span>
+    <span class="c1"># lower_zgrid_processed = np.where(criteria &lt;= 0, 0, lower_zgrid)</span>
+    <span class="c1"># upper_zgrid_processed = np.where(criteria &lt;= 0, 0, upper_zgrid)</span>
+    <span class="c1"># zgrid_ranges = np.column_stack(</span>
+    <span class="c1">#     (lower_zgrid_processed, upper_zgrid_processed))</span>
+    <span class="c1">#</span>
+    <span class="c1"># material_points = fill_particles_inbetween(</span>
+    <span class="c1">#     base_particles, zgrid_ranges, particle_distance)</span>
+    <span class="c1"># ----------------------------------------</span>
+
+    <span class="k">return</span> <span class="n">material_points</span></div>
+
+
+
+<div class="viewcode-block" id="fill_particles_inbetween">
+<a class="viewcode-back" href="../utils.html#utils.fill_particles_inbetween">[docs]</a>
+<span class="k">def</span> <span class="nf">fill_particles_inbetween</span><span class="p">(</span>
+        <span class="n">xy_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+        <span class="n">z_ranges</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+        <span class="n">particle_distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;simple&quot;</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        xy_coords (np.array): shape=(n_coords, 2)</span>
+<span class="sd">        z_ranges (np.array): shape=(n_xy_coords, 2) where z_ranges[:, 0] is the lower bound &amp; z_ranges[:, 1] is upper bound</span>
+<span class="sd">        cell_size (list): [x_len, y_len, z_len]</span>
+<span class="sd">        particle_distance (float): default distance between particles</span>
+<span class="sd">        method (str): method to fill particles between z_ranges: &quot;simple&quot;, &quot;round&quot;</span>
+<span class="sd">            If `simple`, it uses the exact z-coordinate of mesh.</span>
+<span class="sd">            If `round`, it uses the nearest particle grid points for particle generation.</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># particle_distance_offset</span>
+    <span class="n">particle_offset_distance</span> <span class="o">=</span> <span class="n">particle_distance</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="c1"># Initialize an empty list to store particles</span>
+    <span class="n">particles_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xy_coords</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;simple&quot;</span><span class="p">:</span>
+            <span class="n">lower_z</span> <span class="o">=</span> <span class="n">z_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">upper_z</span> <span class="o">=</span> <span class="n">z_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">inside_z_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lower_z</span> <span class="o">+</span> <span class="n">particle_offset_distance</span><span class="p">,</span> <span class="n">upper_z</span><span class="p">,</span> <span class="n">particle_distance</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;round&quot;</span><span class="p">:</span>
+            <span class="n">lower_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">z_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">particle_offset_distance</span><span class="p">)</span> <span class="o">/</span> <span class="n">particle_distance</span><span class="p">)</span> <span class="o">*</span> <span class="n">particle_distance</span> <span class="o">+</span> <span class="n">particle_offset_distance</span>
+            <span class="n">upper_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">z_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">particle_offset_distance</span><span class="p">)</span> <span class="o">/</span> <span class="n">particle_distance</span><span class="p">)</span> <span class="o">*</span> <span class="n">particle_distance</span> <span class="o">+</span> <span class="n">particle_offset_distance</span>
+            <span class="n">inside_z_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lower_z</span><span class="p">,</span> <span class="n">upper_z</span><span class="p">,</span> <span class="n">particle_distance</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method `</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">` is not valid option&quot;</span><span class="p">)</span>
+
+
+        <span class="n">num_z_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inside_z_points</span><span class="p">)</span>
+
+        <span class="c1"># Repeat the xy coordinates for the number of z values</span>
+        <span class="n">xy_repeated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">xy_coords</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">num_z_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Stack the xy coordinates and z values</span>
+        <span class="n">particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">xy_repeated</span><span class="p">,</span> <span class="n">inside_z_points</span><span class="p">))</span>
+
+        <span class="c1"># Append to the list</span>
+        <span class="n">particles_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">particles</span><span class="p">)</span>
+
+        <span class="c1"># TODO: potential improvements</span>
+        <span class="c1"># - If `lower_z` is 0, don&#39;t concatenate</span>
+        <span class="c1"># - Only concatenate `upper_z` if the distance between the last element of `main_particles` exceeds a certain threshold</span>
+
+        <span class="c1"># ----------------------------------------</span>
+        <span class="c1"># # Create z values for the current point</span>
+        <span class="c1"># z_values = np.arange(</span>
+        <span class="c1">#     z_ranges[i, 0] + distance/2,</span>
+        <span class="c1">#     z_ranges[i, 1] - distance/2,</span>
+        <span class="c1">#     distance)</span>
+        <span class="c1"># num_z_values = len(z_values)</span>
+        <span class="c1">#</span>
+        <span class="c1"># # Repeat the xy coordinates for the number of z values</span>
+        <span class="c1"># xy_repeated = np.repeat(xy_coords[i].reshape(1, 2), num_z_values, axis=0)</span>
+        <span class="c1">#</span>
+        <span class="c1"># # Stack the xy coordinates and z values</span>
+        <span class="c1"># particles = np.column_stack((xy_repeated, z_values))</span>
+        <span class="c1">#</span>
+        <span class="c1"># # Append to the list</span>
+        <span class="c1"># particles_list.append(particles)</span>
+        <span class="c1"># ----------------------------------------</span>
+
+    <span class="c1"># Concatenate all particles into a single array</span>
+    <span class="n">all_particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">particles_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">all_particles</span></div>
+
+
+
+<div class="viewcode-block" id="generate_points">
+<a class="viewcode-back" href="../utils.html#utils.generate_points">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_points</span><span class="p">(</span>
+        <span class="n">ranges</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ranges (list): [[x_min, x_max], [y_min, y_max] [z_min, z_max]]</span>
+<span class="sd">        distance (float):</span>
+<span class="sd">        round_unit (float):</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        coordinate of points with shape=(n_points, n_dims)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_dims</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The function only supports 2D and 3D ranges.&quot;</span><span class="p">)</span>
+
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
+        <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">+</span> <span class="n">distance</span><span class="p">,</span> <span class="n">distance</span><span class="p">)</span>
+        <span class="n">coordinates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">coordinates</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_dims</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">points</span></div>
+
+
+
+<div class="viewcode-block" id="obj2mesh">
+<a class="viewcode-back" href="../utils.html#utils.obj2mesh">[docs]</a>
+<span class="k">def</span> <span class="nf">obj2mesh</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">faces</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">parts</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;v&#39;</span><span class="p">:</span>
+                <span class="c1"># Convert vertex coordinates to float and add to the list</span>
+                <span class="n">vertex</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+                <span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vertex</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span><span class="p">:</span>
+                <span class="c1"># Convert face indices to integer and correct for 0-based indexing</span>
+                <span class="n">face</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+                <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">face</span><span class="p">)</span>
+
+    <span class="c1"># Convert lists to numpy arrays</span>
+    <span class="n">vertices_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span>
+    <span class="n">faces_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">faces</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">vertices_array</span><span class="p">,</span> <span class="n">faces_array</span></div>
+
+
+
+<span class="c1"># Extracting points from various entities in the DXF file</span>
+<div class="viewcode-block" id="dxf2points">
+<a class="viewcode-back" href="../utils.html#utils.dxf2points">[docs]</a>
+<span class="k">def</span> <span class="nf">dxf2points</span><span class="p">(</span><span class="n">dxf_file</span><span class="p">):</span>
+    <span class="c1"># Read the DXF file</span>
+    <span class="n">dxf_file</span> <span class="o">=</span> <span class="s1">&#39;topo_surface_Fundao.dxf&#39;</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">ezdxf</span><span class="o">.</span><span class="n">readfile</span><span class="p">(</span><span class="n">dxf_file</span><span class="p">)</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Checking for different entity types and extracting points</span>
+    <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">modelspace</span><span class="p">()</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;POLYLINE VERTEX POINT 3DFACE&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxftype</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;POLYLINE&#39;</span><span class="p">:</span>
+            <span class="c1"># print(&quot;polyline&quot;)</span>
+            <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">entity</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+                <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">vertex</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">vertex</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">vertex</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">z</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxftype</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;VERTEX&#39;</span><span class="p">:</span>
+            <span class="c1"># print(&quot;vertex&quot;)</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">z</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxftype</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;POINT&#39;</span><span class="p">:</span>
+            <span class="c1"># print(&quot;point&quot;)</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">z</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxftype</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;3DFACE&#39;</span><span class="p">:</span>
+            <span class="c1"># print(&quot;3dface&quot;)</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx0</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx0</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx0</span><span class="o">.</span><span class="n">z</span><span class="p">])</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx1</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx1</span><span class="o">.</span><span class="n">z</span><span class="p">])</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx2</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx2</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx2</span><span class="o">.</span><span class="n">z</span><span class="p">])</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx3</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx3</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">dxf</span><span class="o">.</span><span class="n">vtx3</span><span class="o">.</span><span class="n">z</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_h5">
+<a class="viewcode-back" href="../utils.html#utils.get_h5">[docs]</a>
+<span class="k">def</span> <span class="nf">get_h5</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">,</span> <span class="n">timestep</span><span class="p">,</span> <span class="n">n_mpis</span><span class="p">):</span>
+    <span class="c1"># Create an empty list to store DataFrames</span>
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Iterate over different files from MPI and append to list</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_mpis</span><span class="p">):</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;particles-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">n_mpis</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">timestep</span><span class="si">}</span><span class="s1">.h5&#39;</span>  <span class="c1"># ex) particles-26_32-0120000.h5</span>
+        <span class="n">h5_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+        <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="s1">&#39;table&#39;</span><span class="p">))</span>
+
+        <span class="c1"># Concatenate all DataFrames</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Yongjin Choi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils Module &mdash; cbgeopy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2709fde1"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="MPM Module" href="mpm.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cbgeopy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="mpm.html">MPM Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">utils Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#utils.dxf2points"><code class="docutils literal notranslate"><span class="pre">dxf2points()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.fill_particles_between_mesh"><code class="docutils literal notranslate"><span class="pre">fill_particles_between_mesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.fill_particles_inbetween"><code class="docutils literal notranslate"><span class="pre">fill_particles_inbetween()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.generate_points"><code class="docutils literal notranslate"><span class="pre">generate_points()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.get_h5"><code class="docutils literal notranslate"><span class="pre">get_h5()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.get_z_coordinates"><code class="docutils literal notranslate"><span class="pre">get_z_coordinates()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.obj2mesh"><code class="docutils literal notranslate"><span class="pre">obj2mesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utils.save_script"><code class="docutils literal notranslate"><span class="pre">save_script()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cbgeopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">utils Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-utils">
+<span id="utils-module"></span><h1>utils Module<a class="headerlink" href="#module-utils" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.dxf2points">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">dxf2points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dxf_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#dxf2points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.dxf2points" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.fill_particles_between_mesh">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">fill_particles_between_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles_per_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_fill_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#fill_particles_between_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.fill_particles_between_mesh" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_find_method</strong> (<em>str</em>) – method to find the base of the area where two surfaces overlap (‘alphashape’ or ‘simple’)</p></li>
+<li><p><strong>z_find_method</strong> (<em>str</em>) – method to find z-coordinate of mesh</p></li>
+<li><p><strong>z_fill_method</strong> (<em>str</em>) – method to fill between lower and upper z-coordinates</p></li>
+<li><p><strong>lower_mesh</strong> (<em>trimesh.Trimesh</em>)</p></li>
+<li><p><strong>upper_mesh</strong> (<em>trimesh.Trimesh</em>)</p></li>
+<li><p><strong>cell_size</strong> (<em>list</em>)</p></li>
+<li><p><strong>initial_alpha</strong> (<em>float</em>) – = 0.1</p></li>
+<li><p><strong>alpha_decay</strong> (<em>float</em>)</p></li>
+<li><p><strong>n_particles_per_dim</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.fill_particles_inbetween">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">fill_particles_inbetween</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_ranges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#fill_particles_inbetween"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.fill_particles_inbetween" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy_coords</strong> (<em>np.array</em>) – shape=(n_coords, 2)</p></li>
+<li><p><strong>z_ranges</strong> (<em>np.array</em>) – shape=(n_xy_coords, 2) where z_ranges[:, 0] is the lower bound &amp; z_ranges[:, 1] is upper bound</p></li>
+<li><p><strong>cell_size</strong> (<em>list</em>) – [x_len, y_len, z_len]</p></li>
+<li><p><strong>particle_distance</strong> (<em>float</em>) – default distance between particles</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – method to fill particles between z_ranges: “simple”, “round”
+If <cite>simple</cite>, it uses the exact z-coordinate of mesh.
+If <cite>round</cite>, it uses the nearest particle grid points for particle generation.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.generate_points">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">generate_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ranges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#generate_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.generate_points" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ranges</strong> (<em>list</em>) – [[x_min, x_max], [y_min, y_max] [z_min, z_max]]</p></li>
+<li><p><strong>distance</strong> (<em>float</em>)</p></li>
+<li><p><strong>round_unit</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>coordinate of points with shape=(n_points, n_dims)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.get_h5">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_h5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_mpis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#get_h5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.get_h5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.get_z_coordinates">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_z_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#get_z_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.get_z_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Get the z-coordinate values on the mesh that correspond to given (x, y) coordinates.</p>
+<p>Parameters:
+- mesh_path: trimesh object
+- xy_coords: np.array of shape (n, 2), array of (x, y) coordinates to get z-coords
+- find_method: ‘kdtree’, ‘linear’</p>
+<p>Returns:
+- np.array of shape (n,), array of z-coordinate values.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.obj2mesh">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">obj2mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#obj2mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.obj2mesh" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.save_script">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">save_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_script_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#save_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.save_script" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mpm.html" class="btn btn-neutral float-left" title="MPM Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Yongjin Choi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

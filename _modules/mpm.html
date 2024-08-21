@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mpm &mdash; cbgeopy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=2709fde1"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cbgeopy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../mpm.html">MPM Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">utils Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cbgeopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mpm</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mpm</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">trimesh</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">cKDTree</span><span class="p">,</span> <span class="n">KDTree</span>
+
+
+
+<div class="viewcode-block" id="MPMConfig">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig">[docs]</a>
+<span class="k">class</span> <span class="nc">MPMConfig</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">domain_origin</span><span class="p">,</span>
+            <span class="n">domain_length</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;mpm_input_config&quot;</span>
+    <span class="p">):</span>
+        <span class="c1"># Mesh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_stresses</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">materials</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_cells_per_dim</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nnode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nele</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesh_info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesh_coord_base</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Entity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Particle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># General</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">direction_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">domain_length</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domain_origin</span> <span class="o">=</span> <span class="n">domain_origin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domain_length</span> <span class="o">=</span> <span class="n">domain_length</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">lst</span> <span class="ow">in</span> <span class="p">[</span><span class="n">domain_origin</span><span class="p">,</span> <span class="n">domain_length</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Current version only support 3D&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">domain_ranges</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">origin</span> <span class="o">+</span> <span class="n">length</span><span class="p">)</span> <span class="k">for</span> <span class="n">origin</span><span class="p">,</span> <span class="n">length</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">domain_origin</span><span class="p">,</span> <span class="n">domain_length</span><span class="p">)]</span>
+
+        <span class="c1"># Input json file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+            <span class="s2">&quot;mesh&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;mesh&quot;</span><span class="p">:</span> <span class="s2">&quot;mesh.txt&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;entity_sets&quot;</span><span class="p">:</span> <span class="s2">&quot;entity_sets.json&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;boundary_conditions&quot;</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="s2">&quot;cell_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ED3H8&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;ED2Q4&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;isoparametric&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;check_duplicates&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;io_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Ascii3D&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;Ascii2D&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;node_type&quot;</span><span class="p">:</span> <span class="s2">&quot;N3D&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;N2D&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;particles&quot;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="MPMConfig.add_mesh">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_mesh">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_cells_per_dim</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make mesh coordinate array &amp; cell group</span>
+<span class="sd">        Args:</span>
+<span class="sd">            n_cells_per_dim (list): [nx, ny, nz]</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_cells_per_dim</span> <span class="o">=</span> <span class="n">n_cells_per_dim</span>
+
+        <span class="c1"># # Error handling</span>
+        <span class="c1"># if not all(i == n_cells_per_dim[0] for i in n_cells_per_dim):</span>
+        <span class="c1">#     raise NotImplementedError(&quot;Current version only support the same element size for all dimension&quot;)</span>
+
+        <span class="c1"># Make coordinate base for each axis</span>
+        <span class="n">mesh_coord_base</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cell_size</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">domain_range</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_ranges</span><span class="p">):</span>
+            <span class="n">coord_base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                <span class="n">domain_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">domain_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_cells_per_dim</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">mesh_coord_base</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coord_base</span><span class="p">)</span>
+
+            <span class="c1"># Calculate the cell size for the current dimension</span>
+            <span class="n">cell_size_per_dim</span> <span class="o">=</span> <span class="p">(</span><span class="n">coord_base</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">coord_base</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="n">n_cells_per_dim</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span>
+            <span class="n">cell_size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_size_per_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesh_coord_base</span> <span class="o">=</span> <span class="n">mesh_coord_base</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span> <span class="o">=</span> <span class="n">cell_size</span>
+
+        <span class="c1"># Create node coordinates</span>
+        <span class="n">node_coords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_coord_base</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_coord_base</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_coord_base</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">node_coords</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+        <span class="n">node_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">node_coords</span><span class="p">)</span>
+
+        <span class="c1"># Compute the number of nodes and elements (cells) for each dimension</span>
+        <span class="c1"># - node</span>
+        <span class="n">nnode_x</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mesh_coord_base</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">nnode_y</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mesh_coord_base</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">nnode_z</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mesh_coord_base</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nnode</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">*</span> <span class="n">nnode_y</span> <span class="o">*</span> <span class="n">nnode_z</span>
+        <span class="c1"># - element</span>
+        <span class="n">nele_x</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">nele_y</span> <span class="o">=</span> <span class="n">nnode_y</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">nele_z</span> <span class="o">=</span> <span class="n">nnode_z</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nele</span> <span class="o">=</span> <span class="n">nele_x</span> <span class="o">*</span> <span class="n">nele_y</span> <span class="o">*</span> <span class="n">nele_z</span>
+        <span class="n">nnode_in_ele</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># hardcoded for cube for 3-D case</span>
+
+        <span class="c1"># Make cell groups</span>
+        <span class="n">cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nele</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">nnode_in_ele</span><span class="p">)))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">elz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nele_z</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">ely</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nele_y</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">elx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nele_x</span><span class="p">)):</span>
+                    <span class="c1"># cell index starts from 1 not 0, so there is &quot;1+&quot; at first</span>
+                    <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">*</span> <span class="n">nnode_y</span> <span class="o">*</span> <span class="n">elz</span> <span class="o">+</span> <span class="n">ely</span> <span class="o">*</span> <span class="n">nnode_x</span> <span class="o">+</span> <span class="n">elx</span>
+                    <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">*</span> <span class="n">nnode_y</span> <span class="o">*</span> <span class="n">elz</span> <span class="o">+</span> <span class="n">ely</span> <span class="o">*</span> <span class="n">nnode_x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">elx</span>
+                    <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">*</span> <span class="n">nnode_y</span> <span class="o">*</span> <span class="n">elz</span> <span class="o">+</span> <span class="p">(</span><span class="n">ely</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nnode_x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">elx</span>
+                    <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">*</span> <span class="n">nnode_y</span> <span class="o">*</span> <span class="n">elz</span> <span class="o">+</span> <span class="p">(</span><span class="n">ely</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nnode_x</span> <span class="o">+</span> <span class="n">elx</span>
+                    <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">*</span> <span class="n">nnode_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">elz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">ely</span> <span class="o">*</span> <span class="n">nnode_x</span> <span class="o">+</span> <span class="n">elx</span>
+                    <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">*</span> <span class="n">nnode_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">elz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">ely</span> <span class="o">*</span> <span class="n">nnode_x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">elx</span>
+                    <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">*</span> <span class="n">nnode_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">elz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">ely</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nnode_x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">elx</span>
+                    <span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnode_x</span> <span class="o">*</span> <span class="n">nnode_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">elz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">ely</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nnode_x</span> <span class="o">+</span> <span class="n">elx</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">cells</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># Aggregate data in dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesh_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;node_coords&quot;</span><span class="p">:</span> <span class="n">node_coords</span><span class="p">,</span>
+            <span class="s2">&quot;n_node_x&quot;</span><span class="p">:</span> <span class="n">nnode_x</span><span class="p">,</span>
+            <span class="s2">&quot;n_node_y&quot;</span><span class="p">:</span> <span class="n">nnode_y</span><span class="p">,</span>
+            <span class="s2">&quot;n_node_z&quot;</span><span class="p">:</span> <span class="n">nnode_z</span><span class="p">,</span>
+            <span class="s2">&quot;cell_groups&quot;</span><span class="p">:</span> <span class="n">cells</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.add_particles_csv">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_particles_csv">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_particles_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">path</span><span class="p">,</span>
+            <span class="n">material_id</span><span class="p">,</span>
+            <span class="n">particle_group_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            material_id (int): material id associated with this particle group</span>
+<span class="sd">            particle_group_id (int):</span>
+<span class="sd">            path (str): csv file path</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Assign a particle group id</span>
+        <span class="k">if</span> <span class="n">particle_group_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span> <span class="o">=</span> <span class="n">particle_group_id</span>
+
+        <span class="c1"># Read the particle CSV file into a pandas DataFrame</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="c1"># Convert the DataFrame to a NumPy array</span>
+        <span class="n">particles</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+        <span class="c1"># Store</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">][</span><span class="s1">&#39;particles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">particles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">particles</span><span class="p">)))</span>
+
+        <span class="c1"># Update current particle count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">particles</span><span class="p">)</span>
+
+        <span class="c1"># Set config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;particles&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;generator&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;check_duplicates&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;particles_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;io_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Ascii3D&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;Ascii2D&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">,</span>
+                    <span class="s2">&quot;particle_type&quot;</span><span class="p">:</span> <span class="s2">&quot;P3D&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;P2D&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;material_id&quot;</span><span class="p">:</span> <span class="n">material_id</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.add_particles_from_topography">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_particles_from_topography">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_particles_from_topography</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">lower_topography</span><span class="p">:</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">,</span>
+            <span class="n">upper_topography</span><span class="p">:</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">,</span>
+            <span class="n">n_particle_per_cell</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">material_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">z_find_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">base_find_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">z_fill_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+            <span class="n">overlap_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">particle_group_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            overlap_tolerance (float):</span>
+<span class="sd">            lower_topography (trimesh.Trimesh): mesh that defines the surface of the upper layer topography</span>
+<span class="sd">            upper_topography (trimesh.Trimesh):  mesh that defines the surface of the upper layer topography</span>
+<span class="sd">            n_particle_per_cell (int): number of particles per cell per dimension</span>
+<span class="sd">            material_id (int): id of material that you want to assign to this particle set</span>
+<span class="sd">            z_find_method (str): method to find z-coordinate of mesh (&#39;&#39; or &#39;&#39;)</span>
+<span class="sd">            base_find_method (str): method to find the base of the area where two surfaces overlap (&#39;alphashape&#39; or &#39;simple&#39;)</span>
+<span class="sd">                If &#39;alphashape&#39;, it defines base by trying to estimate the x-y plane projection area using alphashape.</span>
+<span class="sd">                if &#39;simple, it defines base using max and min x, y values. The base will be restricted to square shape.</span>
+<span class="sd">            z_fill_method (str): method to fill between lower and upper z-coordinates (&#39;simple&#39; or &#39;round&#39;)</span>
+<span class="sd">                If &#39;simple&#39;, it uses the exact z-coordinate of mesh.</span>
+<span class="sd">                If &#39;round&#39;, it uses the nearest particle grid points for particle generation.</span>
+<span class="sd">            particle_group_id (int):</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Assign a particle group id</span>
+        <span class="k">if</span> <span class="n">particle_group_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span> <span class="o">=</span> <span class="n">particle_group_id</span>
+
+        <span class="c1"># Fill particles between two meshes</span>
+        <span class="n">new_particles</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">fill_particles_between_mesh</span><span class="p">(</span>
+            <span class="n">lower_topography</span><span class="p">,</span>
+            <span class="n">upper_topography</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span><span class="p">,</span>
+            <span class="n">n_particle_per_cell</span><span class="p">,</span>
+            <span class="n">z_find_method</span><span class="p">,</span>
+            <span class="n">base_find_method</span><span class="p">,</span>
+            <span class="n">z_fill_method</span>
+        <span class="p">)</span>
+
+        <span class="n">overlap_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">overlap_tolerance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Overlap checking for particle group </span><span class="si">{</span><span class="n">particle_group_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Collect all existing particles into a single array for KDTree</span>
+            <span class="n">all_existing_particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Build KDTree with existing particles</span>
+            <span class="n">tree</span> <span class="o">=</span> <span class="n">KDTree</span><span class="p">(</span><span class="n">all_existing_particles</span><span class="p">)</span>
+
+            <span class="c1"># Check for overlapping particles</span>
+            <span class="n">non_overlapping_particles</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">particle</span> <span class="ow">in</span> <span class="n">new_particles</span><span class="p">:</span>
+                <span class="n">dist</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">particle</span><span class="p">,</span> <span class="n">distance_upper_bound</span><span class="o">=</span><span class="n">overlap_tolerance</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dist</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">):</span>  <span class="c1"># If distance is inf, it means no close neighbor was found</span>
+                    <span class="n">non_overlapping_particles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">overlap_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">non_overlapping_particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">non_overlapping_particles</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If no existing particles, all new particles are non-overlapping</span>
+            <span class="n">non_overlapping_particles</span> <span class="o">=</span> <span class="n">new_particles</span>
+
+        <span class="c1"># Store</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">][</span><span class="s1">&#39;particles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">non_overlapping_particles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_overlapping_particles</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Update current particle count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_overlapping_particles</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of overlapping particles found: </span><span class="si">{</span><span class="n">overlap_count</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Set config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;particles&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;generator&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;check_duplicates&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;particles_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;io_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Ascii3D&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;Ascii2D&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">,</span>
+                    <span class="s2">&quot;particle_type&quot;</span><span class="p">:</span> <span class="s2">&quot;P3D&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;P2D&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;material_id&quot;</span><span class="p">:</span> <span class="n">material_id</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.define_particle_entity">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.define_particle_entity">[docs]</a>
+    <span class="k">def</span> <span class="nf">define_particle_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span><span class="p">[</span><span class="s1">&#39;particle_sets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">set_id</span><span class="p">,</span> <span class="n">particle_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span><span class="p">[</span><span class="s2">&quot;particle_sets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">set_id</span><span class="p">,</span>  <span class="c1"># index of particle set</span>
+                <span class="s2">&quot;set&quot;</span><span class="p">:</span> <span class="n">particle_dict</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>  <span class="c1"># index of particles for current set</span>
+            <span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.add_cell_entity">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_cell_entity">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_cell_entity</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">nset_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">ranges</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ranges (list): [[x_min, x_max], [y_min, y_max], [z_min, z_max]].</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: set id should be properly considered. Currently, it is first auto created by boundary entity</span>
+        <span class="k">if</span> <span class="n">nset_id</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`nset_id` should be larger than 5 since 0 to 5 is already occupied by the boundary node sets&quot;</span><span class="p">)</span>
+
+        <span class="n">node_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_info</span><span class="p">[</span><span class="s1">&#39;node_coords&#39;</span><span class="p">]</span>
+
+        <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">z_min</span><span class="p">,</span> <span class="n">z_max</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node_coords</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">point</span>
+            <span class="k">if</span> <span class="n">x_min</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">x_max</span> <span class="ow">and</span> <span class="n">y_min</span> <span class="o">&lt;=</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">y_max</span> <span class="ow">and</span> <span class="n">z_min</span> <span class="o">&lt;=</span> <span class="n">z</span> <span class="o">&lt;=</span> <span class="n">z_max</span><span class="p">:</span>
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">coords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span><span class="p">[</span><span class="s2">&quot;node_sets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">nset_id</span><span class="p">,</span>  <span class="c1"># index of node set</span>
+            <span class="s2">&quot;set&quot;</span><span class="p">:</span> <span class="n">nodes</span><span class="p">,</span>  <span class="c1"># index of nodes</span>
+        <span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="MPMConfig.add_particles_cube">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_particles_cube">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_particles_cube</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">cube_origin</span><span class="p">,</span>
+            <span class="n">cube_length</span><span class="p">,</span>
+            <span class="n">material_id</span><span class="p">,</span>
+            <span class="n">n_particle_per_cell</span><span class="p">,</span>
+            <span class="n">particle_group_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cube_origin (list): the lower edge of the cube, [x_min, y_min, z_min]</span>
+<span class="sd">            cube_length (list): the length of the cube defined from `cube_origin` [x_len, y_len, z_len]</span>
+<span class="sd">            material_id (int):</span>
+<span class="sd">            n_particle_per_cell (int):</span>
+<span class="sd">            particle_group_id (int):</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Assign a particle group id</span>
+        <span class="k">if</span> <span class="n">particle_group_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span> <span class="o">=</span> <span class="n">particle_group_id</span>
+
+        <span class="c1"># Particle config</span>
+        <span class="n">particle_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">n_particle_per_cell</span>
+        <span class="n">particle_offset_distance</span> <span class="o">=</span> <span class="n">particle_distance</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">particle_ranges</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">origin</span> <span class="o">+</span> <span class="n">particle_offset_distance</span><span class="p">,</span> <span class="n">origin</span> <span class="o">+</span> <span class="n">length</span> <span class="o">-</span> <span class="n">particle_offset_distance</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">origin</span><span class="p">,</span> <span class="n">length</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cube_origin</span><span class="p">,</span> <span class="n">cube_length</span><span class="p">)]</span>
+
+        <span class="c1"># Create particle range arrays</span>
+        <span class="n">x_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">particle_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">particle_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">particle_offset_distance</span><span class="p">,</span> <span class="n">particle_distance</span><span class="p">)</span>
+        <span class="n">y_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">particle_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">particle_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">particle_offset_distance</span><span class="p">,</span> <span class="n">particle_distance</span><span class="p">)</span>
+        <span class="n">z_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">particle_ranges</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">particle_ranges</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">particle_offset_distance</span><span class="p">,</span> <span class="n">particle_distance</span><span class="p">)</span>
+
+        <span class="c1"># Generate the particle array using meshgrid</span>
+        <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x_coords</span><span class="p">,</span> <span class="n">y_coords</span><span class="p">,</span> <span class="n">z_coords</span><span class="p">)</span>
+        <span class="n">particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">zz</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="c1"># Store</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">][</span><span class="s1">&#39;particles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">particles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">particles</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">][</span><span class="s1">&#39;material_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">material_id</span>
+
+        <span class="c1"># Update current particle count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">particles</span><span class="p">)</span>
+
+        <span class="c1"># Set config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;particles&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;generator&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;check_duplicates&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;particles_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;io_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Ascii3D&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;Ascii2D&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_group_id</span><span class="p">,</span>
+                    <span class="s2">&quot;particle_type&quot;</span><span class="p">:</span> <span class="s2">&quot;P3D&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="s2">&quot;P2D&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;material_id&quot;</span><span class="p">:</span> <span class="n">material_id</span><span class="p">,</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.remove_overlapping_particles">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.remove_overlapping_particles">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_overlapping_particles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">process_group_pair</span><span class="p">(</span><span class="n">group1_data</span><span class="p">,</span> <span class="n">group2_data</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+            <span class="n">particles1</span><span class="p">,</span> <span class="n">ids1</span> <span class="o">=</span> <span class="n">group1_data</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">group1_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">particles2</span><span class="p">,</span> <span class="n">ids2</span> <span class="o">=</span> <span class="n">group2_data</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">group2_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+            <span class="n">tree1</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">particles1</span><span class="p">)</span>
+            <span class="n">tree2</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">particles2</span><span class="p">)</span>
+
+            <span class="n">pairs</span> <span class="o">=</span> <span class="n">tree1</span><span class="o">.</span><span class="n">query_ball_tree</span><span class="p">(</span><span class="n">tree2</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+
+            <span class="n">to_remove1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">to_remove2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">neighbors</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pairs</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">neighbors</span><span class="p">:</span>
+                    <span class="n">to_remove2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">neighbors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># Mark the first neighbor for removal</span>
+
+            <span class="n">keep1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">particles1</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">to_remove1</span><span class="p">])</span>
+            <span class="n">keep2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">particles2</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">to_remove2</span><span class="p">])</span>
+
+            <span class="n">new_group1</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;particles&#39;</span><span class="p">:</span> <span class="n">particles1</span><span class="p">[</span><span class="n">keep1</span><span class="p">],</span>
+                <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">ids1</span><span class="p">[</span><span class="n">keep1</span><span class="p">]</span>
+            <span class="p">}</span>
+
+            <span class="n">new_group2</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;particles&#39;</span><span class="p">:</span> <span class="n">particles2</span><span class="p">[</span><span class="n">keep2</span><span class="p">],</span>
+                <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">ids2</span><span class="p">[</span><span class="n">keep2</span><span class="p">]</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">new_group1</span><span class="p">,</span> <span class="n">new_group2</span>
+
+        <span class="n">sorted_groups</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sorted_groups</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">group1</span> <span class="o">=</span> <span class="n">sorted_groups</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">group2</span> <span class="o">=</span> <span class="n">sorted_groups</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">group1_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="n">group1</span><span class="p">]</span>
+            <span class="n">group2_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="n">group2</span><span class="p">]</span>
+
+            <span class="n">new_group1_data</span><span class="p">,</span> <span class="n">new_group2_data</span> <span class="o">=</span> <span class="n">process_group_pair</span><span class="p">(</span><span class="n">group1_data</span><span class="p">,</span> <span class="n">group2_data</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="n">group1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_group1_data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">[</span><span class="n">group2</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_group2_data</span></div>
+
+
+
+<div class="viewcode-block" id="MPMConfig.add_particle_constraints">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_particle_constraints">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_particle_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints_info</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            constraints_info (dict): list of dicts</span>
+<span class="sd">                Each dict contains:</span>
+<span class="sd">                - &#39;pset_id&#39;: particle set id to be constrained</span>
+<span class="sd">                - &#39;axis&#39;: str, one of &#39;x&#39;, &#39;y&#39;, &#39;z&#39;</span>
+<span class="sd">                - &#39;velocity&#39;: float, velocity</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="n">constraints_info</span><span class="p">:</span>
+            <span class="c1"># Get current constraint info</span>
+            <span class="n">pset_id</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;pset_id&quot;</span><span class="p">]</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span>
+            <span class="n">velocity</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">]</span>
+
+            <span class="c1"># For each node entity set,</span>
+            <span class="k">for</span> <span class="n">particle_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span><span class="p">[</span><span class="s2">&quot;particle_sets&quot;</span><span class="p">]:</span>
+                <span class="c1"># Check if current entity set is imposed a constraint by the current constraint info</span>
+                <span class="k">if</span> <span class="n">particle_set</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">pset_id</span><span class="p">:</span>
+                    <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="n">particle_set</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction_mapping</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span>
+                        <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="n">velocity</span>
+                    <span class="p">})</span>
+                    <span class="k">break</span>
+
+        <span class="k">if</span> <span class="s2">&quot;boundary_conditions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">][</span><span class="s2">&quot;boundary_conditions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">][</span><span class="s2">&quot;boundary_conditions&quot;</span><span class="p">][</span><span class="s2">&quot;particles_velocity_constraints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">constraints</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.define_boundary_entity">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.define_boundary_entity">[docs]</a>
+    <span class="k">def</span> <span class="nf">define_boundary_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define boundary entity set that corresponds to each boundary plain:</span>
+<span class="sd">            entity_sets[&quot;node_sets&quot;] = [</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;id&quot;: set_id,  # index of node set</span>
+<span class="sd">                    &quot;set&quot;: nodes,  # index of node</span>
+<span class="sd">                    &quot;axis&quot;: axis,  # x, y, z</span>
+<span class="sd">                    &quot;bound_loc&quot;: bound_loc  # `start` or `end`</span>
+<span class="sd">                },</span>
+<span class="sd">                ...,</span>
+<span class="sd">            ]</span>
+<span class="sd">        Note that it is hardcoded to occupy node set id from 0 to 5.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO manual association of nset-id considering the</span>
+        <span class="c1">#  `add_velocity_constraints` `add_cell_entity` `add_friction_constrains` methods.</span>
+        <span class="c1">#   so, all the constraints&#39; id would be better to manually assigned.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span><span class="p">[</span><span class="s1">&#39;node_sets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Define boundary node sets</span>
+        <span class="n">boundary_node_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">axis</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">[]}</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">]}</span>
+
+        <span class="c1"># Get boundaries</span>
+        <span class="n">x_bounds</span><span class="p">,</span> <span class="n">y_bounds</span><span class="p">,</span> <span class="n">z_bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_ranges</span>
+
+        <span class="c1"># Node boundary entity</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node_coord</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh_info</span><span class="p">[</span><span class="s2">&quot;node_coords&quot;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">node_coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">x_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">boundary_node_ids</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">][</span><span class="s2">&quot;start&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node_coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">x_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">boundary_node_ids</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">][</span><span class="s2">&quot;end&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node_coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">boundary_node_ids</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">][</span><span class="s2">&quot;start&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node_coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">boundary_node_ids</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">][</span><span class="s2">&quot;end&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node_coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">z_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">boundary_node_ids</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">][</span><span class="s2">&quot;start&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node_coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">z_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">boundary_node_ids</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">][</span><span class="s2">&quot;end&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># Define entity set</span>
+        <span class="n">set_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">bounds</span> <span class="ow">in</span> <span class="n">boundary_node_ids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">bound_loc</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">bounds</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># TODO: may add the type of entity set that describes what this entity is about</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span><span class="p">[</span><span class="s2">&quot;node_sets&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">set_id</span><span class="p">,</span>  <span class="c1"># index of node set</span>
+                    <span class="s2">&quot;set&quot;</span><span class="p">:</span> <span class="n">nodes</span><span class="p">,</span>  <span class="c1"># index of node</span>
+                    <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis</span><span class="p">,</span>  <span class="c1"># x, y, z</span>
+                    <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="n">bound_loc</span>  <span class="c1"># `start` or `end`</span>
+                <span class="p">})</span>
+                <span class="n">set_id</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.add_velocity_constraints">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_velocity_constraints">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_velocity_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints_info</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            constraints_info (): list of dicts</span>
+<span class="sd">                Each dict contains:</span>
+<span class="sd">                - &#39;axis&#39;: str, one of &#39;x&#39;, &#39;y&#39;, &#39;z&#39;</span>
+<span class="sd">                - &#39;bound_loc&#39;: str, one of &#39;start&#39;, &#39;end&#39;</span>
+<span class="sd">                - &#39;velocity&#39;: float</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="n">constraints_info</span><span class="p">:</span>
+            <span class="c1"># Get current constraint info</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span>
+            <span class="n">bound_loc</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;bound_loc&quot;</span><span class="p">]</span>
+            <span class="n">velocity</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">]</span>
+
+            <span class="c1"># For each node entity set,</span>
+            <span class="k">for</span> <span class="n">node_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span><span class="p">[</span><span class="s2">&quot;node_sets&quot;</span><span class="p">]:</span>
+                <span class="c1"># Check if current entity set is imposed a constraint by the current constraint info</span>
+                <span class="k">if</span> <span class="n">node_set</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">axis</span> <span class="ow">and</span> <span class="n">node_set</span><span class="p">[</span><span class="s2">&quot;bound_loc&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">bound_loc</span><span class="p">:</span>
+                    <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s2">&quot;nset_id&quot;</span><span class="p">:</span> <span class="n">node_set</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction_mapping</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span>
+                        <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="n">velocity</span>
+                    <span class="p">})</span>
+                    <span class="k">break</span>
+
+        <span class="k">if</span> <span class="s2">&quot;boundary_conditions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">][</span><span class="s2">&quot;boundary_conditions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">][</span><span class="s2">&quot;boundary_conditions&quot;</span><span class="p">][</span><span class="s2">&quot;velocity_constraints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">constraints</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.add_friction_constrains">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_friction_constrains">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_friction_constrains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints_info</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            constraints_info (): list of dicts</span>
+<span class="sd">                Each dict contains:</span>
+<span class="sd">                - &#39;axis&#39;: str, one of &#39;x&#39;, &#39;y&#39;, &#39;z&#39;</span>
+<span class="sd">                - &#39;bound_loc&#39;: str, one of &#39;start&#39;, &#39;end&#39;</span>
+<span class="sd">                - &#39;dir&#39; (depreciated): int, direction index (0 for x, 1 for y, 2 for z)</span>
+<span class="sd">                - &#39;sign_n&#39;: int, normal sign (-1 or 1)</span>
+<span class="sd">                - &#39;friction&#39;: float</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">friction_constraints</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="n">constraints_info</span><span class="p">:</span>
+            <span class="c1"># Get current constraint info</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span>
+            <span class="n">bound_loc</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;bound_loc&quot;</span><span class="p">]</span>
+            <span class="n">sign_n</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;sign_n&quot;</span><span class="p">]</span>
+            <span class="n">friction</span> <span class="o">=</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;friction&quot;</span><span class="p">]</span>
+
+            <span class="c1"># For each node entity set,</span>
+            <span class="k">for</span> <span class="n">node_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span><span class="p">[</span><span class="s2">&quot;node_sets&quot;</span><span class="p">]:</span>
+                <span class="c1"># Check if current entity set is imposed a constraint by the current constraint info</span>
+                <span class="k">if</span> <span class="n">node_set</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">axis</span> <span class="ow">and</span> <span class="n">node_set</span><span class="p">[</span><span class="s2">&quot;bound_loc&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">bound_loc</span><span class="p">:</span>
+                    <span class="n">friction_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s2">&quot;nset_id&quot;</span><span class="p">:</span> <span class="n">node_set</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction_mapping</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span>
+                        <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="n">sign_n</span><span class="p">,</span>
+                        <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="n">friction</span>
+                    <span class="p">})</span>
+                    <span class="k">break</span>
+
+        <span class="k">if</span> <span class="s2">&quot;boundary_conditions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">][</span><span class="s2">&quot;boundary_conditions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">][</span><span class="s2">&quot;boundary_conditions&quot;</span><span class="p">][</span><span class="s2">&quot;friction_constraints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">friction_constraints</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.add_materials">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_materials">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_materials</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">materials</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            materials (list): list of materials defined in dictionary.</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">materials</span> <span class="o">=</span> <span class="n">materials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;materials&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">materials</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.add_initial_stress">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_initial_stress">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_initial_stress</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">option</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">top_surface</span><span class="p">:</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">,</span>
+            <span class="n">density</span><span class="p">,</span>
+            <span class="n">k0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">undeformed_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            top_surface (trimesh.Trimesh):</span>
+<span class="sd">            k0 (float):</span>
+<span class="sd">            option (str): `k0` or `stabilized_stress_data`</span>
+<span class="sd">            undeformed_data ():</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_stresses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">particles_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;k0&#39;</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">k0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k0 is not specified&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">pset_id</span><span class="p">,</span> <span class="n">pdata</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="c1"># density = find_material_property(pdata[&#39;material_id&#39;], &#39;density&#39;, self.materials)</span>
+
+                <span class="n">top_zcoords</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_z_coordinates</span><span class="p">(</span><span class="n">top_surface</span><span class="p">,</span> <span class="n">pdata</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">][:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> <span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+                <span class="n">vertical_stresses</span> <span class="o">=</span> <span class="p">(</span><span class="n">top_zcoords</span> <span class="o">-</span> <span class="n">pdata</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="n">density</span> <span class="o">*</span> <span class="mf">9.81</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">initial_stresses</span><span class="p">[</span><span class="n">pdata</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">k0</span> <span class="o">*</span> <span class="n">vertical_stresses</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">initial_stresses</span><span class="p">[</span><span class="n">pdata</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">k0</span> <span class="o">*</span> <span class="n">vertical_stresses</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">initial_stresses</span><span class="p">[</span><span class="n">pdata</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">vertical_stresses</span>
+
+            <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="c1"># raise NotImplementedError(&quot;This feature is not yet implemented&quot;)</span>
+
+            <span class="c1"># if k0 is None:</span>
+            <span class="c1">#     raise ValueError(&quot;k0 should be specified&quot;)</span>
+            <span class="c1">#</span>
+            <span class="c1"># gravity = self.mpm_json[&quot;external_loading_conditions&quot;][-1]</span>
+            <span class="c1">#</span>
+            <span class="c1"># all_particles = []</span>
+            <span class="c1"># for pinfo in self.mpm_json[&#39;particles&#39;]:</span>
+            <span class="c1">#     pset_id, material_id = pinfo[&#39;generator&#39;][&#39;pset_id&#39;], pinfo[&#39;generator&#39;][&#39;pset_id&#39;]</span>
+            <span class="c1">#</span>
+            <span class="c1">#     # Find the material associated with `material_id` and its unit weight</span>
+            <span class="c1">#     for material_info in self.mpm_json[&#39;materials&#39;]:</span>
+            <span class="c1">#         if material_id == material_info[&#39;id&#39;]:</span>
+            <span class="c1">#             density = material_info[&#39;density&#39;]</span>
+            <span class="c1">#             unit_weight = gravity * density</span>
+            <span class="c1">#</span>
+            <span class="c1">#     # Get the particles associated with the current `pset_id`.</span>
+            <span class="c1">#     current_particles = self.particle_groups[pset_id][&#39;particles&#39;]</span>
+            <span class="c1">#</span>
+            <span class="c1">#     # Compute stress</span>
+            <span class="c1">#     TODO: the following won&#39;t be correct approach if the surface height is not flat but varies</span>
+            <span class="c1">#     particle_stress = np.zeros((np.shape(current_particles)[0], 3))  # second axis is for stress xx, yy, zz</span>
+            <span class="c1">#     particle_stress[:, 0] = k0 * (y_range[1] - particles[:, 1]) * unit_weight  # K0*H*Unit_Weight</span>
+            <span class="c1">#     particle_stress[:, 1] = (y_range[1] - particles[:, 1]) * unit_weight  # H*Unit_Weight</span>
+            <span class="c1">#     particle_stress[:, 2] = (y_range[1] - particles[:, 1]) * unit_weight  # H*Unit_Weight</span>
+
+        <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;stabilized_stress_data&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This feature is not yet implemented&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Option `</span><span class="si">{</span><span class="n">option</span><span class="si">}</span><span class="s2">` is invalid&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s1">&#39;mesh&#39;</span><span class="p">][</span><span class="s1">&#39;particles_stresses&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;particles_stresses.txt&#39;</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.add_external_loadings">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.add_external_loadings">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_external_loadings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loadings</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            loadings (dict):</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;external_loading_conditions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loadings</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.analysis">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.analysis">[docs]</a>
+    <span class="k">def</span> <span class="nf">analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (dict):</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;analysis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.post_processing">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.post_processing">[docs]</a>
+    <span class="k">def</span> <span class="nf">post_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (dict):</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s2">&quot;post_processing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.write">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.write">[docs]</a>
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">):</span>
+        <span class="c1"># Set save directory</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">save_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span>
+
+        <span class="c1"># --- Mesh</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Write `mesh.txt` at </span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">mesh_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="s2">&quot;mesh.txt&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Function to write mesh array data to file</span>
+        <span class="k">def</span> <span class="nf">append_array_to_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">array</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%g</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Write the number of nodes and elements</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mesh_file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nnode</span><span class="p">)</span><span class="si">}</span><span class="se">\t</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nele</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Append coordinate values of nodes and cell groups to &#39;mesh.txt&#39;</span>
+        <span class="n">append_array_to_file</span><span class="p">(</span><span class="n">mesh_file_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_info</span><span class="p">[</span><span class="s2">&quot;node_coords&quot;</span><span class="p">])</span>
+        <span class="n">append_array_to_file</span><span class="p">(</span><span class="n">mesh_file_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_info</span><span class="p">[</span><span class="s2">&quot;cell_groups&quot;</span><span class="p">])</span>
+
+        <span class="c1"># --- Particles</span>
+        <span class="c1"># Function to write particle coordinates to file</span>
+        <span class="k">def</span> <span class="nf">write_coordinates_to_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">coordinates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.4f</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">pid</span><span class="p">,</span> <span class="n">particle_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;particles_</span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Write `particles_</span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2">.txt` at </span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">write_coordinates_to_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">particle_dict</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">])</span>
+
+        <span class="c1"># --- Entity</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Save `entity_sets.json`at </span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">/entity_sets.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entity_sets</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># --- particles_stresses.txt</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_stresses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Save `particles_stresses.txt` at </span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">/particles_stresses.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_stresses</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_stresses</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.4f</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;saved&#39;</span><span class="p">)</span>
+
+        <span class="c1"># --- `mpm.json` config</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Save `mpm.json`at </span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">/mpm.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+    <span class="c1"># TODO: option to save as img</span>
+<div class="viewcode-block" id="MPMConfig.visualize_mesh">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.visualize_mesh">[docs]</a>
+    <span class="k">def</span> <span class="nf">visualize_mesh</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">save_path</span><span class="p">,</span>
+            <span class="n">node_indices</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Visualize current configuration</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            save_path (str):</span>
+<span class="sd">            nodes (bool):</span>
+<span class="sd">            node_indices (bool):</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Extract the x, y, and z coordinates</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_info</span><span class="p">[</span><span class="s2">&quot;node_coords&quot;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_info</span><span class="p">[</span><span class="s2">&quot;node_coords&quot;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_info</span><span class="p">[</span><span class="s2">&quot;node_coords&quot;</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">]</span>
+
+        <span class="c1"># Calculate the min and max values for each axis</span>
+        <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">z_min</span><span class="p">,</span> <span class="n">z_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+        <span class="c1"># Create a scatter plot</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter3d</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;markers+text&#39;</span> <span class="k">if</span> <span class="n">node_indices</span> <span class="k">else</span> <span class="s1">&#39;markers&#39;</span><span class="p">,</span>
+            <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">opacity</span><span class="o">=</span><span class="mf">0.8</span>
+            <span class="p">),</span>
+            <span class="n">text</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span> <span class="k">if</span> <span class="n">node_indices</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">textposition</span><span class="o">=</span><span class="s1">&#39;top center&#39;</span>
+        <span class="p">)])</span>
+
+        <span class="c1"># Set plot titles and labels</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;3D Mesh Plot&#39;</span><span class="p">,</span>
+            <span class="n">scene</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">xaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;X Axis&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">]),</span>
+                <span class="n">yaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Y Axis&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">]),</span>
+                <span class="n">zaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Z Axis&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">z_min</span><span class="p">,</span> <span class="n">z_max</span><span class="p">]),</span>
+                <span class="n">aspectmode</span><span class="o">=</span><span class="s1">&#39;data&#39;</span>  <span class="c1"># Ensures equal scaling for all axes</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plot saved to </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MPMConfig.visualize_particles">
+<a class="viewcode-back" href="../mpm.html#mpm.MPMConfig.visualize_particles">[docs]</a>
+    <span class="k">def</span> <span class="nf">visualize_particles</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">save_path</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            save_path (str):</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create a figure</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
+
+        <span class="c1"># Define color palette</span>
+        <span class="c1"># colors = [&#39;Viridis&#39;, &#39;Cividis&#39;, &#39;Plasma&#39;, &#39;Inferno&#39;, &#39;Magma&#39;, &#39;Turbo&#39;]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">particle_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Extract the x, y, and z coordinates</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">particle_dict</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">particle_dict</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">particle_dict</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">]</span>
+
+            <span class="c1"># Create a scatter plot for each group</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter3d</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+                <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;markers&#39;</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                    <span class="c1"># color=colors[i],</span>
+                    <span class="n">opacity</span><span class="o">=</span><span class="mf">0.8</span>
+                <span class="p">),</span>
+                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Group-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">))</span>
+
+        <span class="c1"># Set plot titles and labels</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;3D Particles Plot&#39;</span><span class="p">,</span>
+            <span class="n">scene</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">xaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;X Axis&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_ranges</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="n">yaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Y Axis&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_ranges</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="n">zaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Z Axis&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_ranges</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                <span class="n">aspectmode</span><span class="o">=</span><span class="s1">&#39;data&#39;</span>  <span class="c1"># Ensures equal scaling for all axes</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plot saved to </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GeostaticStress">
+<a class="viewcode-back" href="../mpm.html#mpm.GeostaticStress">[docs]</a>
+<span class="k">class</span> <span class="nc">GeostaticStress</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">undeformed_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            undeformed_data (pan):</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+        <span class="c1"># Get h5 file the corresponds to the undeformed data.</span>
+        <span class="c1"># self.df_undeformed = get_h5(undeformed_data_dir, )</span>
+
+
+<div class="viewcode-block" id="find_material_property">
+<a class="viewcode-back" href="../mpm.html#mpm.find_material_property">[docs]</a>
+<span class="k">def</span> <span class="nf">find_material_property</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">material_list</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">material_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">item</span><span class="p">[</span><span class="n">field</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="get_h5">
+<a class="viewcode-back" href="../mpm.html#mpm.get_h5">[docs]</a>
+<span class="k">def</span> <span class="nf">get_h5</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">timestep</span><span class="p">,</span> <span class="n">mpi</span><span class="p">):</span>
+    <span class="c1"># Create an empty list to store DataFrames</span>
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Iterate over different files from MPI and append to list</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mpi</span><span class="p">):</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;particles-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">mpi</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">timestep</span><span class="si">}</span><span class="s1">.h5&#39;</span>  <span class="c1"># ex) particles-26_32-0120000.h5</span>
+        <span class="n">h5_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+        <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="s1">&#39;table&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Concatenate all DataFrames</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Yongjin Choi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

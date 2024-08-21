@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules &mdash; cbgeopy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2709fde1"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cbgeopy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mpm.html">MPM Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cbgeopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Modules</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="modules">
+<h1>Modules<a class="headerlink" href="#modules" title="Link to this heading"></a></h1>
+<section id="module-mpm">
+<span id="mpm"></span><h2>mpm<a class="headerlink" href="#module-mpm" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mpm.GeostaticStress">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mpm.</span></span><span class="sig-name descname"><span class="pre">GeostaticStress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">undeformed_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#GeostaticStress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.GeostaticStress" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mpm.MPMConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mpm.</span></span><span class="sig-name descname"><span class="pre">MPMConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpm_input_config'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_cell_entity">
+<span class="sig-name descname"><span class="pre">add_cell_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_cell_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_cell_entity" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ranges</strong> (<em>list</em>) – [[x_min, x_max], [y_min, y_max], [z_min, z_max]].</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_external_loadings">
+<span class="sig-name descname"><span class="pre">add_external_loadings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loadings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_external_loadings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_external_loadings" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loadings</strong> (<em>dict</em>)</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_friction_constrains">
+<span class="sig-name descname"><span class="pre">add_friction_constrains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraints_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_friction_constrains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_friction_constrains" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraints_info ()</strong> – list of dicts
+Each dict contains:
+- ‘axis’: str, one of ‘x’, ‘y’, ‘z’
+- ‘bound_loc’: str, one of ‘start’, ‘end’
+- ‘dir’ (depreciated): int, direction index (0 for x, 1 for y, 2 for z)
+- ‘sign_n’: int, normal sign (-1 or 1)
+- ‘friction’: float</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_initial_stress">
+<span class="sig-name descname"><span class="pre">add_initial_stress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undeformed_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_initial_stress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_initial_stress" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_surface</strong> (<em>trimesh.Trimesh</em>)</p></li>
+<li><p><strong>k0</strong> (<em>float</em>)</p></li>
+<li><p><strong>option</strong> (<em>str</em>) – <cite>k0</cite> or <cite>stabilized_stress_data</cite></p></li>
+<li><p><strong>undeformed_data ()</strong></p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_materials">
+<span class="sig-name descname"><span class="pre">add_materials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">materials</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_materials"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_materials" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>materials</strong> (<em>list</em>) – list of materials defined in dictionary.</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_mesh">
+<span class="sig-name descname"><span class="pre">add_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells_per_dim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_mesh" title="Link to this definition"></a></dt>
+<dd><p>Make mesh coordinate array &amp; cell group
+:Parameters: <strong>n_cells_per_dim</strong> (<em>list</em>) – [nx, ny, nz]</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particle_constraints">
+<span class="sig-name descname"><span class="pre">add_particle_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraints_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particle_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particle_constraints" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraints_info</strong> (<em>dict</em>) – list of dicts
+Each dict contains:
+- ‘pset_id’: particle set id to be constrained
+- ‘axis’: str, one of ‘x’, ‘y’, ‘z’
+- ‘velocity’: float, velocity</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_csv">
+<span class="sig-name descname"><span class="pre">add_particles_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_csv" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>material_id</strong> (<em>int</em>) – material id associated with this particle group</p></li>
+<li><p><strong>particle_group_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – csv file path</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_cube">
+<span class="sig-name descname"><span class="pre">add_particles_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cube_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_cube" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cube_origin</strong> (<em>list</em>) – the lower edge of the cube, [x_min, y_min, z_min]</p></li>
+<li><p><strong>cube_length</strong> (<em>list</em>) – the length of the cube defined from <cite>cube_origin</cite> [x_len, y_len, z_len]</p></li>
+<li><p><strong>material_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>n_particle_per_cell</strong> (<em>int</em>)</p></li>
+<li><p><strong>particle_group_id</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_topography">
+<span class="sig-name descname"><span class="pre">add_particles_from_topography</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower_topography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_topography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_fill_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_topography"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_topography" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overlap_tolerance</strong> (<em>float</em>)</p></li>
+<li><p><strong>lower_topography</strong> (<em>trimesh.Trimesh</em>) – mesh that defines the surface of the upper layer topography</p></li>
+<li><p><strong>upper_topography</strong> (<em>trimesh.Trimesh</em>) – mesh that defines the surface of the upper layer topography</p></li>
+<li><p><strong>n_particle_per_cell</strong> (<em>int</em>) – number of particles per cell per dimension</p></li>
+<li><p><strong>material_id</strong> (<em>int</em>) – id of material that you want to assign to this particle set</p></li>
+<li><p><strong>z_find_method</strong> (<em>str</em>) – method to find z-coordinate of mesh (’’ or ‘’)</p></li>
+<li><p><strong>base_find_method</strong> (<em>str</em>) – method to find the base of the area where two surfaces overlap (‘alphashape’ or ‘simple’)
+If ‘alphashape’, it defines base by trying to estimate the x-y plane projection area using alphashape.
+if ‘simple, it defines base using max and min x, y values. The base will be restricted to square shape.</p></li>
+<li><p><strong>z_fill_method</strong> (<em>str</em>) – method to fill between lower and upper z-coordinates (‘simple’ or ‘round’)
+If ‘simple’, it uses the exact z-coordinate of mesh.
+If ‘round’, it uses the nearest particle grid points for particle generation.</p></li>
+<li><p><strong>particle_group_id</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_velocity_constraints">
+<span class="sig-name descname"><span class="pre">add_velocity_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraints_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_velocity_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_velocity_constraints" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraints_info ()</strong> – list of dicts
+Each dict contains:
+- ‘axis’: str, one of ‘x’, ‘y’, ‘z’
+- ‘bound_loc’: str, one of ‘start’, ‘end’
+- ‘velocity’: float</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.analysis">
+<span class="sig-name descname"><span class="pre">analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.analysis" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>)</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.define_boundary_entity">
+<span class="sig-name descname"><span class="pre">define_boundary_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.define_boundary_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.define_boundary_entity" title="Link to this definition"></a></dt>
+<dd><dl>
+<dt>Define boundary entity set that corresponds to each boundary plain:</dt><dd><dl>
+<dt>entity_sets[“node_sets”] = [</dt><dd><dl class="simple">
+<dt>{</dt><dd><p>“id”: set_id,  # index of node set
+“set”: nodes,  # index of node
+“axis”: axis,  # x, y, z
+“bound_loc”: bound_loc  # <cite>start</cite> or <cite>end</cite></p>
+</dd>
+</dl>
+<p>},
+…,</p>
+</dd>
+</dl>
+<p>]</p>
+</dd>
+</dl>
+<p>Note that it is hardcoded to occupy node set id from 0 to 5.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.define_particle_entity">
+<span class="sig-name descname"><span class="pre">define_particle_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.define_particle_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.define_particle_entity" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.post_processing">
+<span class="sig-name descname"><span class="pre">post_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.post_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.post_processing" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>)</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.remove_overlapping_particles">
+<span class="sig-name descname"><span class="pre">remove_overlapping_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.remove_overlapping_particles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.remove_overlapping_particles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.visualize_mesh">
+<span class="sig-name descname"><span class="pre">visualize_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.visualize_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.visualize_mesh" title="Link to this definition"></a></dt>
+<dd><p>Visualize current configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_path</strong> (<em>str</em>)</p></li>
+<li><p><strong>nodes</strong> (<em>bool</em>)</p></li>
+<li><p><strong>node_indices</strong> (<em>bool</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.visualize_particles">
+<span class="sig-name descname"><span class="pre">visualize_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.visualize_particles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.visualize_particles" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_path</strong> (<em>str</em>)</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.write" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mpm.find_material_property">
+<span class="sig-prename descclassname"><span class="pre">mpm.</span></span><span class="sig-name descname"><span class="pre">find_material_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#find_material_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.find_material_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mpm.get_h5">
+<span class="sig-prename descclassname"><span class="pre">mpm.</span></span><span class="sig-name descname"><span class="pre">get_h5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#get_h5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.get_h5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-utils">
+<span id="utils"></span><h2>utils<a class="headerlink" href="#module-utils" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.dxf2points">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">dxf2points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dxf_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#dxf2points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.dxf2points" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.fill_particles_between_mesh">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">fill_particles_between_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles_per_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_fill_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#fill_particles_between_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.fill_particles_between_mesh" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_find_method</strong> (<em>str</em>) – method to find the base of the area where two surfaces overlap (‘alphashape’ or ‘simple’)</p></li>
+<li><p><strong>z_find_method</strong> (<em>str</em>) – method to find z-coordinate of mesh</p></li>
+<li><p><strong>z_fill_method</strong> (<em>str</em>) – method to fill between lower and upper z-coordinates</p></li>
+<li><p><strong>lower_mesh</strong> (<em>trimesh.Trimesh</em>)</p></li>
+<li><p><strong>upper_mesh</strong> (<em>trimesh.Trimesh</em>)</p></li>
+<li><p><strong>cell_size</strong> (<em>list</em>)</p></li>
+<li><p><strong>initial_alpha</strong> (<em>float</em>) – = 0.1</p></li>
+<li><p><strong>alpha_decay</strong> (<em>float</em>)</p></li>
+<li><p><strong>n_particles_per_dim</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.fill_particles_inbetween">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">fill_particles_inbetween</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_ranges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#fill_particles_inbetween"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.fill_particles_inbetween" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy_coords</strong> (<em>np.array</em>) – shape=(n_coords, 2)</p></li>
+<li><p><strong>z_ranges</strong> (<em>np.array</em>) – shape=(n_xy_coords, 2) where z_ranges[:, 0] is the lower bound &amp; z_ranges[:, 1] is upper bound</p></li>
+<li><p><strong>cell_size</strong> (<em>list</em>) – [x_len, y_len, z_len]</p></li>
+<li><p><strong>particle_distance</strong> (<em>float</em>) – default distance between particles</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – method to fill particles between z_ranges: “simple”, “round”
+If <cite>simple</cite>, it uses the exact z-coordinate of mesh.
+If <cite>round</cite>, it uses the nearest particle grid points for particle generation.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.generate_points">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">generate_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ranges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#generate_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.generate_points" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ranges</strong> (<em>list</em>) – [[x_min, x_max], [y_min, y_max] [z_min, z_max]]</p></li>
+<li><p><strong>distance</strong> (<em>float</em>)</p></li>
+<li><p><strong>round_unit</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>coordinate of points with shape=(n_points, n_dims)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.get_h5">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_h5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_mpis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#get_h5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.get_h5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.get_z_coordinates">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">get_z_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#get_z_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.get_z_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Get the z-coordinate values on the mesh that correspond to given (x, y) coordinates.</p>
+<p>Parameters:
+- mesh_path: trimesh object
+- xy_coords: np.array of shape (n, 2), array of (x, y) coordinates to get z-coords
+- find_method: ‘kdtree’, ‘linear’</p>
+<p>Returns:
+- np.array of shape (n,), array of z-coordinate values.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.obj2mesh">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">obj2mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#obj2mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.obj2mesh" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.save_script">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">save_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_script_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#save_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.save_script" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Yongjin Choi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
