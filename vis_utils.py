@@ -5,7 +5,65 @@ import vtk
 from vtk.util import numpy_support
 
 
-def save_as_vtk(meshes, points=None, save_path_prefix="output"):
+def plot_scatter(particle_groups, domain_ranges, save_path):
+    """
+    Plots the particles for each set_id with different colors.
+
+    Parameters:
+    - data (dict): A dictionary where keys are set_ids and values are dictionaries with a key "particles"
+                   that contains a numpy array of shape (nparticles, ndims).
+
+    Returns:
+    - None
+    """
+    colors = plt.cm.get_cmap('hsv', len(particle_groups))  # Create a colormap with a different color for each set_id
+    markers = ['o', 's', '^', 'D', '*', '+', 'x', '|', '_']  # List of marker shapes
+
+    fig = plt.figure(figsize=(15, 8), dpi=600)
+
+    # Check if any set has 3D data
+    is_3d = any(value['particles'].shape[1] == 3 for value in particle_groups.values())
+
+    if is_3d:
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        ax = fig.add_subplot(111)
+
+    for set_id, value in particle_groups.items():
+        particles = value['particles']
+        marker = markers[set_id]  # Use a marker shape based on index
+
+        if particles.shape[1] == 2:
+            ax.scatter(
+                particles[:, 0], particles[:, 1],
+                color=colors(set_id), marker=marker, facecolors='none', edgecolors=colors(set_id),
+                label=f'Set {set_id}')
+
+        elif particles.shape[1] == 3:
+            ax.scatter(
+                particles[:, 0], particles[:, 1], particles[:, 2],
+                color=colors(set_id), marker=marker, facecolors='none', edgecolors=colors(set_id),
+                label=f'Set {set_id}')
+        else:
+            raise ValueError("Only 2D and 3D particle arrays are supported.")
+
+    if not is_3d:
+        ax.set_aspect('equal', 'box')  # Set equal aspect ratio for 2D plots
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_xlim(domain_ranges[0])
+    ax.set_ylim(domain_ranges[1])
+
+    if is_3d:
+        ax.set_zlabel('Z')
+        ax.set_zlim(domain_ranges[2])
+
+    plt.legend()
+    plt.savefig(save_path)
+
+
+def save_as_vtk(meshes=None, points=None, save_path_prefix="output"):
     """
     Saves multiple 3D mesh surfaces and multiple groups of points as VTK files for ParaView.
 
@@ -17,28 +75,29 @@ def save_as_vtk(meshes, points=None, save_path_prefix="output"):
     """
 
     # Save each mesh
-    for index, mesh in enumerate(meshes):
-        # Create a new polydata object
-        polydata = vtk.vtkPolyData()
+    if meshes is not None:
+        for index, mesh in enumerate(meshes):
+            # Create a new polydata object
+            polydata = vtk.vtkPolyData()
 
-        # Set the points
-        vtk_points = vtk.vtkPoints()
-        vtk_points.SetData(numpy_support.numpy_to_vtk(mesh.vertices))
-        polydata.SetPoints(vtk_points)
+            # Set the points
+            vtk_points = vtk.vtkPoints()
+            vtk_points.SetData(numpy_support.numpy_to_vtk(mesh.vertices))
+            polydata.SetPoints(vtk_points)
 
-        # Set the faces
-        vtk_cells = vtk.vtkCellArray()
-        for face in mesh.faces:
-            vtk_cells.InsertNextCell(3, face)
-        polydata.SetPolys(vtk_cells)
+            # Set the faces
+            vtk_cells = vtk.vtkCellArray()
+            for face in mesh.faces:
+                vtk_cells.InsertNextCell(3, face)
+            polydata.SetPolys(vtk_cells)
 
-        # Write the polydata to a file
-        writer = vtk.vtkPolyDataWriter()
-        writer.SetFileName(f"{save_path_prefix}_mesh_{index}.vtk")
-        writer.SetInputData(polydata)
-        writer.Write()
+            # Write the polydata to a file
+            writer = vtk.vtkPolyDataWriter()
+            writer.SetFileName(f"{save_path_prefix}_mesh_{index}.vtk")
+            writer.SetInputData(polydata)
+            writer.Write()
 
-        print(f"Mesh {index} saved to {save_path_prefix}_mesh_{index}.vtk")
+            print(f"Mesh {index} saved to {save_path_prefix}_mesh_{index}.vtk")
 
     # Save points if provided
     if points is not None:
