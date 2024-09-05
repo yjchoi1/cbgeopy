@@ -673,56 +673,11 @@ class MPMConfig:
             }
         )
 
-    def remove_overlapping_particles(self, threshold):
-        def process_group_pair(group1_data, group2_data, threshold):
-            particles1, ids1 = group1_data['particles'], group1_data['id']
-            particles2, ids2 = group2_data['particles'], group2_data['id']
-
-            tree1 = cKDTree(particles1)
-            tree2 = cKDTree(particles2)
-
-            pairs = tree1.query_ball_tree(tree2, threshold)
-
-            to_remove1 = set()
-            to_remove2 = set()
-
-            for i, neighbors in enumerate(pairs):
-                if neighbors:
-                    to_remove2.add(neighbors[0])  # Mark the first neighbor for removal
-
-            keep1 = np.array([i for i in range(len(particles1)) if i not in to_remove1])
-            keep2 = np.array([i for i in range(len(particles2)) if i not in to_remove2])
-
-            new_group1 = {
-                'particles': particles1[keep1],
-                'id': ids1[keep1]
-            }
-
-            new_group2 = {
-                'particles': particles2[keep2],
-                'id': ids2[keep2]
-            }
-
-            return new_group1, new_group2
-
-        sorted_groups = sorted(self.particle_groups.keys())
-        for i in range(len(sorted_groups) - 1):
-            group1 = sorted_groups[i]
-            group2 = sorted_groups[i + 1]
-            group1_data = self.particle_groups[group1]
-            group2_data = self.particle_groups[group2]
-
-            new_group1_data, new_group2_data = process_group_pair(group1_data, group2_data, threshold)
-
-            self.particle_groups[group1] = new_group1_data
-            self.particle_groups[group2] = new_group2_data
-
-
-    def add_particle_constraints(self, constraints_info):
+    def add_particle_constraints(self, constraints_info:List[dict]):
         """
 
         Args:
-            constraints_info (dict): list of dicts
+            constraints_info (list[dict]): list of dicts
                 Each dict contains:
                 - 'pset_id': particle set id to be constrained
                 - 'axis': str, one of 'x', 'y', 'z'
@@ -774,26 +729,19 @@ class MPMConfig:
         #   so, all the constraints' id would be better to manually assigned.
         self.entity_sets['node_sets'] = []
 
-        # Define boundary node sets
-        boundary_node_ids = {axis: {"start": [], "end": []} for axis in ["x", "y", "z"]}
+        # Select the appropriate axes based on the number of dimensions
+        axes = AXES_3D if self.ndims == 3 else AXES_2D
 
-        # Get boundaries
-        x_bounds, y_bounds, z_bounds = self.domain_ranges
+        # Initialize boundary node sets
+        boundary_node_ids: Dict[str, Dict[str, List[int]]] = {axis: {"start": [], "end": []} for axis in axes}
 
-        # Node boundary entity
+        # Populate boundary node sets
         for i, node_coord in enumerate(self.mesh_info["node_coords"]):
-            if node_coord[0] == x_bounds[0]:
-                boundary_node_ids["x"]["start"].append(i)
-            if node_coord[0] == x_bounds[1]:
-                boundary_node_ids["x"]["end"].append(i)
-            if node_coord[1] == y_bounds[0]:
-                boundary_node_ids["y"]["start"].append(i)
-            if node_coord[1] == y_bounds[1]:
-                boundary_node_ids["y"]["end"].append(i)
-            if node_coord[2] == z_bounds[0]:
-                boundary_node_ids["z"]["start"].append(i)
-            if node_coord[2] == z_bounds[1]:
-                boundary_node_ids["z"]["end"].append(i)
+            for j, axis in enumerate(axes):
+                if node_coord[j] == self.mesh_coord_base[j][0]:
+                    boundary_node_ids[axis]["start"].append(i)
+                elif node_coord[j] == self.domain_ranges[j][1]:
+                    boundary_node_ids[axis]["end"].append(i)
 
         # Define entity set
         set_id = 0
