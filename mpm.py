@@ -479,6 +479,72 @@ class MPMConfig:
                 "set": particle_dict['id'],  # index of particles for current set
             })
 
+    def remove_overlapping_particles(self, overlap_tolerance):
+        """
+        Iterate over all particles in particle groups and remove the overlapping particles
+            when the particles in the current group overlaps the previous cumulative particles
+        This reorders the particle ids, i.e., `particle_groups['particle_group_id']['id']`
+        Args:
+            overlap_tolerance ():
+
+        Returns:
+
+        """
+
+        if len(self.particle_groups) == 0:
+            raise ValueError("There are no existing particle groups")
+
+        overlap_count = 0
+        self.particles_count = 0
+        particle_group_count = 0
+        current_existing_particles = None
+
+        for pset_id, pdata in self.particle_groups.items():
+            new_particles = pdata['particles']
+
+            # For the first particle group, all new particles are non-overlapping
+            if particle_group_count == 0:
+                non_overlapping_particles = new_particles
+                current_existing_particles = new_particles
+
+            # overlap check with previous particles
+            else:
+                print(f"Overlap checking for particle group {pset_id}")
+
+                # Build KDTree with existing particles
+                tree = KDTree(current_existing_particles)
+
+                # Check for overlapping particles
+                non_overlapping_particles = []
+                for particle in new_particles:
+                    dist, _ = tree.query(particle, distance_upper_bound=overlap_tolerance)
+                    if dist == float('inf'):  # If distance is inf, it means no close neighbor was found
+                        non_overlapping_particles.append(particle)
+                    else:
+                        overlap_count += 1
+
+                non_overlapping_particles = np.array(non_overlapping_particles)
+
+                # Update existing particles with non-overlapping ones
+                if len(non_overlapping_particles) > 0:
+                    current_existing_particles = np.vstack((current_existing_particles, non_overlapping_particles))
+
+            particle_group_count += 1
+
+            # Update particle count after filtering
+            self.particles_count += len(non_overlapping_particles)
+
+            # Store
+            self.particle_groups[pset_id]['particles'] = non_overlapping_particles
+            self.particle_groups[pset_id]['id'] = list(
+                range(self.particles_count, self.particles_count + len(non_overlapping_particles))
+            )
+
+            print(f'Number of overlapping particles found: {overlap_count}')
+            a=1
+
+
+
     def add_cell_entity(
             self,
             nset_id: int,
