@@ -1091,6 +1091,8 @@ class MPMConfig:
         Returns:
 
         """
+        if self.ndims == 2:
+            raise ValueError("This feature does not support 2D case yet.")
 
         # Create a figure
         fig = go.Figure()
@@ -1131,20 +1133,6 @@ class MPMConfig:
 
         fig.write_html(save_path)
         print(f"Plot saved to {save_path}")
-
-
-class GeostaticStress:
-    def __init__(
-            self,
-            undeformed_data: pd.DataFrame
-    ):
-        """
-
-        Args:
-            undeformed_data (pan):
-        """
-        # Get h5 file the corresponds to the undeformed data.
-        # self.df_undeformed = get_h5(undeformed_data_dir, )
 
 
 def find_material_property(id, field, material_list):
