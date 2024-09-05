@@ -756,7 +756,7 @@ class MPMConfig:
                 })
                 set_id += 1
 
-    def add_velocity_constraints(self, constraints_info):
+    def add_velocity_constraints(self, constraints_info: List[Dict]):
         """
 
         Args:
@@ -847,6 +847,11 @@ class MPMConfig:
         self.materials = materials
         self.mpm_json["materials"] = materials
 
+        # Check if the material model has a proper dimensionality
+        for material in materials:
+            if (self.ndims == 3 and "2D" in material["type"]) or (self.ndims == 2 and "3D" in material["type"]):
+                raise ValueError(f"Material '{material['type']}' is not compatible with a {self.ndims}D model.")
+
     def add_initial_stress(
             self,
             option: str,
@@ -883,8 +888,7 @@ class MPMConfig:
                 self.initial_stresses[pdata['id'], 1] = - k0 * vertical_stresses
                 self.initial_stresses[pdata['id'], 2] = - vertical_stresses
 
-            a = 1
-                # raise NotImplementedError("This feature is not yet implemented")
+            # raise NotImplementedError("This feature is not yet implemented")
 
             # if k0 is None:
             #     raise ValueError("k0 should be specified")
@@ -928,6 +932,9 @@ class MPMConfig:
         Returns:
 
         """
+        if self.ndims != len(loadings["gravity"]):
+            raise ValueError("External loading does no comply with the dimension of the current simulation")
+
         self.mpm_json["external_loading_conditions"] = loadings
 
     def analysis(self, config):
@@ -940,6 +947,10 @@ class MPMConfig:
 
         """
         self.mpm_json["analysis"] = config
+
+        # Check if the material model has a proper dimensionality
+        if (self.ndims == 3 and "2D" in config['type']) or (self.ndims == 2 and "3D" in config['type']):
+            raise ValueError(f"Analysis type '{config['type']}' is not compatible with a {self.ndims}D model.")
 
     def post_processing(self, config):
         """
