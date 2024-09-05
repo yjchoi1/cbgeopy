@@ -205,7 +205,7 @@ class MPMConfig:
 
         Args:
             material_id (int): material id associated with this particle group
-            particle_group_id (int):
+            particle_group_id (int): particle group id to be associated with this particles
             path (str): csv file path
 
         Returns:
@@ -245,6 +245,107 @@ class MPMConfig:
                 }
             }
         )
+
+    def add_particles_from_lines(
+            self,
+            layer_info: List,
+            n_particle_per_cell: int,
+            randomness: float = None
+    ):
+        """
+
+        Args:
+            layer_info (List): a list of dict {"line_points": [a list of points], "material_id" int}
+                * "line_points" contains the points that comprise a line that defines the upper boundary of layer.
+                    It should be defined for the entire x-domain range.
+                    For example, [[[0, 0], [1.0, 0]], [[0, 0], [0.3, 0.3], [0.7, 0.1], [1.0, 0]], [[0, 0.5], [0.1]]]
+                * "material_id" is the material id associated with this layer.
+                * "particle_group_id": particle_group_id (int): particle group id to be associated with this particles
+            n_particle_per_cell (int): number of particles per cell per dimension
+            randomness ():
+
+        Returns:
+
+        """
+        if self.ndims == 3:
+            raise ValueError("This feature is only for 2D domain")
+
+        # Particle config for whole domain
+        particle_distance = self.cell_size[0] / n_particle_per_cell
+        particle_offset_distance = particle_distance / 2
+        particle_ranges = [
+            (origin + particle_offset_distance, origin + length - particle_offset_distance)
+            for origin, length in zip(self.domain_origin, self.domain_length)]
+
+        # Create particle range arrays that cover the whole domain
+        x_coords = np.arange(
+            particle_ranges[0][0], particle_ranges[0][1] + particle_offset_distance, particle_distance)
+        y_coords = np.arange(
+            particle_ranges[1][0], particle_ranges[1][1] + particle_offset_distance, particle_distance)
+
+        # Generate the candidate particles
+        xx, yy = np.meshgrid(x_coords, y_coords)
+        candidate_particles = np.vstack((xx.ravel(), yy.ravel())).T
+
+        # Initialize lower boundary (for the first layer it is assumed to be y=0)
+        lower_boundary_y = np.zeros_like(candidate_particles[:, 0])
+
+        # Iterate over layers to define upper boundaries
+        for i, layer in enumerate(layer_info):
+            # Assign a particle group id
+            if "particle_group_id" in layer:
+                self.particle_group_id = layer["particle_group_id"]
+            else:
+                self.particle_group_id += 1
+
+            # Create line function for the upper boundary of the layer
+            points = np.array(layer["line_points"])
+            x_points, y_points = points[:, 0], points[:, 1]
+            upper_boundary_func = interpolate.interp1d(
+                x_points, y_points, kind='linear', fill_value="extrapolate")
+
+            # Determine the y-values of the upper boundary at all x-coordinates
+            upper_boundary_y = upper_boundary_func(candidate_particles[:, 0])
+
+            # Find particles that are between the lower and upper boundaries
+            mask = (candidate_particles[:, 1] < upper_boundary_y) & (candidate_particles[:, 1] >= lower_boundary_y)
+            particles = candidate_particles[mask]
+
+            # Disturb particles
+            if randomness is not None:
+                particles += np.random.uniform(
+                    -particle_offset_distance * randomness,
+                    particle_offset_distance * randomness,
+                    particles.shape)
+
+            # the current upper boundary becomes lower boundary of the next iteration
+            lower_boundary_y = upper_boundary_y
+
+            # Store
+            self.particle_groups[self.particle_group_id] = {}
+            self.particle_groups[self.particle_group_id]['particles'] = particles
+            self.particle_groups[self.particle_group_id]['id'] = list(
+                range(self.particles_count, self.particles_count + len(particles)))
+
+            # Update current particle count
+            self.particles_count += len(particles)
+
+            # Set config
+            self.mpm_json["particles"].append(
+                {
+                    "generator": {
+                        "check_duplicates": True,
+                        "location": f"particles_{self.particle_group_id}.txt",
+                        "io_type": "Ascii3D" if self.ndims == 3 else "Ascii2D",
+                        "pset_id": self.particle_group_id,
+                        "particle_type": "P3D" if self.ndims == 3 else "P2D",
+                        "material_id": layer["material_id"],
+                        "type": "file"
+                    }
+                }
+            )
+
+
 
     def add_particles_from_topography(
             self,
