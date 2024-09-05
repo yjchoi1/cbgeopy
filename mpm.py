@@ -9,7 +9,13 @@ import utils
 import random
 import argparse
 from scipy.spatial import cKDTree, KDTree
+from scipy import interpolate
+from typing import List, Dict, Callable
 
+
+# Define constants for axes
+AXES_3D = ["x", "y", "z"]
+AXES_2D = ["x", "y"]
 
 
 class MPMConfig:
@@ -42,8 +48,6 @@ class MPMConfig:
         self.ndims = len(domain_length)
         self.domain_origin = domain_origin
         self.domain_length = domain_length
-        if not all(len(lst) == 3 for lst in [domain_origin, domain_length]):
-            raise NotImplementedError("Current version only support 3D")
         self.domain_ranges = [
             (origin, origin + length) for origin, length in zip(domain_origin, domain_length)]
 
@@ -63,13 +67,23 @@ class MPMConfig:
             "particles": []
         }
 
-    def add_mesh(self, n_cells_per_dim):
+    def add_mesh(
+            self,
+            n_cells_per_dim: List[int],
+            outer_cell_thickness: float = 0,
+    ):
         """
         Make mesh coordinate array & cell group
         Args:
+            outer_cell_thickness (float): If provided, the outer mesh will be added to the mesh defined by
+                domain_ranges. Therefore, The actual domain is
+                [domain_ranges[0] - outer_cell_thickness, domain_ranges[1] + outer_cell_thickness]
+                If not provided, the actual domain is
+                [domain_ranges[0], domain_ranges[1]]
             n_cells_per_dim (list): [nx, ny, nz]
 
         Returns:
+            None
 
         """
         self.n_cells_per_dim = n_cells_per_dim
@@ -79,57 +93,99 @@ class MPMConfig:
         #     raise NotImplementedError("Current version only support the same element size for all dimension")
 
         # Make coordinate base for each axis
-        mesh_coord_base = []
-        cell_size = []
+        self.mesh_coord_base = []
+        self.cell_size = []
         for dim, domain_range in enumerate(self.domain_ranges):
-            coord_base = np.linspace(
-                domain_range[0], domain_range[1], n_cells_per_dim[dim] + 1, endpoint=True)
-            mesh_coord_base.append(coord_base)
+            if outer_cell_thickness == 0:
+                coord_base = np.linspace(
+                    domain_range[0], domain_range[1], n_cells_per_dim[dim] + 1, endpoint=True)
+            elif outer_cell_thickness > 0:
+                first_cell = np.array([domain_range[0] - outer_cell_thickness])
+                end_cell = np.array([domain_range[1] + outer_cell_thickness])
+                coord_base = np.concatenate((
+                    first_cell,
+                    np.linspace(domain_range[0], domain_range[1], n_cells_per_dim[dim]+1, endpoint=True),
+                    end_cell))
+            else:
+                raise ValueError("Outer cell thickness cannot be negative value")
+            self.mesh_coord_base.append(coord_base)
 
             # Calculate the cell size for the current dimension
             cell_size_per_dim = (coord_base.max() - coord_base.min()) / n_cells_per_dim[dim]
-            cell_size.append(cell_size_per_dim)
-        self.mesh_coord_base = mesh_coord_base
-        self.cell_size = cell_size
+            self.cell_size.append(cell_size_per_dim)
 
         # Create node coordinates
-        node_coords = []
-        for z in self.mesh_coord_base[2]:
+        if self.ndims == 3:
+            node_coords = []
+            for z in self.mesh_coord_base[2]:
+                for y in self.mesh_coord_base[1]:
+                    for x in self.mesh_coord_base[0]:
+                        node_coords.append([x, y, z])
+            node_coords = np.array(node_coords)
+
+            # Compute the number of nodes and elements (cells) for each dimension
+            # - node
+            nnode_x = len(self.mesh_coord_base[0])
+            nnode_y = len(self.mesh_coord_base[1])
+            nnode_z = len(self.mesh_coord_base[2])
+            self.nnode = nnode_x * nnode_y * nnode_z
+            # - element
+            nele_x = nnode_x - 1
+            nele_y = nnode_y - 1
+            nele_z = nnode_z - 1
+            self.nele = nele_x * nele_y * nele_z
+            nnode_in_ele = 8  # hardcoded for cube for 3-D case
+
+            # Make cell groups
+            cells = np.empty((int(self.nele), int(nnode_in_ele)))
+            i = 0
+            for elz in range(int(nele_z)):
+                for ely in range(int(nele_y)):
+                    for elx in range(int(nele_x)):
+                        # cell index starts from 1 not 0, so there is "1+" at first
+                        cells[i, 0] = nnode_x * nnode_y * elz + ely * nnode_x + elx
+                        cells[i, 1] = nnode_x * nnode_y * elz + ely * nnode_x + 1 + elx
+                        cells[i, 2] = nnode_x * nnode_y * elz + (ely + 1) * nnode_x + 1 + elx
+                        cells[i, 3] = nnode_x * nnode_y * elz + (ely + 1) * nnode_x + elx
+                        cells[i, 4] = nnode_x * nnode_y * (elz + 1) + ely * nnode_x + elx
+                        cells[i, 5] = nnode_x * nnode_y * (elz + 1) + ely * nnode_x + 1 + elx
+                        cells[i, 6] = nnode_x * nnode_y * (elz + 1) + (ely + 1) * nnode_x + 1 + elx
+                        cells[i, 7] = nnode_x * nnode_y * (elz + 1) + (ely + 1) * nnode_x + elx
+                        i += 1
+            cells = cells.astype(int)
+
+        else:  # for 2d
+            # Create node coordinates
+            node_coords = []
             for y in self.mesh_coord_base[1]:
                 for x in self.mesh_coord_base[0]:
-                    node_coords.append([x, y, z])
-        node_coords = np.array(node_coords)
+                    node_coords.append([x, y])
+            node_coords = np.array(node_coords)
 
-        # Compute the number of nodes and elements (cells) for each dimension
-        # - node
-        nnode_x = len(mesh_coord_base[0])
-        nnode_y = len(mesh_coord_base[1])
-        nnode_z = len(mesh_coord_base[2])
-        self.nnode = nnode_x * nnode_y * nnode_z
-        # - element
-        nele_x = nnode_x - 1
-        nele_y = nnode_y - 1
-        nele_z = nnode_z - 1
-        self.nele = nele_x * nele_y * nele_z
-        nnode_in_ele = 8  # hardcoded for cube for 3-D case
+            # Compute the number of nodes and elements for each dimension
+            # - node
+            nnode_x = len(self.mesh_coord_base[0])
+            nnode_y = len(self.mesh_coord_base[1])
+            nnode_z = None
+            self.nnode = nnode_x * nnode_y
+            # - element
+            nele_x = nnode_x - 1
+            nele_y = nnode_y - 1
+            self.nele = nele_x * nele_y
+            nnode_in_ele = 4  # hardcoded for cube for 3-D case
 
-        # Make cell groups
-        cells = np.empty((int(self.nele), int(nnode_in_ele)))
-        i = 0
-        for elz in range(int(nele_z)):
+            # Define cell groups consisting of four nodes
+            cells = np.empty((int(self.nele), int(nnode_in_ele)))
+            i = 0
             for ely in range(int(nele_y)):
                 for elx in range(int(nele_x)):
                     # cell index starts from 1 not 0, so there is "1+" at first
-                    cells[i, 0] = nnode_x * nnode_y * elz + ely * nnode_x + elx
-                    cells[i, 1] = nnode_x * nnode_y * elz + ely * nnode_x + 1 + elx
-                    cells[i, 2] = nnode_x * nnode_y * elz + (ely + 1) * nnode_x + 1 + elx
-                    cells[i, 3] = nnode_x * nnode_y * elz + (ely + 1) * nnode_x + elx
-                    cells[i, 4] = nnode_x * nnode_y * (elz + 1) + ely * nnode_x + elx
-                    cells[i, 5] = nnode_x * nnode_y * (elz + 1) + ely * nnode_x + 1 + elx
-                    cells[i, 6] = nnode_x * nnode_y * (elz + 1) + (ely + 1) * nnode_x + 1 + elx
-                    cells[i, 7] = nnode_x * nnode_y * (elz + 1) + (ely + 1) * nnode_x + elx
+                    cells[i, 0] = nnode_x * ely + elx
+                    cells[i, 1] = nnode_x * ely + elx + 1
+                    cells[i, 2] = nnode_x * (ely + 1) + elx + 1
+                    cells[i, 3] = nnode_x * (ely + 1) + elx
                     i += 1
-        cells = cells.astype(int)
+            cells = cells.astype(int)
 
         # Aggregate data in dict
         self.mesh_info = {
