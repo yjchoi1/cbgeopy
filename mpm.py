@@ -579,25 +579,27 @@ class MPMConfig:
             "set": nodes,  # index of nodes
         })
 
-
     def add_particles_cube(
             self,
             cube_origin,
             cube_length,
             material_id,
             n_particle_per_cell,
+            randomness: float = None,
             particle_group_id=None):
         """
+        Adds a group of particles within a defined cubic region of the simulation domain.
 
         Args:
-            cube_origin (list): the lower edge of the cube, [x_min, y_min, z_min]
-            cube_length (list): the length of the cube defined from `cube_origin` [x_len, y_len, z_len]
-            material_id (int):
-            n_particle_per_cell (int):
-            particle_group_id (int):
+            randomness (float): disturb particles with uniform randomness factor
+            cube_origin (List[float]): The lower edge of the cube, [x_min, y_min, (z_min)].
+            cube_length (List[float]): The lengths of the cube along each axis, [x_len, y_len, (z_len)].
+            material_id (int): The material ID associated with this particle group.
+            n_particle_per_cell (int): Number of particles per dimension in each cell.
+            particle_group_id (Optional[int]): Particle group ID to be associated with these particles. Auto-increments if None.
 
-        Returns:
-
+        Raises:
+            ValueError: If an unsupported number of dimensions is provided.
         """
 
         # Assign a particle group id
@@ -614,16 +616,37 @@ class MPMConfig:
             for origin, length in zip(cube_origin, cube_length)]
 
         # Create particle range arrays
-        x_coords = np.arange(
-            particle_ranges[0][0], particle_ranges[0][1] + particle_offset_distance, particle_distance)
-        y_coords = np.arange(
-            particle_ranges[1][0], particle_ranges[1][1] + particle_offset_distance, particle_distance)
-        z_coords = np.arange(
-            particle_ranges[2][0], particle_ranges[2][1] + particle_offset_distance, particle_distance)
+        if self.ndims == 3:
+            x_coords = np.arange(
+                particle_ranges[0][0], particle_ranges[0][1] + particle_offset_distance, particle_distance)
+            y_coords = np.arange(
+                particle_ranges[1][0], particle_ranges[1][1] + particle_offset_distance, particle_distance)
+            z_coords = np.arange(
+                particle_ranges[2][0], particle_ranges[2][1] + particle_offset_distance, particle_distance)
 
-        # Generate the particle array using meshgrid
-        xx, yy, zz = np.meshgrid(x_coords, y_coords, z_coords)
-        particles = np.vstack((xx.ravel(), yy.ravel(), zz.ravel())).T
+            # Generate the particle array using meshgrid
+            xx, yy, zz = np.meshgrid(x_coords, y_coords, z_coords)
+            particles = np.vstack((xx.ravel(), yy.ravel(), zz.ravel())).T
+
+        elif self.ndims == 2:
+            x_coords = np.arange(
+                particle_ranges[0][0], particle_ranges[0][1] + particle_offset_distance, particle_distance)
+            y_coords = np.arange(
+                particle_ranges[1][0], particle_ranges[1][1] + particle_offset_distance, particle_distance)
+
+            # Generate the particle array using meshgrid for 2D
+            xx, yy = np.meshgrid(x_coords, y_coords)
+            particles = np.vstack((xx.ravel(), yy.ravel())).T
+
+        else:
+            raise ValueError("Only 2D and 3D cases are supported")
+        
+        # Disturb particles
+        if randomness is not None:
+            particles += np.random.uniform(
+                -particle_offset_distance * randomness,
+                particle_offset_distance * randomness,
+                particles.shape)
 
         # Store
         self.particle_groups[self.particle_group_id] = {}
