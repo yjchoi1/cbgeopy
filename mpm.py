@@ -541,9 +541,6 @@ class MPMConfig:
             )
 
             print(f'Number of overlapping particles found: {overlap_count}')
-            a=1
-
-
 
     def add_cell_entity(
             self,
@@ -562,20 +559,21 @@ class MPMConfig:
             raise ValueError("`nset_id` should be larger than 5 since 0 to 5 is already occupied by the boundary node sets")
 
         node_coords = self.mesh_info['node_coords']
-
-        x_min, x_max = ranges[0]
-        y_min, y_max = ranges[1]
-        z_min, z_max = ranges[2]
-
         nodes = []
         coords = []
 
+        # Ensure ranges are properly formatted according to dimensionality
+        if len(ranges) != self.ndims:
+            raise ValueError(f"Expected {self.ndims} ranges, but got {len(ranges)}")
+
+        # Determine nodes within the specified ranges
+        # ranges[dim][0] and ranges[dim][1] is the min and max range in dim.
         for i, point in enumerate(node_coords):
-            x, y, z = point
-            if x_min <= x <= x_max and y_min <= y <= y_max and z_min <= z <= z_max:
+            if all(ranges[dim][0] <= point[dim] <= ranges[dim][1] for dim in range(self.ndims)):
                 nodes.append(i)
                 coords.append(point)
 
+        # Add the node set to the entity sets
         self.entity_sets["node_sets"].append({
             "id": nset_id,  # index of node set
             "set": nodes,  # index of nodes
