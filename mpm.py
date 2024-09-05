@@ -468,6 +468,10 @@ class MPMConfig:
         )
 
     def define_particle_entity(self):
+        """
+        Write the indices of particle set & indices of particles for current particle set.
+        It is used for mpm input to define different materials for each particle set in mpm solver.
+        """
         self.entity_sets['particle_sets'] = []
         for set_id, particle_dict in self.particle_groups.items():
             self.entity_sets["particle_sets"].append({
