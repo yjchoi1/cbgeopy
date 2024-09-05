@@ -963,7 +963,16 @@ class MPMConfig:
         """
         self.mpm_json["post_processing"] = config
 
-    def write(self, save_dir):
+    def write(self, save_dir, file_name='mpm.json'):
+        """
+
+        Args:
+            save_dir (str): directory to save the mpm input file
+            file_name (str): mpm json input file name with extension
+
+        Returns:
+
+        """
         # Set save directory
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
@@ -1011,8 +1020,8 @@ class MPMConfig:
             print('saved')
 
         # --- `mpm.json` config
-        print(f"Save `mpm.json`at {save_dir}")
-        with open(f"{save_dir}/mpm.json", "w") as f:
+        print(f"Save `{file_name}`at {save_dir}")
+        with open(f"{save_dir}/{file_name}", "w") as f:
             json.dump(self.mpm_json, f, indent=2)
 
     # TODO: option to save as img
