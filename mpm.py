@@ -356,12 +356,14 @@ class MPMConfig:
             z_find_method: str,
             base_find_method: str,
             z_fill_method: str = 'simple',
+            randomness: float = None,
             overlap_tolerance: float = None,
             particle_group_id: int = None
     ):
         """
 
         Args:
+            randomness (float): disturb particles with uniform randomness factor
             overlap_tolerance (float):
             lower_topography (trimesh.Trimesh): mesh that defines the surface of the upper layer topography
             upper_topography (trimesh.Trimesh):  mesh that defines the surface of the upper layer topography
@@ -374,11 +376,18 @@ class MPMConfig:
             z_fill_method (str): method to fill between lower and upper z-coordinates ('simple' or 'round')
                 If 'simple', it uses the exact z-coordinate of mesh.
                 If 'round', it uses the nearest particle grid points for particle generation.
-            particle_group_id (int):
+            particle_group_id (int): particle group id to be associated with this particles
 
         Returns:
 
         """
+
+        if self.ndims == 3:
+            raise ValueError("This feature is only for 3D domain")
+
+        # Particle config
+        particle_distance = self.cell_size[0] / n_particle_per_cell
+        particle_offset_distance = particle_distance / 2
 
         # Assign a particle group id
         if particle_group_id is None:
@@ -397,6 +406,14 @@ class MPMConfig:
             z_fill_method
         )
 
+        # Disturb particles
+        if randomness is not None:
+            new_particles += np.random.uniform(
+                -particle_offset_distance * randomness,
+                particle_offset_distance * randomness,
+                new_particles.shape)
+
+        # overlap check with previous particles
         overlap_count = 0
 
         if len(self.particle_groups) > 0 and overlap_tolerance is not None:
@@ -421,7 +438,7 @@ class MPMConfig:
             non_overlapping_particles = np.array(non_overlapping_particles)
 
         else:
-            # If no existing particles, all new particles are non-overlapping
+            # If only one particle group exists, all new particles are non-overlapping
             non_overlapping_particles = new_particles
 
         # Store
