@@ -161,8 +161,8 @@ def convert_hd5_to_npz(
             particle_material_mapping[material["id"]] = material["friction"]
 
         # make material_feature based on the id.
-        material_feature = df['material_id'].map(particle_material_mapping).to_numpy()
-        material_feature = np.tan(np.deg2rad(material_feature))
+        friction_angle_deg = df['material_id'].map(particle_material_mapping).to_numpy()
+        material_feature = np.tan(np.deg2rad(friction_angle_deg))
 
     # Make npz
     trajectories = {}
