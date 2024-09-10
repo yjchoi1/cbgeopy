@@ -77,12 +77,6 @@
 <section id="module-mpm">
 <span id="mpm"></span><h2>mpm<a class="headerlink" href="#module-mpm" title="Link to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="mpm.GeostaticStress">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mpm.</span></span><span class="sig-name descname"><span class="pre">GeostaticStress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">undeformed_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#GeostaticStress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.GeostaticStress" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="mpm.MPMConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mpm.</span></span><span class="sig-name descname"><span class="pre">MPMConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpm_input_config'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -154,10 +148,25 @@ Each dict contains:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.add_mesh">
-<span class="sig-name descname"><span class="pre">add_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells_per_dim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_mesh" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells_per_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer_cell_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_mesh" title="Link to this definition"></a></dt>
 <dd><p>Make mesh coordinate array &amp; cell group
-:Parameters: <strong>n_cells_per_dim</strong> (<em>list</em>) – [nx, ny, nz]</p>
-<p>Returns:</p>
+:Parameters: * <strong>outer_cell_thickness</strong> (<em>float</em>) – If provided, the outer mesh will be added to the mesh defined by</p>
+<blockquote>
+<div><blockquote>
+<div><p>domain_ranges. Therefore, The actual domain is
+[domain_ranges[0] - outer_cell_thickness, domain_ranges[1] + outer_cell_thickness]
+If not provided, the actual domain is
+[domain_ranges[0], domain_ranges[1]]</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><strong>n_cells_per_dim</strong> (<em>list</em>) – [nx, ny, nz]</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -165,7 +174,7 @@ Each dict contains:
 <span class="sig-name descname"><span class="pre">add_particle_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraints_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particle_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particle_constraints" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>constraints_info</strong> (<em>dict</em>) – list of dicts
+<dd class="field-odd"><p><strong>constraints_info</strong> (<em>list[dict]</em>) – list of dicts
 Each dict contains:
 - ‘pset_id’: particle set id to be constrained
 - ‘axis’: str, one of ‘x’, ‘y’, ‘z’
@@ -182,7 +191,7 @@ Each dict contains:
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>material_id</strong> (<em>int</em>) – material id associated with this particle group</p></li>
-<li><p><strong>particle_group_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>particle_group_id</strong> (<em>int</em>) – particle group id to be associated with this particles</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – csv file path</p></li>
 </ul>
 </dd>
@@ -192,15 +201,44 @@ Each dict contains:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_cube">
-<span class="sig-name descname"><span class="pre">add_particles_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cube_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_cube" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<span class="sig-name descname"><span class="pre">add_particles_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cube_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_cube" title="Link to this definition"></a></dt>
+<dd><p>Adds a group of particles within a defined cubic region of the simulation domain.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cube_origin</strong> (<em>list</em>) – the lower edge of the cube, [x_min, y_min, z_min]</p></li>
-<li><p><strong>cube_length</strong> (<em>list</em>) – the length of the cube defined from <cite>cube_origin</cite> [x_len, y_len, z_len]</p></li>
-<li><p><strong>material_id</strong> (<em>int</em>)</p></li>
-<li><p><strong>n_particle_per_cell</strong> (<em>int</em>)</p></li>
-<li><p><strong>particle_group_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>randomness</strong> (<em>float</em>) – disturb particles with uniform randomness factor</p></li>
+<li><p><strong>cube_origin</strong> (<em>List[float]</em>) – The lower edge of the cube, [x_min, y_min, (z_min)].</p></li>
+<li><p><strong>cube_length</strong> (<em>List[float]</em>) – The lengths of the cube along each axis, [x_len, y_len, (z_len)].</p></li>
+<li><p><strong>material_id</strong> (<em>int</em>) – The material ID associated with this particle group.</p></li>
+<li><p><strong>n_particle_per_cell</strong> (<em>int</em>) – Number of particles per dimension in each cell.</p></li>
+<li><p><strong>particle_group_id</strong> (<em>Optional[int]</em>) – Particle group ID to be associated with these particles. Auto-increments if None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an unsupported number of dimensions is provided.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_lines">
+<span class="sig-name descname"><span class="pre">add_particles_from_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_lines" title="Link to this definition"></a></dt>
+<dd><dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul>
+<li><p><strong>layer_info</strong> (<em>List</em>) – a list of dict {“line_points”: [a list of points], “material_id” int}
+* “line_points” contains the points that comprise a line that defines the upper boundary of layer.</p>
+<blockquote>
+<div><p>It should be defined for the entire x-domain range.
+For example, [[[0, 0], [1.0, 0]], [[0, 0], [0.3, 0.3], [0.7, 0.1], [1.0, 0]], [[0, 0.5], [0.1]]]</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>“material_id” is the material id associated with this layer.</p></li>
+<li><p>“particle_group_id”: particle_group_id (int): particle group id to be associated with this particles</p></li>
+</ul>
+</li>
+<li><p><strong>n_particle_per_cell</strong> (<em>int</em>) – number of particles per cell per dimension</p></li>
+<li><p><strong>randomness ()</strong></p></li>
 </ul>
 </dd>
 </dl>
@@ -209,10 +247,11 @@ Each dict contains:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_topography">
-<span class="sig-name descname"><span class="pre">add_particles_from_topography</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower_topography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_topography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_fill_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_topography"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_topography" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_particles_from_topography</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower_topography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_topography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_fill_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_topography"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_topography" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>randomness</strong> (<em>float</em>) – disturb particles with uniform randomness factor</p></li>
 <li><p><strong>overlap_tolerance</strong> (<em>float</em>)</p></li>
 <li><p><strong>lower_topography</strong> (<em>trimesh.Trimesh</em>) – mesh that defines the surface of the upper layer topography</p></li>
 <li><p><strong>upper_topography</strong> (<em>trimesh.Trimesh</em>) – mesh that defines the surface of the upper layer topography</p></li>
@@ -225,7 +264,7 @@ if ‘simple, it defines base using max and min x, y values. The base will be re
 <li><p><strong>z_fill_method</strong> (<em>str</em>) – method to fill between lower and upper z-coordinates (‘simple’ or ‘round’)
 If ‘simple’, it uses the exact z-coordinate of mesh.
 If ‘round’, it uses the nearest particle grid points for particle generation.</p></li>
-<li><p><strong>particle_group_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>particle_group_id</strong> (<em>int</em>) – particle group id to be associated with this particles</p></li>
 </ul>
 </dd>
 </dl>
@@ -283,7 +322,9 @@ Each dict contains:
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.define_particle_entity">
 <span class="sig-name descname"><span class="pre">define_particle_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.define_particle_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.define_particle_entity" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Write the indices of particle set &amp; indices of particles for current particle set.
+It is used for mpm input to define different materials for each particle set in mpm solver.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.post_processing">
@@ -298,8 +339,15 @@ Each dict contains:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.remove_overlapping_particles">
-<span class="sig-name descname"><span class="pre">remove_overlapping_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.remove_overlapping_particles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.remove_overlapping_particles" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">remove_overlapping_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overlap_tolerance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.remove_overlapping_particles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.remove_overlapping_particles" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Iterate over all particles in particle groups and remove the overlapping particles</dt><dd><p>when the particles in the current group overlaps the previous cumulative particles</p>
+</dd>
+</dl>
+<p>This reorders the particle ids, i.e., <cite>particle_groups[‘particle_group_id’][‘id’]</cite>
+:Parameters: <strong>overlap_tolerance ()</strong></p>
+<p>Returns:</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.visualize_mesh">
@@ -330,8 +378,17 @@ Each dict contains:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.write">
-<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.write" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpm.json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.write" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_dir</strong> (<em>str</em>) – directory to save the mpm input file</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – mpm json input file name with extension</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
 
 </dd></dl>
 
