@@ -3,7 +3,7 @@ import json
 import numpy as np
 from matplotlib import pyplot as plt
 from collections import defaultdict
-from concurrent.futures import ProcessPoolExecutor, as_completed
+import concurrent.futures
 from typing import List, Dict, Tuple
 import argparse
 import utils
@@ -12,6 +12,13 @@ import utils
 LINEAR_ELASTIC_FEATURE = 1.0
 KINEMATIC_PARTICLE = 6
 NON_KINEMATIC_PARTICLE = 3
+
+
+def process_time_step_wrapper(args):
+    t, h5s_at_t, result_dir, n_dims = args
+    t, positions, df = utils.process_time_step(t, h5s_at_t, result_dir, n_dims)
+    print(t)
+    return t, positions, df
 
 
 def convert_hd5_to_npz(
@@ -64,41 +71,34 @@ def convert_hd5_to_npz(
     n_particles_reference = None
     positions_over_time = []
 
-    # Parallelize the processing of each time step
-    with ProcessPoolExecutor() as executor:
-        futures = [executor.submit(
-            utils.process_time_step, t, h5s_at_t, result_dir, n_dims)
-            for t, h5s_at_t in files_by_time.items()]
-        for future in as_completed(futures):
-            t, positions, df = future.result()
-            # Store positions over time
-            positions_over_time.append((t, positions))
+    # Prepare arguments for multiprocessing
+    process_args = [(t, h5s_at_t, result_dir, n_dims) for t, h5s_at_t in files_by_time.items()]
 
-            # print(f"Processing timestep {t}")
+    # Use ProcessPoolExecutor for multiprocessing
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = list(executor.map(process_time_step_wrapper, process_args))
 
-            # Check if the particle disappears
-            n_particles = len(positions)
-            if n_particles_reference is None:
-                n_particles_reference = n_particles
-            else:
-                if n_particles != n_particles_reference:
-                    raise ValueError(f"Number of particles at timestep {t} is not the same as previous one.")
+    for t, positions, df in results:
+        positions_over_time.append((t, positions))
+
+        n_particles = len(positions)
+        if n_particles_reference is None:
+            n_particles_reference = n_particles
+        else:
+            if n_particles != n_particles_reference:
+                raise ValueError(f"Number of particles at timestep {t} is not the same as previous one.")
 
     positions_over_time.sort(key=lambda x: x[0])
     positions_list = [positions for _, positions in positions_over_time]
 
     # concat positions over time
-    positions_over_time = np.stack(
-        positions_list, axis=0)[::scale["timestep_stride"]]
+    positions_over_time = np.stack(positions_list, axis=0)[::scale["timestep_stride"]]
+    if any(dim == 0 for dim in positions_over_time.shape):
+        raise ValueError(f"The values for the result file are empty in {result_dir}")
     print(f"Sampled {len(positions_over_time)} position sequence...")
 
     positions_over_time = utils.scale_positions(
         positions_over_time, scale["origin"], scale["factor"])
-
-    # fig, ax = plt.subplots()
-    # plottime = -1
-    # ax.scatter(positions_over_time[plottime, :, 0], positions_over_time[plottime, :, 1])
-    # plt.show()
 
     # material feature
     if use_material_feature:
@@ -179,11 +179,16 @@ if __name__ == "__main__":
              " (e.g., --timestep_stride 10).")
     args = parser.parse_args()
 
-    # Just for debug
+    n_dims = args.n_dims
+    result_dir = args.result_dir
+    save_path = args.save_path
+    mpm_input_path = args.mpm_input_path
+
+    # # Just for debug
     # n_dims = 2
-    # result_dir = "/work2/08264/baagee/frontera/gns-mpm-data/mpm/sand2d_frictions_test/sand2d_inverse_eval31/results/metadata-sand2d_inverse_eval"
-    # mpm_input_path = "/work2/08264/baagee/frontera/gns-mpm-data/mpm/sand2d_frictions_test/sand2d_inverse_eval31/mpm_input.json"
-    # save_path = "/work2/08264/baagee/frontera/gns-mpm-data/mpm/sand2d_frictions_test/sand2d_inverse_eval31/results/trj.npz"
+    # result_dir = "/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand2d-layers-random/sim-12/results/sand2d/"
+    # mpm_input_path = "/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand2d-layers-random/sim-12/mpm.json"
+    # save_path = "/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand2d-layers-random/sim-12/trajectory.npz"
 
     scale = {
         "origin": [0, 0] if args.scale_origin is None else args.scale_origin,
@@ -192,10 +197,10 @@ if __name__ == "__main__":
     }
 
     convert_hd5_to_npz(
-        n_dims=args.n_dims,
-        result_dir=args.result_dir,
-        mpm_input_path=args.mpm_input_path,
-        save_path=args.save_path,
+        n_dims=n_dims,
+        result_dir=result_dir,
+        mpm_input_path=mpm_input_path,
+        save_path=save_path,
         scale=scale,
         use_material_feature=True)
 
