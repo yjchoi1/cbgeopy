@@ -2,50 +2,68 @@ import random
 from typing import List
 import numpy as np
 
-
 def generate_cubes(
-        domain_range, min_length, max_length, num_cubes
-):
+        domain_range, min_length, max_length, num_cubes, tolerance=0):
     n_dims = len(domain_range)
     cubes = []
 
-    def cubes_fully_contained(cube1, cube2):
-        # Extract the origins and lengths
+    # Validate inputs
+    for i in range(n_dims):
+        if min_length[i] > max_length[i]:
+            raise ValueError(f"min_length[{i}] cannot be greater than max_length[{i}]")
+        if domain_range[i][1] - domain_range[i][0] < min_length[i]:
+            raise ValueError(f"Domain range in dimension {i} is too small for min_length[{i}]")
+
+    def is_fully_contained(cube1, cube2, tolerance):
+        # Returns True if cube1 is fully contained within cube2, with some tolerance
         origin1, length1 = cube1
         origin2, length2 = cube2
+        for i in range(n_dims):
+            if not (origin1[i] >= origin2[i] - tolerance and
+                    origin1[i] + length1[i] <= origin2[i] + length2[i] + tolerance):
+                return False
+        return True
 
-        contained = True  # Assume fully contained until proven otherwise
+    attempts = 0
+    max_attempts = num_cubes * 1000  # To prevent infinite loops
 
-        for i in range(3):  # Check each dimension
-            # Check if cube1 is fully inside cube2 along dimension i
-            if not (origin1[i] >= origin2[i] and
-                    origin1[i] + length1[i] <= origin2[i] + length2[i]):
-                contained = False
+    while len(cubes) < num_cubes and attempts < max_attempts:
+        # Generate random lengths for the cube
+        length = [random.uniform(min_length[i], max_length[i]) for i in range(n_dims)]
+
+        # Ensure that we can generate a valid origin
+        valid = True
+        for i in range(n_dims):
+            if domain_range[i][1] - domain_range[i][0] < length[i]:
+                valid = False
                 break
 
-        return contained
+        if not valid:
+            attempts += 1
+            continue
 
-    for _ in range(num_cubes):
-        while True:
-            # Generate random origin and lengths
-            length = [random.uniform(min_length[i], max_length[i]) for i in range(n_dims)]
-            origin = [random.uniform(domain_range[i][0], domain_range[i][1] - length[i]) for i in range(n_dims)]
+        # Generate random origin within the domain
+        origin = [random.uniform(domain_range[i][0], domain_range[i][1] - length[i]) for i in range(n_dims)]
 
-            new_cube = (origin, length)
+        new_cube = (origin, length)
 
-            # Check if this new cube is fully contained in any existing cube
-            fully_contained = False
-            for cube in cubes:
-                if cubes_fully_contained(new_cube, cube) or cubes_fully_contained(cube, new_cube):
-                    fully_contained = True
-                    break
-
-            # If it's not fully contained, we accept the new cube
-            if not fully_contained:
-                cubes.append(new_cube)
+        # Check if the new cube is fully contained within any existing cube, or vice versa
+        contained = False
+        for cube in cubes:
+            if is_fully_contained(new_cube, cube, tolerance) or is_fully_contained(cube, new_cube, tolerance):
+                contained = True
                 break
 
+        # If not contained, add to list
+        if not contained:
+            cubes.append(new_cube)
+
+        attempts += 1
+
+    if len(cubes) < num_cubes:
+        raise ValueError(f"Warning: Only generated {len(cubes)} cubes after {attempts} attempts.")
     return cubes
+
 
 
 

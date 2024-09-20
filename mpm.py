@@ -870,6 +870,8 @@ class MPMConfig:
         Returns:
 
         """
+        if self.ndims != 3:
+            raise ValueError("This function currently only supports 3D domain")
 
         self.initial_stresses = np.zeros((self.particles_count, self.ndims))
 
