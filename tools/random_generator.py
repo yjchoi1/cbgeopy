@@ -68,7 +68,9 @@ def generate_cubes(
 
 
 def generate_soils(
-        n_soil_range: List, friction_range: List
+        n_soil_range: List,
+        friction_range: List=None,
+        friction_options: List=None
 ):
     """
     Randomly generate materials with specified number of soils and friction range.
@@ -76,6 +78,7 @@ def generate_soils(
     Args:
         n_soil_range (int): [min, max]
         friction_range (List): [min_friction, max_friction]
+        friction_options (List): [a list of friction angles to choose from]
 
     Returns:
         Dict mpm input for materials
@@ -83,12 +86,18 @@ def generate_soils(
     n_soils = random.randint(*n_soil_range)
     soils = []
     for i in range(1, n_soils + 1):
+        if friction_range is not None:
+            friction = round(random.uniform(*friction_range), 2)
+        elif friction_options is not None:
+            friction = random.choice(friction_options)
+        else:
+            raise ValueError
         soil = {
             "id": i,
             "density": 1800,
             "youngs_modulus": 20000000.0,
             "poisson_ratio": 0.3,
-            "friction": round(random.uniform(*friction_range), 2),
+            "friction": round(friction, 2),
             "dilation": 0.0,
             "cohesion": 1000,
             "tension_cutoff": 100,

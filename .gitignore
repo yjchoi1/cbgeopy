@@ -1,0 +1,10 @@
+*__pycache__*
+.idea/*
+docs/_build/*
+*.vtk
+*.vtp
+*.vtu
+*.pvtp
+*.h5
+*.html
+*.txt
