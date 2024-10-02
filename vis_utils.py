@@ -36,13 +36,13 @@ def plot_scatter(particle_groups, domain_ranges, save_path):
         if particles.shape[1] == 2:
             ax.scatter(
                 particles[:, 0], particles[:, 1],
-                color=colors(set_id), marker=marker, facecolors='none', edgecolors=colors(set_id),
+                color=colors(set_id), marker=marker, facecolors='none', edgecolors=colors(set_id), s=0.1,
                 label=f'Set {set_id}')
 
         elif particles.shape[1] == 3:
             ax.scatter(
                 particles[:, 0], particles[:, 1], particles[:, 2],
-                color=colors(set_id), marker=marker, facecolors='none', edgecolors=colors(set_id),
+                color=colors(set_id), marker=marker, facecolors='none', edgecolors=colors(set_id), s=0.1,
                 label=f'Set {set_id}')
         else:
             raise ValueError("Only 2D and 3D particle arrays are supported.")
