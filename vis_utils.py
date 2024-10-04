@@ -104,6 +104,13 @@ def save_as_vtk(meshes=None, points=None, save_path_prefix="output"):
         for group_index, values in points.items():
             particle_group = values['particles']
 
+            if particle_group.shape[1] == 2:
+                # If 2D, add a zero z-coordinate
+                particle_group = np.hstack((particle_group, np.zeros((particle_group.shape[0], 1))))
+            elif particle_group.shape[1] != 3:
+                raise ValueError(
+                    f"Particle group {group_index} has an invalid shape. Expected (n, 2) or (n, 3), got {particle_group.shape}")
+
             # Create a new polydata object
             polydata = vtk.vtkPolyData()
 
