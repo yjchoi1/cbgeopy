@@ -382,7 +382,7 @@ class MPMConfig:
 
         """
 
-        if self.ndims == 3:
+        if self.ndims == 2:
             raise ValueError("This feature is only for 3D domain")
 
         # Particle config
@@ -640,7 +640,7 @@ class MPMConfig:
 
         else:
             raise ValueError("Only 2D and 3D cases are supported")
-        
+
         # Disturb particles
         if randomness is not None:
             particles += np.random.uniform(
