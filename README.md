@@ -17,7 +17,7 @@ It supports the followings major features.
 * Generate multi-layered material points for mountain-like topography (3D) from user-defined mesh file that represents layer boundary.* 
 
 
-  ![output example for 3d](docs/img/mp2d-example.png "Material point output example for 2d slope")
+  ![output example for 3d](docs/img/mp3d-example.png "Material point output example for 2d slope")
   ![output example for 3d](img/mp3d-example.png "Material point output example for 3d slope")
 
 
