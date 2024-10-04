@@ -17,13 +17,24 @@ release = '0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
+
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints',
-    'm2r2'
+    'myst_parser',
 ]
+
+# Configure MyST-Parser
+myst_enable_extensions = [
+    "colon_fence",
+]
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 autodoc_default_options = {
     'members': True,
@@ -49,4 +60,4 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
-html_static_path = ['_static']
+html_static_path = ['_static', '../docs/img']

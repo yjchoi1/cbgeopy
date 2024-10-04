@@ -4,19 +4,20 @@
    contain the root `toctree` directive.
 
 `cbgeopy` documentation
-=====================
+========================
 
 Welcome to `cbgeopy`'s documentation.
-`cbgeopy` is a tool to facilitate generating mpm input files for CB-Geo MPM.
 
-.. mdinclude:: ../README.md
+.. include:: ../README.md
+   :parser: myst_parser.sphinx_
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   mpm
-   utils
+   examples
+   modules
+   cbgeo_installation
 
 Indices and tables
 ==================

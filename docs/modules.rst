@@ -1,18 +1,9 @@
 Modules
 =======
 
-mpm
----
 
-.. automodule:: mpm
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
 
-utils
------
-
-.. automodule:: utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   mpm
+   utils

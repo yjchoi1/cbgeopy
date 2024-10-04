@@ -201,6 +201,11 @@ mpm.mpm_json['analysis']['resume']['resume'] = True
 # Overwrite
 mpm.write(save_dir=save_dir, file_name='mpm-resume.json')
 
+vis_utils.save_as_vtk(
+    meshes=None,
+    points=mpm.particle_groups
+)
+
 # Save the current script
 # Get the path of the currently running script (main.py)
 current_script_path = os.path.abspath(__file__)

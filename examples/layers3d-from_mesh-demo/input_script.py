@@ -1,4 +1,5 @@
-import trimesh
+import sys
+sys.path.append('/work2/08264/baagee/frontera/cbgeopy')
 import utils
 from mpm import MPMConfig
 import demo_utils
@@ -11,12 +12,26 @@ import trimesh
 
 save_dir = './'
 
+# Create surface
+layer0 = demo_utils.gen_surface_mesh(
+    (-300, 700), (-500, 500), 25,
+    partial(demo_utils.generate_slope, slope_angle=0, z_min=0, amplitude=0))
+layer1 = demo_utils.gen_surface_mesh(
+    (0, 700), (-500, 500), 25,
+    partial(demo_utils.generate_slope, slope_angle=20, z_min=0, amplitude=50))
+layer2 = demo_utils.gen_surface_mesh(
+    (400, 700), (-200, 200), 25,
+    partial(demo_utils.generate_slope, slope_angle=0, z_min=300, amplitude=0))
+
+# # See surfaces
+# vis_utils.plot_surfaces(layer0, layer2, layer1)
+
 # Set config
-lx, ly, lz = 1.0, 1.0, 1.0
-mpm = MPMConfig(domain_origin=[0, 0, 0], domain_length=[lx, ly, lz])
+lx, ly, lz = 1000.0, 1000.0, 400.0
+mpm = MPMConfig(domain_origin=[-300, -500, 0], domain_length=[lx, ly, lz])
 
 # Mesh
-cell_size = 0.1
+cell_size = 50
 mpm.add_mesh(
     n_cells_per_dim=[int(lx/cell_size), int(ly/cell_size), int(lz/cell_size)])
 
@@ -34,7 +49,7 @@ mpm.add_materials(
             "tension_cutoff": 50,
             "softening": False,
             "peak_pdstrain": 0.0,
-            "residual_friction": 30.0,
+            "residual_friction": 10.0,
             "residual_dilation": 0.0,
             "residual_cohesion": 0.0,
             "residual_pdstrain": 0.0,
@@ -60,20 +75,23 @@ mpm.add_materials(
     ]
 )
 
-# Particles
-mpm.add_particles_cube(
-    cube_origin=[0, 0, 0],
-    cube_length=[0.4, 0.4, 0.4],
-    material_id=0,
+mpm.add_particles_from_topography(
+    lower_topography=layer0,
+    upper_topography=layer1,
     n_particle_per_cell=4,
-    particle_group_id=0
-)
-mpm.add_particles_cube(
-    cube_origin=[0.7, 0.7, 0.0],
-    cube_length=[0.3, 0.3, 0.3],
     material_id=1,
+    particle_group_id=0,
+    z_find_method='kdtree',
+    base_find_method='simple'
+)
+mpm.add_particles_from_topography(
+    lower_topography=layer1,
+    upper_topography=layer2,
     n_particle_per_cell=4,
-    particle_group_id=1
+    material_id=0,
+    particle_group_id=1,
+    z_find_method='kdtree',
+    base_find_method='simple'
 )
 mpm.define_particle_entity()
 
@@ -128,7 +146,7 @@ mpm.analysis({
 # Post-processing
 mpm.post_processing({
     "path": "results/",
-    "output_steps": 10000,
+    "output_steps": 20000,
     "vtk": [
         "displacements"
     ]
@@ -139,9 +157,11 @@ mpm.write(save_dir=save_dir)
 
 mpm.visualize_mesh(save_path=f'{save_dir}/mesh_config.html', node_indices=True)
 mpm.visualize_particles(save_path=f'{save_dir}/particle_config.html')
-vis_utils.save_as_vtk(
-    points=mpm.particle_groups
-)
+vis_utils.plot_cross_section(mpm.particle_groups, 'xz', 93.75)
+vis_utils.plot_surfaces(layer0, layer2, layer1,
+                        points=mpm.particle_groups,
+                        resolution=1,
+                        save_path=f'{save_dir}/surfaces.html')
 
 # Save the current script
 # Get the path of the currently running script (main.py)
