@@ -91,7 +91,7 @@ and associated files can be directly used as input files for <a class="reference
 <img alt="output example for 2d" src="_images/mp2d-example.png" /></p>
 </li>
 <li><p>Generate multi-layered material points for mountain-like topography (3D) from user-defined mesh file that represents layer boundary.*</p>
-<p><img alt="output example for 3d" src="docs/img/mp2d-example.png" />
+<p><img alt="output example for 3d" src="docs/img/mp3d-example.png" />
 <img alt="output example for 3d" src="_images/mp3d-example.png" /></p>
 </li>
 <li><p>Appending user-defined material point files (<code class="docutils literal notranslate"><span class="pre">.csv</span></code>) to the existing material points.</p></li>
@@ -110,11 +110,12 @@ the CB-geo MPM specific files that the code can generate.</p>
 <section id="usage">
 <h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
 <p>The following code shows an example for generating material point method model for simulating a rectangular cube drop
-due to gravity. More examples can be found in <code class="docutils literal notranslate"><span class="pre">./examples</span></code>.</p>
+due to gravity. More examples can be found in the <a class="reference external" href="https://cbgeopy.readthedocs.io/en/latest/index.html">documentation website</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">mpm</span> <span class="kn">import</span> <span class="n">MPMConfig</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">vis_utils</span>
 
 
 <span class="n">save_dir</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span>
@@ -237,8 +238,15 @@ due to gravity. More examples can be found in <code class="docutils literal notr
 
 <span class="n">mpm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">)</span>
 
-<span class="c1"># mpm.visualize_mesh(save_path=f&#39;{save_dir}/mesh_config.html&#39;, node_indices=True)</span>
+<span class="c1"># Visualization with html</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">visualize_mesh</span><span class="p">(</span><span class="n">save_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s1">/mesh_config.html&#39;</span><span class="p">,</span> <span class="n">node_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">mpm</span><span class="o">.</span><span class="n">visualize_particles</span><span class="p">(</span><span class="n">save_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s1">/particle_config.html&#39;</span><span class="p">)</span>
+
+<span class="c1"># visualization with paraview vtk</span>
+<span class="n">vis_utils</span><span class="o">.</span><span class="n">save_as_vtk</span><span class="p">(</span>
+    <span class="n">meshes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">points</span><span class="o">=</span><span class="n">mpm</span><span class="o">.</span><span class="n">particle_groups</span>
+<span class="p">)</span>
 
 <span class="c1"># Save the current script</span>
 <span class="c1"># Get the path of the currently running script (main.py)</span>
