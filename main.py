@@ -169,8 +169,16 @@ mpm.post_processing({
 
 mpm.write(save_dir=save_dir)
 
+# visualization with html
 mpm.visualize_mesh(save_path=f'{save_dir}/mesh_config.html', node_indices=True)
 mpm.visualize_particles(save_path=f'{save_dir}/particle_config.html')
+
+# visualization with paraview vtk
+vis_utils.save_as_vtk(
+    meshes=None,
+    points=mpm.particle_groups
+)
+
 vis_utils.plot_cross_section(mpm.particle_groups, 'xz', 93.75)
 vis_utils.plot_surfaces(layer0, layer2, layer1,
                         points=mpm.particle_groups,

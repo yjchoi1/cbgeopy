@@ -33,13 +33,14 @@ the CB-geo MPM specific files that the code can generate.
 
 ## Usage
 The following code shows an example for generating material point method model for simulating a rectangular cube drop 
-due to gravity. More examples can be found in `./examples`. 
+due to gravity. More examples can be found in the [documentation website](https://cbgeopy.readthedocs.io/en/latest/index.html). 
 
 ```python
 import utils
 from mpm import MPMConfig
 import os
 import math
+import vis_utils
 
 
 save_dir = './'
@@ -162,8 +163,15 @@ mpm.post_processing({
 
 mpm.write(save_dir=save_dir)
 
-# mpm.visualize_mesh(save_path=f'{save_dir}/mesh_config.html', node_indices=True)
+# Visualization with html
+mpm.visualize_mesh(save_path=f'{save_dir}/mesh_config.html', node_indices=True)
 mpm.visualize_particles(save_path=f'{save_dir}/particle_config.html')
+
+# visualization with paraview vtk
+vis_utils.save_as_vtk(
+    meshes=None,
+    points=mpm.particle_groups
+)
 
 # Save the current script
 # Get the path of the currently running script (main.py)
