@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="MPM Module" href="mpm.html" /> 
+    <link rel="next" title="Examples" href="examples.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,8 +45,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mpm.html">MPM Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">utils Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cbgeo_installation.html">CB-geo MPM installation</a></li>
 </ul>
 
         </div>
@@ -75,73 +76,41 @@
              
   <section id="cbgeopy-documentation">
 <h1><cite>cbgeopy</cite> documentation<a class="headerlink" href="#cbgeopy-documentation" title="Link to this heading"></a></h1>
-<p>Welcome to <cite>cbgeopy</cite>’s documentation.
-<cite>cbgeopy</cite> is a tool to facilitate generating mpm input files for CB-Geo MPM.</p>
-</section>
-<section id="cbgeopy">
-<h1>cbgeopy<a class="headerlink" href="#cbgeopy" title="Link to this heading"></a></h1>
-<p>This repository provides a code to generate input files for CBGeo MPM, and other useful tools to run CBGeo MPM.</p>
+<p>Welcome to <cite>cbgeopy</cite>’s documentation.</p>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<section id="features">
+<h3>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">cbgeopy</span></code> is a tool to generate material point method (MPM) model. The output model
+and associated files can be directly used as input files for <a class="reference external" href="https://github.com/cb-geo/mpm">CB-geo MPM</a>.</p>
+<p>It supports the followings major features.</p>
+<ul>
+<li><p>Generate MPM models (background mesh and material points) for 2D and 3D space.</p></li>
+<li><p>Generate multi-layered material points for mountain-like topography (2D) from user-defined points that represents layer boundary line.</p>
+<p><img alt="output example for 2d" src="docs/img/mp2d-example.png" />
+<img alt="output example for 2d" src="img/mp2d-example.png" /></p>
+</li>
+<li><p>Generate multi-layered material points for mountain-like topography (3D) from user-defined mesh file that represents layer boundary.*</p>
+<p><img alt="output example for 3d" src="docs/img/mp2d-example.png" />
+<img alt="output example for 3d" src="img/mp3d-example.png" /></p>
+</li>
+<li><p>Appending user-defined material point files (<code class="docutils literal notranslate"><span class="pre">.csv</span></code>) to the existing material points.</p></li>
+<li><p>Save material points as <code class="docutils literal notranslate"><span class="pre">.vtk</span></code> or <code class="docutils literal notranslate"><span class="pre">.html</span></code> files for visualization.</p></li>
+<li><p>Generate CB-geo MPM input files wth user-defined constraints associated with the generated material points. The followings are
+the CB-geo MPM specific files that the code can generate.</p>
 <ul class="simple">
-<li><p>MPM input generation.</p></li>
-<li><p>Geostatic stress resume point tool using <a class="reference external" href="https://github.com/kks32/mpm-csv-hdf5">MPM csv to HDF5 convertor</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">entity_sets.json</span></code>: defines cell group and particle group.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mpm.json</span></code>: defines cell and particle group constraints and boundary conditions. Defines other CB-geo related simulation settings.</p></li>
 </ul>
-<section id="cbgeo-mpm-installation">
-<h2>CBGeo MPM installation<a class="headerlink" href="#cbgeo-mpm-installation" title="Link to this heading"></a></h2>
-<section id="stampede3">
-<h3>Stampede3:<a class="headerlink" href="#stampede3" title="Link to this heading"></a></h3>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$WORK</span>
-module<span class="w"> </span>load<span class="w"> </span>boost
-module<span class="w"> </span>load<span class="w"> </span>hdf5
-module<span class="w"> </span>load<span class="w"> </span>intel
-<span class="c1"># export LD_LIBRARY_PATH=$SWR_LD_LIBRARY_PATH:$LD_LIBRARY_PATH</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/work2/01197/semeraro/stampede3/VTK/lib64:<span class="nv">$LD_LIBRARY_PATH</span>
-
-git<span class="w"> </span>clone<span class="w"> </span>https://gitlab.com/libeigen/eigen.git
-<span class="nb">cd</span><span class="w"> </span><span class="nv">$WORK</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/KaHIP/KaHIP<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span><span class="nb">cd</span><span class="w"> </span>KaHIP<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sh<span class="w"> </span>./compile_withcmake.sh
-<span class="nb">cd</span><span class="w"> </span><span class="nv">$WORK</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/cb-geo/mpm.git
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/cb-geo/mpm-benchmarks.git<span class="w"> </span>benchmarks
-<span class="nb">export</span><span class="w"> </span><span class="nv">CC</span><span class="o">=</span>icx
-<span class="nb">export</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>icpx
-
-<span class="c1"># Set the HDF5 environment variables</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">HDF5_ROOT</span><span class="o">=</span><span class="nv">$TACC_HDF5_DIR</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">HDF5_INCLUDE_DIRS</span><span class="o">=</span><span class="nv">$TACC_HDF5_INC</span>
-
-<span class="nb">cd</span><span class="w"> </span>mpm<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
-
-cmake<span class="w"> </span>-DMPM_BUILD_TESTING<span class="o">=</span>Off<span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>-DBOOST_ROOT<span class="o">=</span><span class="nv">$TACC_BOOST_DIR</span><span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>-DBOOST_INCLUDE_DIRS<span class="o">=</span><span class="nv">$TACC_BOOST_INC</span><span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>-DEIGEN3_INCLUDE_DIR<span class="o">=</span><span class="nv">$WORK</span>/eigen<span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>-DKAHIP_ROOT<span class="o">=</span><span class="nv">$WORK</span>/KaHIP<span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>-DHDF5_ROOT<span class="o">=</span><span class="nv">$HDF5_ROOT</span><span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>-DHDF5_INCLUDE_DIRS<span class="o">=</span><span class="nv">$HDF5_INCLUDE_DIRS</span><span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>-DVTK_ROOT<span class="o">=</span>/work2/01197/semeraro/stampede3/VTK/lib64<span class="w"> </span><span class="se">\</span>
-<span class="w">      </span>..
-
-make<span class="w"> </span>-j8
-</pre></div>
-</div>
-<p>Note,d</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>The compilation will step at around 45%, but MPM runs.</p></li>
-<li><p>VTKs are not generated as outputs.</p></li>
-<li><p>When set <code class="docutils literal notranslate"><span class="pre">-DMPM_BUILD_TESTING=Off</span></code>, the build goes to 100%, but still no VTK as outputs.</p></li>
+</li>
+<li><p>Tools for post and preprocessing of CB-geo MPM.</p></li>
+<li><p>Tools for post and preprocessing of making GNS training data from CB-geo MPM.</p></li>
 </ul>
-</div></blockquote>
-</section>
-<section id="frontera">
-<h3>Frontera<a class="headerlink" href="#frontera" title="Link to this heading"></a></h3>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</section>
 </section>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
+<p>The following code shows an example for generating material point method model for simulating a rectangular cube drop
+due to gravity. More examples can be found in <code class="docutils literal notranslate"><span class="pre">./examples</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">mpm</span> <span class="kn">import</span> <span class="n">MPMConfig</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -280,34 +249,46 @@ make<span class="w"> </span>-j8
 </pre></div>
 </div>
 </section>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initiate a python virtual environment.</span>
+python<span class="w"> </span>-m<span class="w"> </span>virtualenv<span class="w"> </span>venv
+<span class="c1"># Activate the virtual environment.</span>
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+<span class="c1"># Install dependencies.</span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
 </section>
 <section id="note">
-<h1>Note<a class="headerlink" href="#note" title="Link to this heading"></a></h1>
+<h3>Note<a class="headerlink" href="#note" title="Link to this heading"></a></h3>
 <p>To create parallel <code class="docutils literal notranslate"><span class="pre">.h5</span></code>, use <a class="reference external" href="https://github.com/kks32/mpm-csv-hdf5">this code</a>.</p>
 </section>
 <section id="todo">
-<h1>TODO<a class="headerlink" href="#todo" title="Link to this heading"></a></h1>
+<h3>TODO<a class="headerlink" href="#todo" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Integrity check for resuming and results</p></li>
+<li><p>[ ] Improve 3D base mesh projection method.</p></li>
 </ul>
+</section>
+</section>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mpm.html">MPM Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mpm.html#mpm.MPMConfig"><code class="docutils literal notranslate"><span class="pre">MPMConfig</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mpm.html#mpm.find_material_property"><code class="docutils literal notranslate"><span class="pre">find_material_property()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="mpm.html#mpm.get_h5"><code class="docutils literal notranslate"><span class="pre">get_h5()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#make-3d-topography-model-from-mesh-files">Make 3D topography model from mesh files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#make-mp-model-based-on-2d-lines">Make MP model based on 2D lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#make-mp-model-for-sand-cube-collision">Make MP model for sand cube collision</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">utils Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.dxf2points"><code class="docutils literal notranslate"><span class="pre">dxf2points()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.fill_particles_between_mesh"><code class="docutils literal notranslate"><span class="pre">fill_particles_between_mesh()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.fill_particles_inbetween"><code class="docutils literal notranslate"><span class="pre">fill_particles_inbetween()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.generate_points"><code class="docutils literal notranslate"><span class="pre">generate_points()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.get_h5"><code class="docutils literal notranslate"><span class="pre">get_h5()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.get_z_coordinates"><code class="docutils literal notranslate"><span class="pre">get_z_coordinates()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.obj2mesh"><code class="docutils literal notranslate"><span class="pre">obj2mesh()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.save_script"><code class="docutils literal notranslate"><span class="pre">save_script()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mpm.html">MPM Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cbgeo_installation.html">CB-geo MPM installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cbgeo_installation.html#stampede3">Stampede3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cbgeo_installation.html#frontera">Frontera</a></li>
 </ul>
 </li>
 </ul>
@@ -326,7 +307,7 @@ make<span class="w"> </span>-j8
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="mpm.html" class="btn btn-neutral float-right" title="MPM Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

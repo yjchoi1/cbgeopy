@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples &mdash; cbgeopy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2709fde1"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Modules" href="modules.html" />
+    <link rel="prev" title="cbgeopy documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cbgeopy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#make-3d-topography-model-from-mesh-files">Make 3D topography model from mesh files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#make-mp-model-based-on-2d-lines">Make MP model based on 2D lines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#make-mp-model-for-sand-cube-collision">Make MP model for sand cube collision</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cbgeo_installation.html">CB-geo MPM installation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cbgeopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/examples.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
+<section id="make-3d-topography-model-from-mesh-files">
+<h2>Make 3D topography model from mesh files<a class="headerlink" href="#make-3d-topography-model-from-mesh-files" title="Link to this heading"></a></h2>
+<p>This example generates material point method model from external <code class="docutils literal notranslate"><span class="pre">mesh.obj</span></code> files which defines layer boundaries of
+ground of mountain.</p>
+<p><img alt="output example for 3d" src="img/mp3d-example.png" /></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/work2/08264/baagee/frontera/cbgeopy&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">mpm</span> <span class="kn">import</span> <span class="n">MPMConfig</span>
+<span class="kn">import</span> <span class="nn">demo_utils</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">vis_utils</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">trimesh</span>
+
+
+<span class="n">save_dir</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span>
+<span class="c1"># Replace the data_dir to the directory containing the obj surface meshes</span>
+<span class="n">data_dir</span> <span class="o">=</span> <span class="s1">&#39;/work2/08264/baagee/frontera/fundao/fundao_3d-8/&#39;</span>
+
+<span class="c1"># Create surface</span>
+<span class="n">mesh_base</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_0_v2.obj&#39;</span><span class="p">)</span>  <span class="c1"># base</span>
+<span class="n">mesh_dike</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_1_v2.obj&#39;</span><span class="p">)</span>  <span class="c1"># dike</span>
+<span class="n">mesh_sand1</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_2_v2.obj&#39;</span><span class="p">)</span>  <span class="c1"># sand (or slime)</span>
+<span class="n">mesh_slime1</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_2_slime.obj&#39;</span><span class="p">)</span>  <span class="c1"># slime-1</span>
+<span class="n">mesh_sand_right</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_2_right_sand.obj&#39;</span><span class="p">)</span>  <span class="c1"># sand right</span>
+<span class="n">mesh_sand2</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_7.obj&#39;</span><span class="p">)</span>  <span class="c1"># sand</span>
+<span class="n">mesh_sand3</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_7_sand.obj&#39;</span><span class="p">)</span>  <span class="c1"># sand below slime-2</span>
+<span class="n">mesh_slime2</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_7_slime.obj&#39;</span><span class="p">)</span>  <span class="c1"># slime-2</span>
+<span class="n">mesh_top</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_8.obj&#39;</span><span class="p">)</span>  <span class="c1"># sand</span>
+<span class="n">mesh_top_ref</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">obj2mesh</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/mesh_top.obj&#39;</span><span class="p">)</span>  <span class="c1"># reference top surface for stress initialization</span>
+
+
+<span class="c1"># Make it to trimesh object</span>
+<span class="n">floor</span> <span class="o">=</span> <span class="n">demo_utils</span><span class="o">.</span><span class="n">gen_surface_mesh</span><span class="p">(</span>
+    <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">1130</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">850</span><span class="p">,</span> <span class="mi">450</span><span class="p">],</span> <span class="mi">10</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="n">demo_utils</span><span class="o">.</span><span class="n">generate_slope</span><span class="p">,</span> <span class="n">slope_angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z_min</span><span class="o">=</span><span class="mi">740</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+    <span class="c1"># [180, 1150], [-300, 450], 10, partial(demo_utils.generate_slope, slope_angle=0, z_min=740, amplitude=0),</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">mesh_base</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_base</span><span class="p">)</span>
+<span class="n">mesh_dike</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_dike</span><span class="p">)</span>
+<span class="n">mesh_sand1</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_sand1</span><span class="p">)</span>
+<span class="n">mesh_slime1</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_slime1</span><span class="p">)</span>
+<span class="n">mesh_sand_right</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_sand_right</span><span class="p">)</span>
+<span class="n">mesh_sand2</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_sand2</span><span class="p">)</span>
+<span class="n">mesh_sand3</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_sand3</span><span class="p">)</span>
+<span class="n">mesh_slime2</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_slime2</span><span class="p">)</span>
+<span class="n">mesh_top</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_top</span><span class="p">)</span>
+<span class="n">mesh_top_ref</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh_top_ref</span><span class="p">)</span>
+
+
+<span class="c1"># # See surfaces</span>
+<span class="c1"># vis_utils.plot_surfaces(floor, mesh_base, mesh_sand_up, mesh_top, save_path=&#39;./surface.html&#39;)</span>
+
+<span class="c1"># Set config</span>
+<span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">,</span> <span class="n">lz</span> <span class="o">=</span> <span class="mi">1130</span> <span class="o">-</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">450</span> <span class="o">-</span> <span class="p">(</span><span class="o">-</span><span class="mi">850</span><span class="p">),</span> <span class="mi">950</span> <span class="o">-</span> <span class="mi">740</span>
+<span class="n">mpm</span> <span class="o">=</span> <span class="n">MPMConfig</span><span class="p">(</span><span class="n">domain_origin</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="mi">850</span><span class="p">,</span> <span class="mi">740</span><span class="p">],</span> <span class="n">domain_length</span><span class="o">=</span><span class="p">[</span><span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">,</span> <span class="n">lz</span><span class="p">])</span>
+<span class="c1"># lx, ly, lz = 1150 - 180, 450 - (-300), 950 - 780</span>
+<span class="c1"># mpm = MPMConfig(domain_origin=[180, -300, 780], domain_length=[lx, ly, lz])</span>
+
+<span class="c1"># Mesh</span>
+<span class="n">cell_size</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span>
+    <span class="n">n_cells_per_dim</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">lx</span><span class="o">/</span><span class="n">cell_size</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">ly</span><span class="o">/</span><span class="n">cell_size</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">lz</span><span class="o">/</span><span class="n">cell_size</span><span class="p">)])</span>
+
+<span class="c1"># Add materials</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_materials</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;liq_sand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">2200</span><span class="p">,</span>
+            <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mf">4e6</span><span class="p">,</span>
+            <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.30</span><span class="p">,</span>
+            <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;cohesion&quot;</span><span class="p">:</span> <span class="mf">10e3</span><span class="p">,</span>
+            <span class="s2">&quot;tension_cutoff&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;softening&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;peak_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_friction&quot;</span><span class="p">:</span> <span class="mf">45.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_cohesion&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MohrCoulomb3D&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">2200</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;slime&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mf">2e6</span><span class="p">,</span>
+            <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.30</span><span class="p">,</span>
+            <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;cohesion&quot;</span><span class="p">:</span> <span class="mf">50e3</span><span class="p">,</span>
+            <span class="s2">&quot;tension_cutoff&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;softening&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;peak_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_friction&quot;</span><span class="p">:</span> <span class="mf">45.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_cohesion&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MohrCoulomb3D&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bedrock&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;LinearElastic3D&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">2600</span><span class="p">,</span>
+            <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mf">8e6</span><span class="p">,</span>
+            <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;sand&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">2200</span><span class="p">,</span>
+            <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mf">4e6</span><span class="p">,</span>
+            <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.30</span><span class="p">,</span>
+            <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span>
+            <span class="s2">&quot;dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;cohesion&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+            <span class="s2">&quot;tension_cutoff&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;softening&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;peak_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_friction&quot;</span><span class="p">:</span> <span class="mf">45.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_cohesion&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MohrCoulomb3D&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;geostatic_le&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;LinearElastic3D&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">2200</span><span class="p">,</span>
+            <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mf">8e6</span><span class="p">,</span>
+            <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">n_particle_per_cell</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">z_find_method</span> <span class="o">=</span> <span class="s1">&#39;linear&#39;</span>
+<span class="n">z_fill_method</span> <span class="o">=</span> <span class="s1">&#39;round&#39;</span>
+<span class="n">overlap_tolerance</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_topography</span><span class="p">(</span>
+    <span class="n">lower_topography</span><span class="o">=</span><span class="n">floor</span><span class="p">,</span>
+    <span class="n">upper_topography</span><span class="o">=</span><span class="n">mesh_base</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="n">n_particle_per_cell</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">z_find_method</span><span class="o">=</span><span class="n">z_find_method</span><span class="p">,</span>
+    <span class="n">base_find_method</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+    <span class="n">z_fill_method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">,</span>
+    <span class="n">overlap_tolerance</span><span class="o">=</span><span class="n">overlap_tolerance</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_topography</span><span class="p">(</span>
+    <span class="n">lower_topography</span><span class="o">=</span><span class="n">mesh_base</span><span class="p">,</span>
+    <span class="n">upper_topography</span><span class="o">=</span><span class="n">mesh_dike</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="n">n_particle_per_cell</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">z_find_method</span><span class="o">=</span><span class="n">z_find_method</span><span class="p">,</span>
+    <span class="n">base_find_method</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+    <span class="n">z_fill_method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">,</span>
+    <span class="n">overlap_tolerance</span><span class="o">=</span><span class="n">overlap_tolerance</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_topography</span><span class="p">(</span>
+    <span class="n">lower_topography</span><span class="o">=</span><span class="n">mesh_dike</span><span class="p">,</span>
+    <span class="n">upper_topography</span><span class="o">=</span><span class="n">mesh_sand1</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="n">n_particle_per_cell</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">z_find_method</span><span class="o">=</span><span class="n">z_find_method</span><span class="p">,</span>
+    <span class="n">base_find_method</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+    <span class="n">z_fill_method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">,</span>
+    <span class="n">overlap_tolerance</span><span class="o">=</span><span class="n">overlap_tolerance</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_topography</span><span class="p">(</span>
+    <span class="n">lower_topography</span><span class="o">=</span><span class="n">mesh_sand1</span><span class="p">,</span>
+    <span class="n">upper_topography</span><span class="o">=</span><span class="n">mesh_slime1</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="n">n_particle_per_cell</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">z_find_method</span><span class="o">=</span><span class="n">z_find_method</span><span class="p">,</span>
+    <span class="n">base_find_method</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+    <span class="n">z_fill_method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">,</span>
+    <span class="n">overlap_tolerance</span><span class="o">=</span><span class="n">overlap_tolerance</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_topography</span><span class="p">(</span>
+    <span class="n">lower_topography</span><span class="o">=</span><span class="n">mesh_slime1</span><span class="p">,</span>
+    <span class="n">upper_topography</span><span class="o">=</span><span class="n">mesh_sand_right</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="n">n_particle_per_cell</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">z_find_method</span><span class="o">=</span><span class="n">z_find_method</span><span class="p">,</span>
+    <span class="n">base_find_method</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+    <span class="n">z_fill_method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">,</span>
+    <span class="n">overlap_tolerance</span><span class="o">=</span><span class="n">overlap_tolerance</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_topography</span><span class="p">(</span>
+    <span class="n">lower_topography</span><span class="o">=</span><span class="n">mesh_sand_right</span><span class="p">,</span>
+    <span class="n">upper_topography</span><span class="o">=</span><span class="n">mesh_sand2</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="n">n_particle_per_cell</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">z_find_method</span><span class="o">=</span><span class="n">z_find_method</span><span class="p">,</span>
+    <span class="n">base_find_method</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+    <span class="n">z_fill_method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">,</span>
+    <span class="n">overlap_tolerance</span><span class="o">=</span><span class="n">overlap_tolerance</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_topography</span><span class="p">(</span>
+    <span class="n">lower_topography</span><span class="o">=</span><span class="n">mesh_sand2</span><span class="p">,</span>
+    <span class="n">upper_topography</span><span class="o">=</span><span class="n">mesh_sand3</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="n">n_particle_per_cell</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">z_find_method</span><span class="o">=</span><span class="n">z_find_method</span><span class="p">,</span>
+    <span class="n">base_find_method</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+    <span class="n">z_fill_method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">,</span>
+    <span class="n">overlap_tolerance</span><span class="o">=</span><span class="n">overlap_tolerance</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_topography</span><span class="p">(</span>
+    <span class="n">lower_topography</span><span class="o">=</span><span class="n">mesh_sand3</span><span class="p">,</span>
+    <span class="n">upper_topography</span><span class="o">=</span><span class="n">mesh_slime2</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="n">n_particle_per_cell</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+    <span class="n">z_find_method</span><span class="o">=</span><span class="n">z_find_method</span><span class="p">,</span>
+    <span class="n">base_find_method</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+    <span class="n">z_fill_method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">,</span>
+    <span class="n">overlap_tolerance</span><span class="o">=</span><span class="n">overlap_tolerance</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_topography</span><span class="p">(</span>
+    <span class="n">lower_topography</span><span class="o">=</span><span class="n">mesh_slime2</span><span class="p">,</span>
+    <span class="n">upper_topography</span><span class="o">=</span><span class="n">mesh_top</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="n">n_particle_per_cell</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">z_find_method</span><span class="o">=</span><span class="n">z_find_method</span><span class="p">,</span>
+    <span class="n">base_find_method</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">,</span>
+    <span class="n">z_fill_method</span><span class="o">=</span><span class="n">z_fill_method</span><span class="p">,</span>
+    <span class="n">overlap_tolerance</span><span class="o">=</span><span class="n">overlap_tolerance</span>
+<span class="p">)</span>
+<span class="c1"># mpm.add_particles_from_topography(</span>
+<span class="c1">#     lower_topography=mesh_top,</span>
+<span class="c1">#     upper_topography=mesh_top2,</span>
+<span class="c1">#     n_particle_per_cell=n_particle_per_cell,</span>
+<span class="c1">#     material_id=10,</span>
+<span class="c1">#     particle_group_id=8,</span>
+<span class="c1">#     z_find_method=z_find_method,</span>
+<span class="c1">#     base_find_method=&#39;simple&#39;,</span>
+<span class="c1">#     z_fill_method=&#39;round&#39;</span>
+<span class="c1"># )</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">define_particle_entity</span><span class="p">()</span>
+
+<span class="c1"># Stress initialization</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_initial_stress</span><span class="p">(</span>
+    <span class="n">option</span><span class="o">=</span><span class="s1">&#39;k0&#39;</span><span class="p">,</span>
+    <span class="n">top_surface</span><span class="o">=</span><span class="n">mesh_top_ref</span><span class="p">,</span>
+    <span class="n">density</span><span class="o">=</span><span class="mi">2200</span><span class="p">,</span>
+    <span class="n">k0</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="p">)</span>
+
+<span class="c1"># Boundary constraints</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">define_boundary_entity</span><span class="p">()</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_velocity_constraints</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_friction_constrains</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># External loading conditions</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_external_loadings</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;gravity&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.81</span><span class="p">]}</span>
+<span class="p">)</span>
+
+<span class="c1"># Analysis settings</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">analysis</span><span class="p">({</span>
+    <span class="s2">&quot;mpm_scheme&quot;</span><span class="p">:</span> <span class="s2">&quot;usl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;locate_particles&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">1e-04</span><span class="p">,</span>
+    <span class="s2">&quot;damping&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Cundall&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;damping_factor&quot;</span><span class="p">:</span> <span class="mf">0.05</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;resume&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;resume&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;sand3d&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;velocity_update&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;nsteps&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e6</span><span class="p">),</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MPMExplicit3D&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;sand3d&quot;</span>
+<span class="p">})</span>
+
+<span class="c1"># Post-processing</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">post_processing</span><span class="p">({</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;results/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;output_steps&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
+    <span class="s2">&quot;vtk&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;displacements&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;stresses&quot;</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+
+
+<span class="n">mpm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">)</span>
+
+<span class="c1"># mpm.visualize_mesh(save_path=f&#39;{save_dir}/mesh_config.html&#39;, node_indices=True)</span>
+<span class="c1"># mpm.visualize_particles(save_path=f&#39;{save_dir}/particle_config.html&#39;)</span>
+<span class="n">vis_utils</span><span class="o">.</span><span class="n">plot_cross_section</span><span class="p">(</span><span class="n">mpm</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">,</span> <span class="s1">&#39;yz&#39;</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">grid_spacing</span><span class="o">=</span><span class="n">cell_size</span><span class="p">)</span>
+<span class="c1"># vis_utils.plot_surfaces(floor, mesh_base, mesh_sand_up, mesh_top,</span>
+<span class="c1">#                         points=mpm.particle_groups,</span>
+<span class="c1">#                         resolution=1,</span>
+<span class="c1">#                         save_path=f&#39;{save_dir}/surfaces.html&#39;)</span>
+<span class="n">vis_utils</span><span class="o">.</span><span class="n">save_as_vtk</span><span class="p">(</span>
+    <span class="n">meshes</span><span class="o">=</span><span class="p">(</span><span class="n">floor</span><span class="p">,</span> <span class="n">mesh_base</span><span class="p">,</span> <span class="n">mesh_dike</span><span class="p">,</span> <span class="n">mesh_sand1</span><span class="p">,</span> <span class="n">mesh_slime1</span><span class="p">,</span> <span class="n">mesh_sand2</span><span class="p">,</span> <span class="n">mesh_sand3</span><span class="p">,</span> <span class="n">mesh_slime2</span><span class="p">,</span> <span class="n">mesh_top</span><span class="p">),</span>
+    <span class="n">points</span><span class="o">=</span><span class="n">mpm</span><span class="o">.</span><span class="n">particle_groups</span>
+<span class="p">)</span>
+
+<span class="c1"># Save the current script</span>
+<span class="c1"># Get the path of the currently running script (main.py)</span>
+<span class="n">current_script_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="n">utils</span><span class="o">.</span><span class="n">save_script</span><span class="p">(</span>
+    <span class="n">current_script_path</span><span class="p">,</span>
+    <span class="n">save_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s1">/input_script.py&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="make-mp-model-based-on-2d-lines">
+<h2>Make MP model based on 2D lines<a class="headerlink" href="#make-mp-model-based-on-2d-lines" title="Link to this heading"></a></h2>
+<p>This example generates material point method model from user-defined points defining the boundary lines that
+distinguishes the layers.</p>
+<p><img alt="output example for 3d" src="img/mp2d-example.png" /></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">mpm</span> <span class="kn">import</span> <span class="n">MPMConfig</span>
+<span class="kn">import</span> <span class="nn">vis_utils</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">tools</span> <span class="kn">import</span> <span class="n">random_generator</span>
+
+
+
+<span class="n">save_dir</span> <span class="o">=</span> <span class="s1">&#39;../layers2d_from_lines/&#39;</span>
+
+<span class="c1"># Set config</span>
+<span class="n">lx</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="mf">1250.0</span><span class="p">,</span> <span class="mf">150.0</span>
+<span class="n">origin_x</span><span class="p">,</span> <span class="n">origin_y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+<span class="n">mpm</span> <span class="o">=</span> <span class="n">MPMConfig</span><span class="p">(</span><span class="n">domain_origin</span><span class="o">=</span><span class="p">[</span><span class="n">origin_x</span><span class="p">,</span> <span class="n">origin_y</span><span class="p">],</span> <span class="n">domain_length</span><span class="o">=</span><span class="p">[</span><span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">])</span>
+
+<span class="c1"># Mesh</span>
+<span class="n">cell_size</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span>
+    <span class="n">n_cells_per_dim</span><span class="o">=</span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">lx</span><span class="o">/</span><span class="n">cell_size</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">ly</span><span class="o">/</span><span class="n">cell_size</span><span class="p">)])</span>
+
+<span class="c1"># Materials</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_materials</span><span class="p">([</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bedrock&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;LinearElastic2D&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;density&quot;</span> <span class="p">:</span> <span class="mi">1800</span><span class="p">,</span>
+        <span class="s2">&quot;youngs_modulus&quot;</span> <span class="p">:</span> <span class="mi">50000000</span><span class="p">,</span>
+        <span class="s2">&quot;poisson_ratio&quot;</span> <span class="p">:</span> <span class="mf">0.3</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;slime&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">1800</span><span class="p">,</span>
+        <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mi">20000000</span><span class="p">,</span>
+        <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+        <span class="s2">&quot;dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;cohesion&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="s2">&quot;tension_cutoff&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;softening&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;peak_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+        <span class="s2">&quot;residual_friction&quot;</span><span class="p">:</span> <span class="mf">18.0</span><span class="p">,</span>
+        <span class="s2">&quot;residual_dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;residual_cohesion&quot;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
+        <span class="s2">&quot;residual_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MohrCoulomb2D&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;sand&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">1800</span><span class="p">,</span>
+        <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mi">20000000</span><span class="p">,</span>
+        <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="s2">&quot;dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;cohesion&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="s2">&quot;tension_cutoff&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;softening&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;peak_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+        <span class="s2">&quot;residual_friction&quot;</span><span class="p">:</span> <span class="mf">18.0</span><span class="p">,</span>
+        <span class="s2">&quot;residual_dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;residual_cohesion&quot;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
+        <span class="s2">&quot;residual_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MohrCoulomb2D&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;comp_sand&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">2200</span><span class="p">,</span>
+        <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mi">20000000</span><span class="p">,</span>
+        <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">13.0</span><span class="p">,</span>
+        <span class="s2">&quot;dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;cohesion&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="s2">&quot;tension_cutoff&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;softening&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;peak_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.005</span><span class="p">,</span>
+        <span class="s2">&quot;residual_friction&quot;</span><span class="p">:</span> <span class="mf">18.0</span><span class="p">,</span>
+        <span class="s2">&quot;residual_dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;residual_cohesion&quot;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span>
+        <span class="s2">&quot;residual_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MohrCoulomb2D&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;LinearElastic2D&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">1800</span><span class="p">,</span>
+        <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mf">5e7</span><span class="p">,</span>
+        <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># Particle</span>
+<span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span>	<span class="mi">98</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">37</span><span class="p">,</span>	<span class="mi">97</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">97</span><span class="p">,</span>	<span class="mi">53</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">151</span><span class="p">,</span>	<span class="mi">47</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">423</span><span class="p">,</span>	<span class="mi">40</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">423</span><span class="p">,</span>	<span class="mi">53</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">468</span><span class="p">,</span>	<span class="mi">55</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">491</span><span class="p">,</span>	<span class="mi">40</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">746</span><span class="p">,</span>	<span class="mi">36</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">1250</span><span class="p">,</span>	<span class="mi">12</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">62</span><span class="p">,</span>	<span class="mi">78</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">410</span><span class="p">,</span>	<span class="mi">78</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span>	<span class="mi">120</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">290</span><span class="p">,</span>	<span class="mi">123</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">354</span><span class="p">,</span>	<span class="mi">102</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">541</span><span class="p">,</span>	<span class="mi">78</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">574</span><span class="p">,</span>	<span class="mi">78</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">655</span><span class="p">,</span>	<span class="mi">56</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">673</span><span class="p">,</span>	<span class="mi">37</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">331</span><span class="p">,</span>	<span class="mi">123</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">380</span><span class="p">,</span>	<span class="mi">104</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">486</span><span class="p">,</span>	<span class="mi">90</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">573</span><span class="p">,</span>	<span class="mi">89</span><span class="p">]</span>
+<span class="p">]</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_lines</span><span class="p">(</span>
+    <span class="n">layer_info</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;line_points&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span>
+            <span class="s2">&quot;material_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;particle_group_id&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;line_points&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span>
+            <span class="s2">&quot;material_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;particle_group_id&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;line_points&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span>
+            <span class="s2">&quot;material_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;particle_group_id&quot;</span><span class="p">:</span> <span class="mi">2</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;line_points&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]],</span>
+            <span class="s2">&quot;material_id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;particle_group_id&quot;</span><span class="p">:</span> <span class="mi">3</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">remove_overlapping_particles</span><span class="p">(</span><span class="n">overlap_tolerance</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">define_particle_entity</span><span class="p">()</span>
+
+<span class="c1"># Boundary constraints</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">define_boundary_entity</span><span class="p">()</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_velocity_constraints</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_friction_constrains</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># External loading conditions</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_external_loadings</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;gravity&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.81</span><span class="p">]}</span>
+<span class="p">)</span>
+
+<span class="c1"># Analysis settings</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">analysis</span><span class="p">({</span>
+    <span class="s2">&quot;mpm_scheme&quot;</span><span class="p">:</span> <span class="s2">&quot;usf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;locate_particles&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">1e-04</span><span class="p">,</span>
+    <span class="s2">&quot;damping&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Cundall&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;damping_factor&quot;</span><span class="p">:</span> <span class="mf">0.05</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;resume&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;resume&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;sand2d&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;velocity_update&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;nsteps&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1.8e5</span><span class="p">),</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MPMExplicit2D&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;sand2d&quot;</span>
+<span class="p">})</span>
+
+<span class="c1"># Post-processing</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">post_processing</span><span class="p">({</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;results/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;output_steps&quot;</span><span class="p">:</span> <span class="mi">375</span><span class="p">,</span>
+    <span class="s2">&quot;vtk&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;displacements&quot;</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+
+<span class="n">mpm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">)</span>
+<span class="n">vis_utils</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">mpm</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">,</span> <span class="n">mpm</span><span class="o">.</span><span class="n">domain_ranges</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s1">/particle_config.png&#39;</span><span class="p">)</span>
+
+<span class="c1"># Save the current script</span>
+<span class="c1"># Get the path of the currently running script (main.py)</span>
+<span class="n">current_script_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="n">utils</span><span class="o">.</span><span class="n">save_script</span><span class="p">(</span>
+    <span class="n">current_script_path</span><span class="p">,</span>
+    <span class="n">save_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s1">/input_script.py&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="make-mp-model-for-sand-cube-collision">
+<h2>Make MP model for sand cube collision<a class="headerlink" href="#make-mp-model-for-sand-cube-collision" title="Link to this heading"></a></h2>
+<p>This example generates material point method model from two colliding cubes.
+This saves</p>
+<p><img alt="output example for 3d" src="img/sand_cubes2d.png" /></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">trimesh</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">mpm</span> <span class="kn">import</span> <span class="n">MPMConfig</span>
+<span class="kn">import</span> <span class="nn">demo_utils</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">vis_utils</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">trimesh</span>
+
+
+<span class="n">save_dir</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span>
+
+<span class="c1"># Set config</span>
+<span class="n">lx</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span>
+<span class="n">mpm</span> <span class="o">=</span> <span class="n">MPMConfig</span><span class="p">(</span><span class="n">domain_origin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">domain_length</span><span class="o">=</span><span class="p">[</span><span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">])</span>
+
+<span class="c1"># Mesh</span>
+<span class="n">cell_size</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span>
+    <span class="n">n_cells_per_dim</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">lx</span><span class="o">/</span><span class="n">cell_size</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">ly</span><span class="o">/</span><span class="n">cell_size</span><span class="p">)])</span>
+
+<span class="c1"># Add materials</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_materials</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;soil-0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">1800</span><span class="p">,</span>
+            <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mf">20000000.0</span><span class="p">,</span>
+            <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+            <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">40.0</span><span class="p">,</span>
+            <span class="s2">&quot;dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;cohesion&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;tension_cutoff&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+            <span class="s2">&quot;softening&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;peak_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_friction&quot;</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_cohesion&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MohrCoulomb2D&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;soil-2&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">1800</span><span class="p">,</span>
+            <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mf">20000000.0</span><span class="p">,</span>
+            <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+            <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+            <span class="s2">&quot;dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;cohesion&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;tension_cutoff&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+            <span class="s2">&quot;softening&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;peak_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_friction&quot;</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_dilation&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_cohesion&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;residual_pdstrain&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MohrCoulomb2D&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;LinearElastic2D&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;density&quot;</span><span class="p">:</span> <span class="mi">1800</span><span class="p">,</span>
+            <span class="s2">&quot;youngs_modulus&quot;</span><span class="p">:</span> <span class="mf">50000000.0</span><span class="p">,</span>
+            <span class="s2">&quot;poisson_ratio&quot;</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># Particles</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_from_lines</span><span class="p">(</span>
+    <span class="n">layer_info</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;line_points&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">80</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">30</span><span class="p">]],</span>
+            <span class="s2">&quot;material_id&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;particle_group_id&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_cube</span><span class="p">(</span>
+    <span class="n">cube_origin</span><span class="o">=</span><span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
+    <span class="n">cube_length</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particles_cube</span><span class="p">(</span>
+    <span class="n">cube_origin</span><span class="o">=</span><span class="p">[</span><span class="mi">130</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span>
+    <span class="n">cube_length</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">n_particle_per_cell</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">particle_group_id</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">remove_overlapping_particles</span><span class="p">(</span><span class="n">overlap_tolerance</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">define_particle_entity</span><span class="p">()</span>
+<span class="n">vis_utils</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">mpm</span><span class="o">.</span><span class="n">particle_groups</span><span class="p">,</span> <span class="n">mpm</span><span class="o">.</span><span class="n">domain_ranges</span><span class="p">,</span> <span class="s1">&#39;particle_config.png&#39;</span><span class="p">)</span>
+
+<span class="c1"># Boundary constraints</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">define_boundary_entity</span><span class="p">()</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_velocity_constraints</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_friction_constrains</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_particle_constraints</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">10.0</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># External loading conditions</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">add_external_loadings</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;gravity&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.81</span><span class="p">]}</span>
+<span class="p">)</span>
+
+<span class="c1"># Analysis settings</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">analysis</span><span class="p">({</span>
+    <span class="s2">&quot;mpm_scheme&quot;</span><span class="p">:</span> <span class="s2">&quot;usf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;locate_particles&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">1e-04</span><span class="p">,</span>
+    <span class="s2">&quot;damping&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Cundall&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;damping_factor&quot;</span><span class="p">:</span> <span class="mf">0.05</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;resume&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;resume&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;sand2d&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;velocity_update&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;nsteps&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1.5e5</span><span class="p">),</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MPMExplicit2D&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;sand2d&quot;</span>
+<span class="p">})</span>
+
+<span class="c1"># Post-processing</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">post_processing</span><span class="p">({</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;results/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;output_steps&quot;</span><span class="p">:</span> <span class="mi">375</span><span class="p">,</span>
+    <span class="s2">&quot;vtk&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;displacements&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;stresses&quot;</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+
+<span class="n">mpm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">)</span>
+<span class="c1"># # Update input json for resuming without particle velocity constraints</span>
+<span class="c1"># current_particle_constraints = mpm.mpm_json[&#39;mesh&#39;][&#39;boundary_conditions&#39;][&#39;particles_velocity_constraints&#39;]</span>
+<span class="c1"># # Only fix the velocities for the bedrock</span>
+<span class="c1"># new_constraints = [constraint for constraint in current_particle_constraints if constraint[&#39;pset_id&#39;] == 0]</span>
+<span class="c1"># mpm.mpm_json[&#39;mesh&#39;][&#39;boundary_conditions&#39;][&#39;particles_velocity_constraints&#39;] = new_constraints</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s1">&#39;mesh&#39;</span><span class="p">][</span><span class="s1">&#39;boundary_conditions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;particles_velocity_constraints&#39;</span><span class="p">)</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">mpm_json</span><span class="p">[</span><span class="s1">&#39;analysis&#39;</span><span class="p">][</span><span class="s1">&#39;resume&#39;</span><span class="p">][</span><span class="s1">&#39;resume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Overwrite</span>
+<span class="n">mpm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;mpm-resume.json&#39;</span><span class="p">)</span>
+
+<span class="n">vis_utils</span><span class="o">.</span><span class="n">save_as_vtk</span><span class="p">(</span>
+    <span class="n">meshes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">points</span><span class="o">=</span><span class="n">mpm</span><span class="o">.</span><span class="n">particle_groups</span>
+<span class="p">)</span>
+
+<span class="c1"># Save the current script</span>
+<span class="c1"># Get the path of the currently running script (main.py)</span>
+<span class="n">current_script_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="n">utils</span><span class="o">.</span><span class="n">save_script</span><span class="p">(</span>
+    <span class="n">current_script_path</span><span class="p">,</span>
+    <span class="n">save_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s1">/input_script.py&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="cbgeopy documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Yongjin Choi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -21,6 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CB-geo MPM installation" href="cbgeo_installation.html" />
     <link rel="prev" title="MPM Module" href="mpm.html" /> 
 </head>
 
@@ -45,18 +46,23 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="mpm.html">MPM Module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">utils Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#utils.dxf2points"><code class="docutils literal notranslate"><span class="pre">dxf2points()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.fill_particles_between_mesh"><code class="docutils literal notranslate"><span class="pre">fill_particles_between_mesh()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.fill_particles_inbetween"><code class="docutils literal notranslate"><span class="pre">fill_particles_inbetween()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.generate_points"><code class="docutils literal notranslate"><span class="pre">generate_points()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.get_h5"><code class="docutils literal notranslate"><span class="pre">get_h5()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.get_z_coordinates"><code class="docutils literal notranslate"><span class="pre">get_z_coordinates()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.obj2mesh"><code class="docutils literal notranslate"><span class="pre">obj2mesh()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#utils.save_script"><code class="docutils literal notranslate"><span class="pre">save_script()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mpm.html">MPM Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">utils Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#utils.dxf2points"><code class="docutils literal notranslate"><span class="pre">dxf2points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.fill_particles_between_mesh"><code class="docutils literal notranslate"><span class="pre">fill_particles_between_mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.fill_particles_inbetween"><code class="docutils literal notranslate"><span class="pre">fill_particles_inbetween()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.generate_points"><code class="docutils literal notranslate"><span class="pre">generate_points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.get_h5"><code class="docutils literal notranslate"><span class="pre">get_h5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.get_z_coordinates"><code class="docutils literal notranslate"><span class="pre">get_z_coordinates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.obj2mesh"><code class="docutils literal notranslate"><span class="pre">obj2mesh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.save_script"><code class="docutils literal notranslate"><span class="pre">save_script()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cbgeo_installation.html">CB-geo MPM installation</a></li>
 </ul>
 
         </div>
@@ -73,6 +79,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
       <li class="breadcrumb-item active">utils Module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/utils.rst.txt" rel="nofollow"> View page source</a>
@@ -83,9 +90,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-utils">
-<span id="utils-module"></span><h1>utils Module<a class="headerlink" href="#module-utils" title="Link to this heading"></a></h1>
-<dl class="py function">
+  <section id="utils-module">
+<h1>utils Module<a class="headerlink" href="#utils-module" title="Link to this heading"></a></h1>
+<p>This includes utility functions that is used in <cite>MPM</cite> module.</p>
+<dl class="py function" id="module-utils">
 <dt class="sig sig-object py" id="utils.dxf2points">
 <span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">dxf2points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dxf_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#dxf2points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.dxf2points" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -181,6 +189,7 @@ If <cite>round</cite>, it uses the nearest particle grid points for particle gen
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="mpm.html" class="btn btn-neutral float-left" title="MPM Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cbgeo_installation.html" class="btn btn-neutral float-right" title="CB-geo MPM installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

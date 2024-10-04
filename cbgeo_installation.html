@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CB-geo MPM installation &mdash; cbgeopy 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2709fde1"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="utils Module" href="utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cbgeopy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CB-geo MPM installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#stampede3">Stampede3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#frontera">Frontera</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cbgeopy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">CB-geo MPM installation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/cbgeo_installation.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cb-geo-mpm-installation">
+<h1>CB-geo MPM installation<a class="headerlink" href="#cb-geo-mpm-installation" title="Link to this heading"></a></h1>
+<p>For the original installation guide, refer to the CB-geo website <a class="reference external" href="https://mpm.cb-geo.com/#/">here</a>.
+This document deal with the latest successful compilation on Stampede3 system on TACC.</p>
+<section id="stampede3">
+<h2>Stampede3<a class="headerlink" href="#stampede3" title="Link to this heading"></a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$WORK</span>
+module<span class="w"> </span>load<span class="w"> </span>boost
+module<span class="w"> </span>load<span class="w"> </span>hdf5
+module<span class="w"> </span>load<span class="w"> </span>intel
+<span class="c1"># export LD_LIBRARY_PATH=$SWR_LD_LIBRARY_PATH:$LD_LIBRARY_PATH</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/work2/01197/semeraro/stampede3/VTK/lib64:<span class="nv">$LD_LIBRARY_PATH</span>
+
+git<span class="w"> </span>clone<span class="w"> </span>https://gitlab.com/libeigen/eigen.git
+<span class="nb">cd</span><span class="w"> </span><span class="nv">$WORK</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/KaHIP/KaHIP<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span><span class="nb">cd</span><span class="w"> </span>KaHIP<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sh<span class="w"> </span>./compile_withcmake.sh
+<span class="nb">cd</span><span class="w"> </span><span class="nv">$WORK</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/cb-geo/mpm.git
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/cb-geo/mpm-benchmarks.git<span class="w"> </span>benchmarks
+<span class="nb">export</span><span class="w"> </span><span class="nv">CC</span><span class="o">=</span>icx
+<span class="nb">export</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>icpx
+
+<span class="c1"># Set the HDF5 environment variables</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HDF5_ROOT</span><span class="o">=</span><span class="nv">$TACC_HDF5_DIR</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HDF5_INCLUDE_DIRS</span><span class="o">=</span><span class="nv">$TACC_HDF5_INC</span>
+
+<span class="nb">cd</span><span class="w"> </span>mpm<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
+
+cmake<span class="w"> </span>-DMPM_BUILD_TESTING<span class="o">=</span>Off<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DBOOST_ROOT<span class="o">=</span><span class="nv">$TACC_BOOST_DIR</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DBOOST_INCLUDE_DIRS<span class="o">=</span><span class="nv">$TACC_BOOST_INC</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DEIGEN3_INCLUDE_DIR<span class="o">=</span><span class="nv">$WORK</span>/eigen<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DKAHIP_ROOT<span class="o">=</span><span class="nv">$WORK</span>/KaHIP<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DHDF5_ROOT<span class="o">=</span><span class="nv">$HDF5_ROOT</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DHDF5_INCLUDE_DIRS<span class="o">=</span><span class="nv">$HDF5_INCLUDE_DIRS</span><span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DVTK_ROOT<span class="o">=</span>/work2/01197/semeraro/stampede3/VTK/lib64<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>..
+
+make<span class="w"> </span>-j8
+</pre></div>
+</div>
+<p>Note:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The compilation will step at around 45%, but MPM runs.</p></li>
+<li><p>VTKs are not generated as outputs.</p></li>
+<li><p>When set <code class="docutils literal notranslate"><span class="pre">-DMPM_BUILD_TESTING=Off</span></code>, the build goes to 100%, but still no VTK as outputs.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="frontera">
+<h2>Frontera<a class="headerlink" href="#frontera" title="Link to this heading"></a></h2>
+<p>Please refer to https://mpm.cb-geo.com/#/user/run/hpc/tacc-frontera.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># (on update)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="utils.html" class="btn btn-neutral float-left" title="utils Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Yongjin Choi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
