@@ -346,7 +346,6 @@ class MPMConfig:
             self,
             layer_info: List,
             n_particle_per_cell: int,
-            randomness: float = None
     ):
         """
 
@@ -357,8 +356,9 @@ class MPMConfig:
                     For example, [[[0, 0], [1.0, 0]], [[0, 0], [0.3, 0.3], [0.7, 0.1], [1.0, 0]], [[0, 0.5], [0.1]]]
                 * "material_id" is the material id associated with this layer.
                 * "particle_group_id": particle_group_id (int): particle group id to be associated with this particles
+                * randomness (float): disturb particles with magnitude defined by float from 0 (no disturb) to 1.0
+                (max disturb to particle spacing)
             n_particle_per_cell (int): number of particles per cell per dimension
-            randomness ():
 
         Returns:
 
@@ -408,10 +408,10 @@ class MPMConfig:
             particles = candidate_particles[mask]
 
             # Disturb particles
-            if randomness is not None:
+            if "randomness" in layer:
                 particles += np.random.uniform(
-                    -particle_offset_distance * randomness,
-                    particle_offset_distance * randomness,
+                    -particle_offset_distance * layer["randomness"],
+                    particle_offset_distance * layer["randomness"],
                     particles.shape)
 
             # the current upper boundary becomes lower boundary of the next iteration
