@@ -70,15 +70,19 @@ def generate_cubes(
 def generate_soils(
         n_soil_range: List,
         friction_range: List=None,
-        friction_options: List=None
+        friction_options: List=None,
+        cohesion_range: List=None,
+        cohesion_options: List=None
 ):
     """
-    Randomly generate materials with specified number of soils and friction range.
+    Randomly generate materials with specified number of soils and material property range.
     Note that the material id starts from 1. This is to accommodate the bedrock id as 0.
     Args:
         n_soil_range (int): [min, max]
         friction_range (List): [min_friction, max_friction]
         friction_options (List): [a list of friction angles to choose from]
+        cohesion_range (List): [min_cohesion, max_cohesion]
+        cohesion_options (List): [a list of cohesions to choose from]
 
     Returns:
         Dict mpm input for materials
@@ -86,20 +90,32 @@ def generate_soils(
     n_soils = random.randint(*n_soil_range)
     soils = []
     for i in range(1, n_soils + 1):
+        # Friction
+        friction = None
         if friction_range is not None:
             friction = round(random.uniform(*friction_range), 2)
         elif friction_options is not None:
             friction = random.choice(friction_options)
         else:
             raise ValueError
+
+        # Cohesion
+        cohesion = None
+        if cohesion_range is not None:
+            cohesion = round(random.uniform(*cohesion_range), 2)
+        elif cohesion_options is not None:
+            cohesion = random.choice(cohesion_options)
+        else:
+            cohesion = None
+
         soil = {
             "id": i,
             "density": 1800,
-            "youngs_modulus": 20000000.0,
+            "youngs_modulus": 40000000.0,
             "poisson_ratio": 0.3,
-            "friction": round(friction, 2),
+            "friction": round(friction, 2) if friction is not None else 0,
             "dilation": 0.0,
-            "cohesion": 1000,
+            "cohesion": round(cohesion) if cohesion is not None else 1000,
             "tension_cutoff": 100,
             "softening": False,
             "peak_pdstrain": 0.0,
