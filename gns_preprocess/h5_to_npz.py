@@ -9,7 +9,7 @@ import argparse
 import utils
 
 
-LINEAR_ELASTIC_FEATURE = 1.0
+LINEAR_ELASTIC_FEATURE = 45
 KINEMATIC_PARTICLE = 6
 NON_KINEMATIC_PARTICLE = 3
 
@@ -23,6 +23,8 @@ def process_time_step_wrapper(args):
 
 def convert_hd5_to_npz(
         n_dims: int,
+        n_material_props: int,
+        max_cohesion: float,
         result_dir: str,
         mpm_input_path: str,
         save_path: str,
@@ -35,6 +37,8 @@ def convert_hd5_to_npz(
     It can
     Args:
         n_dims (int): dimensionality of the simulation
+        n_material_props (int): number of material properties to consider when making npz for gns
+        max_cohesion (float): Max cohesion value for normalizing the cohesion
         result_dir (str): path to directory where h5 files are located
         mpm_input_path (str): path to mpm.json file with extension
         save_path (str): path to save the result npz file with extension
@@ -110,22 +114,45 @@ def convert_hd5_to_npz(
         materials = mpm_json["materials"]
 
         # get the map between material_id and corresponding property
-        particle_material_mapping = {}  # {material_id: phi_deg}
+        particle_material_mapping = {}  # {material_id: [`properties`] or [LINEAR_ELASTIC_FEATURE, 0]}
         particle_type_mapping = {}  # {material_id: material_type}
         for material in materials:
-            if "MohrCoulomb" in material["type"] and "friction" in material:
-                particle_material_mapping[material["id"]] = material["friction"]
-                particle_type_mapping[material["id"]] = KINEMATIC_PARTICLE
-            elif "LinearElastic" in material["type"]:
-                # Set an arbitrary feature for the LE model. Here, we use 1.0.
-                particle_material_mapping[material["id"]] = LINEAR_ELASTIC_FEATURE
-                particle_type_mapping[material["id"]] = NON_KINEMATIC_PARTICLE
+            if n_material_props == 2:
+                if "MohrCoulomb" in material["type"] and "friction" in material and "cohesion" in material:
+                    particle_material_mapping[material["id"]] = [material["friction"], material["cohesion"]]
+                    particle_type_mapping[material["id"]] = KINEMATIC_PARTICLE
+                elif "LinearElastic" in material["type"]:
+                    # Set an arbitrary feature for the LE model. Here, we use 1.0.
+                    particle_material_mapping[material["id"]] = [LINEAR_ELASTIC_FEATURE, 0]
+                    particle_type_mapping[material["id"]] = NON_KINEMATIC_PARTICLE
+                else:
+                    raise NotImplemented("Not supported material")
+            elif n_material_props == 1:
+                if "MohrCoulomb" in material["type"] and "friction" in material:
+                    particle_material_mapping[material["id"]] = material["friction"]
+                    particle_type_mapping[material["id"]] = KINEMATIC_PARTICLE
+                elif "LinearElastic" in material["type"]:
+                    # Set an arbitrary feature for the LE model. Here, we use 1.0.
+                    particle_material_mapping[material["id"]] = LINEAR_ELASTIC_FEATURE
+                    particle_type_mapping[material["id"]] = NON_KINEMATIC_PARTICLE
+                else:
+                    raise NotImplemented("Not supported material")
             else:
-                raise NotImplemented("Not supported material")
+                raise NotImplemented("Current version only takes up to 2 material properties")
+
 
         # make material_feature based on the id.
-        friction_angle_deg = df['material_id'].map(particle_material_mapping).to_numpy()
-        material_feature = np.tan(np.deg2rad(friction_angle_deg))
+        material_properties = df['material_id'].map(particle_material_mapping).to_numpy()
+        # Normalize friction angle and cohesion
+        if n_material_props == 2:
+            if max_cohesion in None:
+                raise ValueError("Max cohesion should be passed when you consider cohesion")
+            material_feature = np.array([
+                [np.tan(np.deg2rad(prop[0])), prop[1]/max_cohesion] for prop in material_properties])
+        elif n_material_props == 1:
+            material_feature = np.tan(np.deg2rad(material_properties))
+        else:
+            raise NotImplemented("Current version only takes up to 2 material properties")
 
         # make particle_type feature
         particle_types = df['material_id'].map(particle_type_mapping).to_numpy()
@@ -140,7 +167,7 @@ def convert_hd5_to_npz(
         trajectories[result_dir] = (
             positions_over_time.astype("float32"),  # position sequence (timesteps, particles, dims)
             particle_types.astype("int32"),  # particle type (particles, )
-            material_feature.astype("float32"))  # particle type (particles, )
+            material_feature.astype("float32"))  # particle type (particles, n_particle_features)
 
     # Create structured array to hold the data
     structured_data = np.empty(len(trajectories), dtype=object)
@@ -156,6 +183,13 @@ if __name__ == "__main__":
     parser.add_argument(
         '--n_dims', type=int,
         help="MPM simulation dimensions")
+    parser.add_argument(
+        '--n_material_props', type=int,
+        default=1,
+        help="Number of material properties")
+    parser.add_argument(
+        '--max_cohesion', type=float, required=False,
+        help="Max cohesion value for normalizing the cohesion")
     parser.add_argument(
         '--result_dir', type=str,
         help="Directory where h5 files are located.")
@@ -180,15 +214,18 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     n_dims = args.n_dims
+    n_material_props = args.n_material_props
     result_dir = args.result_dir
     save_path = args.save_path
     mpm_input_path = args.mpm_input_path
+    max_cohesion = args.max_cohesion
 
     # # Just for debug
     # n_dims = 2
-    # result_dir = "/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand2d-layers-random/sim-12/results/sand2d/"
-    # mpm_input_path = "/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand2d-layers-random/sim-12/mpm.json"
-    # save_path = "/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand2d-layers-random/sim-12/trajectory.npz"
+    # n_material_props = 2
+    # result_dir = "/work2/08264/baagee/frontera/cbgeopy/examples/sand_layers-2d-random/sim-0/results/sand2d/"
+    # mpm_input_path = "/work2/08264/baagee/frontera/cbgeopy/examples/sand_layers-2d-random/sim-0/mpm-resume.json"
+    # save_path = "/work2/08264/baagee/frontera/cbgeopy/examples/sand_layers-2d-random/sim-0/trajectory.npz"
 
     scale = {
         "origin": [0, 0] if args.scale_origin is None else args.scale_origin,
@@ -198,6 +235,8 @@ if __name__ == "__main__":
 
     convert_hd5_to_npz(
         n_dims=n_dims,
+        n_material_props=n_material_props,
+        max_cohesion=max_cohesion,
         result_dir=result_dir,
         mpm_input_path=mpm_input_path,
         save_path=save_path,
