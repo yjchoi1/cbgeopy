@@ -11,7 +11,7 @@ import argparse
 from scipy.spatial import cKDTree, KDTree
 from scipy import interpolate
 from typing import List, Dict, Callable
-
+import shapely.geometry
 
 # Define constants for axes
 AXES_3D = ["x", "y", "z"]
@@ -245,6 +245,102 @@ class MPMConfig:
                 }
             }
         )
+        
+    def add_particles_from_random_field(
+        self,
+        random_params: Dict,
+        n_particle_per_cell: int,
+        randomness: float = None
+    ):
+        pass
+    
+    def add_particles_from_polygon(
+        self,
+        polygon_info: List,
+        n_particle_per_cell: int,
+        randomness: float = None
+    ):
+        """
+        Add particles from a polygon
+
+        Args:
+            polygon_info (List): a list of dict {"polygon_points": [a list of points], "material_id" int}
+                * "polygon_points" contains the points that comprise a polygon.
+                    For example, [[0, 0], [1, 0], [1, 1], [0, 1]]
+                * "material_id" is the material id associated with this polygon
+                * "particle_group_id": (optional) particle group id to be associated with these particles
+            n_particle_per_cell (int): number of particles per cell per dimension
+            randomness (float, optional): randomness factor for particle generation
+        """
+        if self.ndims == 3:
+            raise ValueError("This feature is only for 2D domain")
+
+        # Particle config
+        particle_distance = self.cell_size[0] / n_particle_per_cell
+        particle_offset_distance = particle_distance / 2
+
+        # Create particle range arrays that cover the whole domain
+        particle_ranges = [
+            (origin + particle_offset_distance, origin + length - particle_offset_distance)
+            for origin, length in zip(self.domain_origin, self.domain_length)]
+        
+        x_coords = np.arange(
+            particle_ranges[0][0], particle_ranges[0][1] + particle_offset_distance, particle_distance)
+        y_coords = np.arange(
+            particle_ranges[1][0], particle_ranges[1][1] + particle_offset_distance, particle_distance)
+
+        # Generate candidate particles grid
+        xx, yy = np.meshgrid(x_coords, y_coords)
+        candidate_particles = np.vstack((xx.ravel(), yy.ravel())).T
+
+        # Process each polygon
+        for poly in polygon_info:
+            # Assign a particle group id
+            if "particle_group_id" in poly:
+                self.particle_group_id = poly["particle_group_id"]
+            else:
+                self.particle_group_id += 1
+
+            # Create Shapely polygon
+            polygon = shapely.geometry.Polygon(poly["polygon_points"])
+            
+            # Create Shapely points for all candidate particles
+            points = [shapely.geometry.Point(p) for p in candidate_particles]
+            
+            # Filter particles inside polygon
+            mask = [polygon.contains(point) for point in points]
+            particles = candidate_particles[mask]
+
+            # Disturb particles if randomness is specified
+            if randomness is not None and len(particles) > 0:
+                particles += np.random.uniform(
+                    -particle_offset_distance * randomness,
+                    particle_offset_distance * randomness,
+                    particles.shape)
+
+            # Store particles
+            self.particle_groups[self.particle_group_id] = {}
+            self.particle_groups[self.particle_group_id]['particles'] = particles
+            self.particle_groups[self.particle_group_id]['id'] = list(
+                range(self.particles_count, self.particles_count + len(particles)))
+
+            # Update current particle count
+            self.particles_count += len(particles)
+
+            # Set config
+            self.mpm_json["particles"].append(
+                {
+                    "generator": {
+                        "check_duplicates": True,
+                        "location": f"particles_{self.particle_group_id}.txt",
+                        "io_type": "Ascii2D",
+                        "pset_id": self.particle_group_id,
+                        "particle_type": "P2D",
+                        "material_id": poly["material_id"],
+                        "type": "file"
+                    }
+                }
+            )
 
     def add_particles_from_lines(
             self,
