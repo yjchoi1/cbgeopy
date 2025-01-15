@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -5,19 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MPM Module &mdash; cbgeopy 0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=2709fde1"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -60,6 +58,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_csv"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_csv()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_cube"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_cube()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_from_lines"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_from_lines()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_from_polygon"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_from_polygon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_from_random_field"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_from_random_field()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_from_topography"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_from_topography()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_velocity_constraints"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_velocity_constraints()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.analysis"><code class="docutils literal notranslate"><span class="pre">MPMConfig.analysis()</span></code></a></li>
@@ -260,7 +260,7 @@ Each dict contains:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_lines">
-<span class="sig-name descname"><span class="pre">add_particles_from_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_lines" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_particles_from_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_lines" title="Link to this definition"></a></dt>
 <dd><dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul>
@@ -273,15 +273,45 @@ For example, [[[0, 0], [1.0, 0]], [[0, 0], [0.3, 0.3], [0.7, 0.1], [1.0, 0]], [[
 <ul class="simple">
 <li><p>“material_id” is the material id associated with this layer.</p></li>
 <li><p>“particle_group_id”: particle_group_id (int): particle group id to be associated with this particles</p></li>
+<li><p>randomness (float): disturb particles with magnitude defined by float from 0 (no disturb) to 1.0</p></li>
 </ul>
+<p>(max disturb to particle spacing)</p>
 </li>
 <li><p><strong>n_particle_per_cell</strong> (<em>int</em>) – number of particles per cell per dimension</p></li>
-<li><p><strong>randomness ()</strong></p></li>
 </ul>
 </dd>
 </dl>
 <p>Returns:</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_polygon">
+<span class="sig-name descname"><span class="pre">add_particles_from_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_polygon" title="Link to this definition"></a></dt>
+<dd><p>Add particles from a polygon</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul>
+<li><p><strong>polygon_info</strong> (<em>List</em>) – a list of dict {“polygon_points”: [a list of points], “material_id” int}
+* “polygon_points” contains the points that comprise a polygon.</p>
+<blockquote>
+<div><p>For example, [[0, 0], [1, 0], [1, 1], [0, 1]]</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>“material_id” is the material id associated with this polygon</p></li>
+<li><p>“particle_group_id”: (optional) particle group id to be associated with these particles</p></li>
+</ul>
+</li>
+<li><p><strong>n_particle_per_cell</strong> (<em>int</em>) – number of particles per cell per dimension</p></li>
+<li><p><strong>randomness</strong> (<em>float, optional</em>) – randomness factor for particle generation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_random_field">
+<span class="sig-name descname"><span class="pre">add_particles_from_random_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_random_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_random_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_topography">
