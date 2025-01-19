@@ -1,3 +1,9 @@
+"""MPM configuration module for setting up Material Point Method simulations.
+
+This module provides the MPMConfig class and helper functions for configuring MPM simulations.
+It handles mesh generation, particle placement, material properties, boundary conditions and more.
+"""
+
 import numpy as np
 import pandas
 import plotly.graph_objects as go
@@ -22,12 +28,50 @@ AXES_2D = ["x", "y"]
 
 
 class MPMConfig:
+    """Class for configuring Material Point Method simulations.
+
+    This class handles all aspects of MPM simulation setup including:
+    - Mesh generation and configuration
+    - Particle placement and properties 
+    - Material definitions
+    - Boundary conditions
+    - Analysis settings
+    - Output configuration
+
+    Attributes:
+        initial_stresses: Initial stress states for particles
+        materials: List of material definitions
+        cell_size: Size of mesh cells
+        n_cells_per_dim: Number of cells per dimension
+        nnode: Total number of nodes
+        nele: Total number of elements
+        mesh_info: Dictionary containing mesh information
+        mesh_coord_base: Base coordinates for mesh generation
+        entity_sets: Dictionary of entity sets
+        particle_group_id: Current particle group ID
+        particles_count: Total number of particles
+        particle_groups: Dictionary of particle groups
+        direction_mapping: Maps direction names to indices
+        ndims: Number of dimensions
+        domain_origin: Origin coordinates of domain
+        domain_length: Length of domain in each dimension
+        domain_ranges: Ranges of domain in each dimension
+        mpm_json: Dictionary containing MPM configuration
+    """
+
     def __init__(
             self,
-            domain_origin,
-            domain_length,
-            title="mpm_input_config"
+            domain_origin: List[float],
+            domain_length: List[float],
+            title: str = "mpm_input_config"
     ):
+        """Initialize MPM configuration.
+
+        Args:
+            domain_origin: Origin coordinates of simulation domain
+            domain_length: Length of domain in each dimension
+            title: Title for the configuration
+        """
         # Mesh
         self.initial_stresses = None
         self.materials = []
@@ -75,19 +119,15 @@ class MPMConfig:
             n_cells_per_dim: List[int],
             outer_cell_thickness: float = 0,
     ):
-        """
-        Make mesh coordinate array & cell group
+        """Make mesh coordinate array & cell group.
+
         Args:
-            outer_cell_thickness (float): If provided, the outer mesh will be added to the mesh defined by
-                domain_ranges. Therefore, The actual domain is
-                [domain_ranges[0] - outer_cell_thickness, domain_ranges[1] + outer_cell_thickness]
-                If not provided, the actual domain is
-                [domain_ranges[0], domain_ranges[1]]
-            n_cells_per_dim (list): [nx, ny, nz]
+            n_cells_per_dim: Number of cells per dimension [nx, ny, nz]
+            outer_cell_thickness: Thickness of outer mesh layer. If provided, adds outer mesh
+                beyond domain_ranges. If 0, mesh matches domain_ranges exactly.
 
-        Returns:
-            None
-
+        Raises:
+            ValueError: If outer_cell_thickness is negative
         """
         self.n_cells_per_dim = n_cells_per_dim
 
@@ -204,14 +244,12 @@ class MPMConfig:
             path,
             material_id,
             particle_group_id=None):
-        """
+        """Add particles from a CSV file.
 
         Args:
-            material_id (int): material id associated with this particle group
-            particle_group_id (int): particle group id to be associated with this particles
-            path (str): csv file path
-
-        Returns:
+            path: Path to CSV file containing particle coordinates
+            material_id: Material ID to associate with these particles
+            particle_group_id: Optional particle group ID, auto-increments if None
 
         """
         # Assign a particle group id
@@ -255,19 +293,21 @@ class MPMConfig:
         n_particle_per_cell: int,
         randomness: float = None
     ):
-        """
-        Add particles within polygons with random field values assigned to each particle.
-        
+        """Add particles within polygons with random field values.
+
         Args:
-            polygons_params (List): List of dictionaries containing:
-                - "polygon_points": List of points defining polygon vertices
-                - "random_params": Dict with random field parameters (mean, std, len_scale)
-            n_particle_per_cell (int): Number of particles per cell per dimension
-            randomness (float, optional): Factor for random perturbation of particle positions
-            
+            polygons_params: List of dictionaries containing:
+                - polygon_points: List of points defining polygon vertices
+                - random_params: Dict with random field parameters (mean, std, len_scale)
+            n_particle_per_cell: Number of particles per cell per dimension
+            randomness: Factor for random perturbation of particle positions
+
         Note:
-            Unlike other `add_particles` methods, it automatically set `particle_group_id` based 
-            on the particles associated cell id, and "material_id" is the same as `particle_group_id`.
+            Unlike other add_particles methods, this automatically sets particle_group_id based
+            on the particles' associated cell id, and material_id equals particle_group_id.
+
+        Raises:
+            ValueError: If used with 3D domain or if no particles found in polygon
         """
         if self.ndims == 3:
             raise ValueError("This feature is only for 2D domain")
@@ -397,17 +437,18 @@ class MPMConfig:
         n_particle_per_cell: int,
         randomness: float = None
     ):
-        """
-        Add particles from a polygon
+        """Add particles within defined polygons.
 
         Args:
-            polygon_info (List): a list of dict {"polygon_points": [a list of points], "material_id" int}
-                * "polygon_points" contains the points that comprise a polygon.
-                    For example, [[0, 0], [1, 0], [1, 1], [0, 1]]
-                * "material_id" is the material id associated with this polygon
-                * "particle_group_id": (optional) particle group id to be associated with these particles
-            n_particle_per_cell (int): number of particles per cell per dimension
-            randomness (float, optional): randomness factor for particle generation
+            polygon_info: List of dictionaries containing:
+                - polygon_points: List of points defining polygon vertices
+                - material_id: Material ID for particles in this polygon
+                - particle_group_id: (Optional) Group ID for these particles
+            n_particle_per_cell: Number of particles per cell per dimension
+            randomness: Factor for random perturbation of particle positions
+
+        Raises:
+            ValueError: If used with 3D domain
         """
         if self.ndims == 3:
             raise ValueError("This feature is only for 2D domain")
@@ -475,21 +516,22 @@ class MPMConfig:
             layer_info: List,
             n_particle_per_cell: int,
     ):
-        """
+        """Add particles in layers defined by line segments.
 
         Args:
-            layer_info (List): a list of dict {"line_points": [a list of points], "material_id" int}
-                * "line_points" contains the points that comprise a line that defines the upper boundary of layer.
-                    It should be defined for the entire x-domain range.
-                    For example, [[[0, 0], [1.0, 0]], [[0, 0], [0.3, 0.3], [0.7, 0.1], [1.0, 0]], [[0, 0.5], [0.1]]]
-                * "material_id" is the material id associated with this layer.
-                * "particle_group_id": particle_group_id (int): particle group id to be associated with this particles
-                * randomness (float): disturb particles with magnitude defined by float from 0 (no disturb) to 1.0
-                (max disturb to particle spacing)
-            n_particle_per_cell (int): number of particles per cell per dimension
+            layer_info: List of dictionaries containing:
+                - line_points: Points defining upper boundary line of layer
+                - material_id: Material ID for this layer
+                - particle_group_id: (Optional) Group ID for these particles
+                - randomness: (Optional) Factor for particle position randomization
+            n_particle_per_cell: Number of particles per cell per dimension
 
-        Returns:
+        Raises:
+            ValueError: If used with 3D domain
 
+        Note:
+            Line points should span entire x-domain range.
+            First layer assumes y=0 as lower boundary.
         """
         if self.ndims == 3:
             raise ValueError("This feature is only for 2D domain")
@@ -570,7 +612,6 @@ class MPMConfig:
             )
 
 
-
     def add_particles_from_topography(
             self,
             lower_topography: trimesh.Trimesh,
@@ -584,26 +625,33 @@ class MPMConfig:
             overlap_tolerance: float = None,
             particle_group_id: int = None
     ):
-        """
+        """Add particles between two topographic surfaces.
+
+        This method fills the space between two topographic surfaces with particles. The particles
+        are placed in a regular grid pattern and can optionally be randomly perturbed.
 
         Args:
-            randomness (float): disturb particles with uniform randomness factor
-            overlap_tolerance (float):
-            lower_topography (trimesh.Trimesh): mesh that defines the surface of the upper layer topography
-            upper_topography (trimesh.Trimesh):  mesh that defines the surface of the upper layer topography
-            n_particle_per_cell (int): number of particles per cell per dimension
-            material_id (int): id of material that you want to assign to this particle set
-            z_find_method (str): method to find z-coordinate of mesh ('' or '')
-            base_find_method (str): method to find the base of the area where two surfaces overlap ('alphashape' or 'simple')
-                If 'alphashape', it defines base by trying to estimate the x-y plane projection area using alphashape.
-                if 'simple, it defines base using max and min x, y values. The base will be restricted to square shape.
-            z_fill_method (str): method to fill between lower and upper z-coordinates ('simple' or 'round')
-                If 'simple', it uses the exact z-coordinate of mesh.
-                If 'round', it uses the nearest particle grid points for particle generation.
-            particle_group_id (int): particle group id to be associated with this particles
+            lower_topography: Mesh defining the lower surface topography
+            upper_topography: Mesh defining the upper surface topography 
+            n_particle_per_cell: Number of particles per cell per dimension
+            material_id: ID of material to assign to this particle set
+            z_find_method: Method to find z-coordinate of mesh ('' or '')
+            base_find_method: Method to find base area where surfaces overlap
+                'alphashape': Estimates x-y projection area using alphashape
+                'simple': Uses max/min x,y values, restricted to square shape
+            z_fill_method: Method to fill between lower and upper z-coordinates
+                'simple': Uses exact z-coordinate of mesh
+                'round': Uses nearest particle grid points
+            randomness: Factor to randomly perturb particle positions
+            overlap_tolerance: Maximum distance to consider particles as overlapping
+            particle_group_id: ID to assign to this particle group
 
-        Returns:
+        Raises:
+            ValueError: If used with 2D domain (only supports 3D)
 
+        Note:
+            The particles are stored in self.particle_groups with the specified particle_group_id.
+            If particle_group_id is None, it will be auto-incremented.
         """
 
         if self.ndims == 2:
@@ -732,8 +780,7 @@ class MPMConfig:
             })
                 
     def remove_overlapping_particles(self, overlap_tolerance: float):
-        """
-        Remove overlapping particles between different particle groups.
+        """Remove overlapping particles between different particle groups.
         
         This method iterates through particle groups in order and removes any particles 
         that overlap with particles from previous groups. A particle is considered overlapping
@@ -742,13 +789,10 @@ class MPMConfig:
         The particle IDs are reordered after removing overlaps to maintain consecutive numbering.
         
         Args:
-            overlap_tolerance (float): Maximum distance between particles to consider them as overlapping.
-                                     Particles closer than this distance will be considered overlapping
-                                     and one will be removed.
+            overlap_tolerance: Maximum distance between particles to consider them as overlapping.
+                             Particles closer than this distance will be considered overlapping
+                             and one will be removed.
         
-        Returns:
-            None
-            
         Raises:
             ValueError: If no particle groups exist
             
@@ -812,13 +856,18 @@ class MPMConfig:
             self,
             nset_id: int,
             ranges: list):
-        """
+        """Add a cell entity set based on coordinate ranges.
 
         Args:
-            ranges (list): [[x_min, x_max], [y_min, y_max], [z_min, z_max]].
+            nset_id: Node set ID to assign to this entity set. Must be > 5 since 0-5 are reserved.
+            ranges: List of coordinate ranges [[x_min, x_max], [y_min, y_max], [z_min, z_max]]
 
-        Returns:
+        Raises:
+            ValueError: If nset_id <= 5 or if ranges length doesn't match domain dimensions
 
+        Note:
+            The cell entity set is stored in self.entity_sets["node_sets"] and contains all nodes
+            within the specified coordinate ranges.
         """
         # TODO: set id should be properly considered. Currently, it is first auto created by boundary entity
         if nset_id <= 5:
@@ -853,19 +902,22 @@ class MPMConfig:
             n_particle_per_cell,
             randomness: float = None,
             particle_group_id=None):
-        """
-        Adds a group of particles within a defined cubic region of the simulation domain.
+        """Add a group of particles within a defined cubic region.
 
         Args:
-            randomness (float): disturb particles with uniform randomness factor
-            cube_origin (List[float]): The lower edge of the cube, [x_min, y_min, (z_min)].
-            cube_length (List[float]): The lengths of the cube along each axis, [x_len, y_len, (z_len)].
-            material_id (int): The material ID associated with this particle group.
-            n_particle_per_cell (int): Number of particles per dimension in each cell.
-            particle_group_id (Optional[int]): Particle group ID to be associated with these particles. Auto-increments if None.
+            cube_origin: Lower edge coordinates of cube [x_min, y_min, (z_min)]
+            cube_length: Lengths of cube along each axis [x_len, y_len, (z_len)]
+            material_id: Material ID to assign to this particle group
+            n_particle_per_cell: Number of particles per dimension in each cell
+            randomness: Factor to randomly perturb particle positions
+            particle_group_id: ID to assign to this particle group
 
         Raises:
-            ValueError: If an unsupported number of dimensions is provided.
+            ValueError: If domain dimensions are not 2D or 3D
+
+        Note:
+            The particles are stored in self.particle_groups with the specified particle_group_id.
+            If particle_group_id is None, it will be auto-incremented.
         """
 
         # Assign a particle group id
@@ -943,14 +995,14 @@ class MPMConfig:
         """
 
         Args:
-            constraints_info (list[dict]): list of dicts
-                Each dict contains:
-                - 'pset_id': particle set id to be constrained
-                - 'axis': str, one of 'x', 'y', 'z'
-                - 'velocity': float, velocity
+            constraints_info: List of constraint dictionaries, each containing:
+                - 'pset_id': Particle set ID to constrain
+                - 'axis': Direction to constrain ('x', 'y', or 'z')
+                - 'velocity': Velocity value to apply
 
-        Returns:
-
+        Note:
+            The constraints are added to self.mpm_json["mesh"]["boundary_conditions"]
+            under the "particles_velocity_constraints" key.
         """
         constraints = []
 
@@ -977,18 +1029,19 @@ class MPMConfig:
         self.mpm_json["mesh"]["boundary_conditions"]["particles_velocity_constraints"] = constraints
 
     def define_boundary_entity(self):
-        """
-        Define boundary entity set that corresponds to each boundary plain:
-            entity_sets["node_sets"] = [
-                {
-                    "id": set_id,  # index of node set
-                    "set": nodes,  # index of node
-                    "axis": axis,  # x, y, z
-                    "bound_loc": bound_loc  # `start` or `end`
-                },
-                ...,
-            ]
-        Note that it is hardcoded to occupy node set id from 0 to 5.
+        """Define boundary entity sets for each boundary plane.
+
+        Creates node sets for each boundary plane of the domain. The node sets are stored in
+        self.entity_sets["node_sets"] with IDs 0-5 reserved for boundaries.
+
+        Each node set dictionary contains:
+            - id: Node set ID (0-5)
+            - set: List of node indices
+            - axis: Boundary axis ('x', 'y', 'z')
+            - bound_loc: Boundary location ('start' or 'end')
+
+        Note:
+            Node set IDs 0-5 are hardcoded for boundaries. Other entity sets should use IDs > 5.
         """
         # TODO manual association of nset-id considering the
         #  `add_velocity_constraints` `add_cell_entity` `add_friction_constrains` methods.
@@ -1023,17 +1076,17 @@ class MPMConfig:
                 set_id += 1
 
     def add_velocity_constraints(self, constraints_info: List[Dict]):
-        """
+        """Add velocity constraints to boundary nodes.
 
         Args:
-            constraints_info (): list of dicts
-                Each dict contains:
-                - 'axis': str, one of 'x', 'y', 'z'
-                - 'bound_loc': str, one of 'start', 'end'
-                - 'velocity': float
+            constraints_info: List of constraint dictionaries, each containing:
+                - 'axis': Direction to constrain ('x', 'y', or 'z')
+                - 'bound_loc': Boundary location ('start' or 'end')
+                - 'velocity': Velocity value to apply
 
-        Returns:
-
+        Note:
+            The constraints are added to self.mpm_json["mesh"]["boundary_conditions"]
+            under the "velocity_constraints" key.
         """
         constraints = []
 
@@ -1060,19 +1113,18 @@ class MPMConfig:
         self.mpm_json["mesh"]["boundary_conditions"]["velocity_constraints"] = constraints
 
     def add_friction_constrains(self, constraints_info):
-        """
+        """Add friction constraints to boundary nodes.
 
         Args:
-            constraints_info (): list of dicts
-                Each dict contains:
-                - 'axis': str, one of 'x', 'y', 'z'
-                - 'bound_loc': str, one of 'start', 'end'
-                - 'dir' (depreciated): int, direction index (0 for x, 1 for y, 2 for z)
-                - 'sign_n': int, normal sign (-1 or 1)
-                - 'friction': float
+            constraints_info: List of constraint dictionaries, each containing:
+                - 'axis': Direction to constrain ('x', 'y', or 'z')
+                - 'bound_loc': Boundary location ('start' or 'end')
+                - 'sign_n': Normal direction sign (-1 or 1)
+                - 'friction': Friction coefficient
 
-        Returns:
-
+        Note:
+            The constraints are added to self.mpm_json["mesh"]["boundary_conditions"]
+            under the "friction_constraints" key.
         """
 
         friction_constraints = []
@@ -1204,16 +1256,22 @@ class MPMConfig:
             density,
             k0=None,
             undeformed_data=None):
-        """
+        """Add initial stress state to particles.
 
         Args:
-            top_surface (trimesh.Trimesh):
-            k0 (float):
-            option (str): `k0` or `stabilized_stress_data`
-            undeformed_data ():
+            option: Method to calculate initial stress ('k0' or 'stabilized_stress_data')
+            top_surface: Mesh defining the top surface topography
+            density: Material density
+            k0: Lateral earth pressure coefficient (required if option='k0')
+            undeformed_data: Data for stabilized stress calculation (required if option='stabilized_stress_data')
 
-        Returns:
+        Raises:
+            ValueError: If used with 2D domain or if required parameters are missing
+            NotImplementedError: If option is not implemented
 
+        Note:
+            The initial stresses are stored in self.initial_stresses and written to
+            'particles_stresses.txt' when the configuration is saved.
         """
         if self.ndims != 3:
             raise ValueError("This function currently only supports 3D domain")
@@ -1271,13 +1329,17 @@ class MPMConfig:
         self.mpm_json['mesh']['particles_stresses'] = 'particles_stresses.txt'
 
     def add_external_loadings(self, loadings):
-        """
+        """Add external loading conditions.
 
         Args:
-            loadings (dict):
+            loadings: Dictionary containing loading conditions, including:
+                - gravity: List of gravity components matching domain dimensions
 
-        Returns:
+        Raises:
+            ValueError: If loading dimensions don't match domain dimensions
 
+        Note:
+            The loadings are stored in self.mpm_json["external_loading_conditions"].
         """
         if self.ndims != len(loadings["gravity"]):
             raise ValueError("External loading does no comply with the dimension of the current simulation")
@@ -1285,13 +1347,19 @@ class MPMConfig:
         self.mpm_json["external_loading_conditions"] = loadings
 
     def analysis(self, config):
-        """
+        """Configure analysis settings for the MPM simulation.
 
         Args:
-            config (dict):
+            config (dict): Dictionary containing analysis configuration parameters including:
+                - type: Analysis type (e.g. 'MPMExplicit2D', 'MPMExplicit3D')
+                - Other analysis-specific parameters
 
-        Returns:
+        Raises:
+            ValueError: If analysis type dimensionality doesn't match domain dimensions
 
+        Note:
+            The analysis settings are stored in self.mpm_json["analysis"].
+            Analysis type must match domain dimensionality (2D/3D).
         """
         self.mpm_json["analysis"] = config
 
@@ -1300,25 +1368,30 @@ class MPMConfig:
             raise ValueError(f"Analysis type '{config['type']}' is not compatible with a {self.ndims}D model.")
 
     def post_processing(self, config):
-        """
+        """Configure post-processing settings for the MPM simulation.
 
         Args:
-            config (dict):
+            config (dict): Dictionary containing post-processing configuration parameters.
 
-        Returns:
-
+        Note:
+            The post-processing settings are stored in self.mpm_json["post_processing"].
         """
         self.mpm_json["post_processing"] = config
 
     def write(self, save_dir, file_name='mpm.json'):
-        """
+        """Write MPM configuration and data files to disk.
 
         Args:
-            save_dir (str): directory to save the mpm input file
-            file_name (str): mpm json input file name with extension
+            save_dir (str): Directory path to save the MPM input files
+            file_name (str): Name of the MPM JSON input file with extension
 
-        Returns:
-
+        Note:
+            This method writes several files:
+            - mesh.txt: Contains mesh node coordinates and cell groups
+            - particles_*.txt: Particle coordinates for each particle group
+            - entity_sets.json: Entity set definitions
+            - particles_stresses.txt: Initial particle stresses if defined
+            - mpm.json: Main configuration file
         """
         # Set save directory
         if not os.path.exists(save_dir):
@@ -1377,16 +1450,15 @@ class MPMConfig:
             save_path,
             node_indices=False
     ):
-        """
-        Visualize current configuration
+        """Visualize the mesh configuration in 3D.
 
         Args:
-            save_path (str):
-            nodes (bool):
-            node_indices (bool):
+            save_path (str): Path to save the visualization HTML file
+            node_indices (bool): Whether to display node indices in the visualization
 
-        Returns:
-
+        Note:
+            Creates an interactive 3D plot using Plotly showing mesh nodes.
+            The plot is saved as an HTML file at the specified path.
         """
         # Extract the x, y, and z coordinates
         x = self.mesh_info["node_coords"][:, 0]
@@ -1430,13 +1502,18 @@ class MPMConfig:
             self,
             save_path
     ):
-        """
+        """Visualize particle groups in 3D.
 
         Args:
-            save_path (str):
+            save_path (str): Path to save the visualization HTML file
 
-        Returns:
+        Raises:
+            ValueError: If attempting to visualize 2D particle configuration
 
+        Note:
+            Creates an interactive 3D plot using Plotly showing particles from all groups.
+            Each particle group is plotted in a different color.
+            The plot is saved as an HTML file at the specified path.
         """
         if self.ndims == 2:
             raise ValueError("This feature does not support 2D case yet.")
@@ -1489,8 +1566,7 @@ class MPMConfig:
         n_particle_per_cell, 
         ndims
         ):
-        """
-        Generates a uniform grid of particle coordinates.
+        """Generate a uniform grid of particle coordinates.
         
         Args:
             domain_origin (List[float]): Origin coordinates of the domain
@@ -1500,7 +1576,10 @@ class MPMConfig:
             ndims (int): Number of dimensions (2 or 3)
             
         Returns:
-            tuple: (particle_coordinates, particle_distance, particle_offset_distance)
+            tuple: Contains:
+                - particles (np.ndarray): Array of particle coordinates
+                - particle_distance (float): Distance between particles
+                - particle_offset_distance (float): Offset distance from domain boundaries
         """
         particle_distance = cell_size[0] / n_particle_per_cell
         particle_offset_distance = particle_distance / 2
@@ -1528,12 +1607,32 @@ class MPMConfig:
 
 
 def find_material_property(id, field, material_list):
+    """Find a specific property of a material by its ID.
+
+    Args:
+        id (int): Material ID to search for
+        field (str): Name of the material property to retrieve
+        material_list (List[dict]): List of material dictionaries
+
+    Returns:
+        The value of the specified field for the material with matching ID
+    """
     for item in material_list:
         if item['id'] == id:
             return item[field]
 
 
 def get_h5(directory, timestep, mpi):
+    """Read and combine HDF5 particle data files from MPI processes.
+
+    Args:
+        directory (str): Directory containing the HDF5 files
+        timestep (int): Timestep to read
+        mpi (int): Number of MPI processes
+
+    Returns:
+        pandas.DataFrame: Combined particle data from all MPI processes
+    """
     # Create an empty list to store DataFrames
     dfs = []
 
