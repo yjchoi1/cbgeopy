@@ -46,7 +46,38 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">MPM Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">MPM Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mpm.MPMConfig"><code class="docutils literal notranslate"><span class="pre">MPMConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.__init__"><code class="docutils literal notranslate"><span class="pre">MPMConfig.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig._generate_particle_grid"><code class="docutils literal notranslate"><span class="pre">MPMConfig._generate_particle_grid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_cell_entity"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_cell_entity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_external_loadings"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_external_loadings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_friction_constrains"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_friction_constrains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_initial_stress"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_initial_stress()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_materials"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_materials()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_mesh"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_mesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particle_constraints"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particle_constraints()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_csv"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_cube"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_cube()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_from_lines"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_from_lines()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_from_polygon"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_from_polygon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_from_random_field"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_from_random_field()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_particles_from_topography"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_particles_from_topography()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.add_velocity_constraints"><code class="docutils literal notranslate"><span class="pre">MPMConfig.add_velocity_constraints()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.analysis"><code class="docutils literal notranslate"><span class="pre">MPMConfig.analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.define_boundary_entity"><code class="docutils literal notranslate"><span class="pre">MPMConfig.define_boundary_entity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.define_particle_entity"><code class="docutils literal notranslate"><span class="pre">MPMConfig.define_particle_entity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.post_processing"><code class="docutils literal notranslate"><span class="pre">MPMConfig.post_processing()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.remove_overlapping_particles"><code class="docutils literal notranslate"><span class="pre">MPMConfig.remove_overlapping_particles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.visualize_mesh"><code class="docutils literal notranslate"><span class="pre">MPMConfig.visualize_mesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.visualize_particles"><code class="docutils literal notranslate"><span class="pre">MPMConfig.visualize_particles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mpm.MPMConfig.write"><code class="docutils literal notranslate"><span class="pre">MPMConfig.write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mpm.find_material_property"><code class="docutils literal notranslate"><span class="pre">find_material_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mpm.get_h5"><code class="docutils literal notranslate"><span class="pre">get_h5()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">utils Module</a></li>
 </ul>
 </li>
@@ -85,6 +116,731 @@
 * defining boundary conditions and particle constraints.
 * generating CB-geo MPM input files that are associated with
 the current mesh and material points (e.g, <code class="docutils literal notranslate"><span class="pre">entity_sets.json</span></code>, <code class="docutils literal notranslate"><span class="pre">mpm.json</span></code>).</p>
+<p id="module-mpm">MPM configuration module for setting up Material Point Method simulations.</p>
+<p>This module provides the MPMConfig class and helper functions for configuring MPM simulations.
+It handles mesh generation, particle placement, material properties, boundary conditions and more.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mpm.MPMConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mpm.</span></span><span class="sig-name descname"><span class="pre">MPMConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpm_input_config'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class for configuring Material Point Method simulations.</p>
+<p>This class handles all aspects of MPM simulation setup including:
+- Mesh generation and configuration
+- Particle placement and properties
+- Material definitions
+- Boundary conditions
+- Analysis settings
+- Output configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>initial_stresses</strong> – Initial stress states for particles</p></li>
+<li><p><strong>materials</strong> – List of material definitions</p></li>
+<li><p><strong>cell_size</strong> – Size of mesh cells</p></li>
+<li><p><strong>n_cells_per_dim</strong> – Number of cells per dimension</p></li>
+<li><p><strong>nnode</strong> – Total number of nodes</p></li>
+<li><p><strong>nele</strong> – Total number of elements</p></li>
+<li><p><strong>mesh_info</strong> – Dictionary containing mesh information</p></li>
+<li><p><strong>mesh_coord_base</strong> – Base coordinates for mesh generation</p></li>
+<li><p><strong>entity_sets</strong> – Dictionary of entity sets</p></li>
+<li><p><strong>particle_group_id</strong> – Current particle group ID</p></li>
+<li><p><strong>particles_count</strong> – Total number of particles</p></li>
+<li><p><strong>particle_groups</strong> – Dictionary of particle groups</p></li>
+<li><p><strong>direction_mapping</strong> – Maps direction names to indices</p></li>
+<li><p><strong>ndims</strong> – Number of dimensions</p></li>
+<li><p><strong>domain_origin</strong> – Origin coordinates of domain</p></li>
+<li><p><strong>domain_length</strong> – Length of domain in each dimension</p></li>
+<li><p><strong>domain_ranges</strong> – Ranges of domain in each dimension</p></li>
+<li><p><strong>mpm_json</strong> – Dictionary containing MPM configuration</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>domain_origin</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>)</p></li>
+<li><p><strong>domain_length</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>)</p></li>
+<li><p><strong>title</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpm_input_config'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize MPM configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>domain_origin</strong> – Origin coordinates of simulation domain</p></li>
+<li><p><strong>domain_length</strong> – Length of domain in each dimension</p></li>
+<li><p><strong>title</strong> – Title for the configuration</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>domain_origin</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>)</p></li>
+<li><p><strong>domain_length</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>)</p></li>
+<li><p><strong>title</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig._generate_particle_grid">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_generate_particle_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndims</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig._generate_particle_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig._generate_particle_grid" title="Link to this definition"></a></dt>
+<dd><p>Generate a uniform grid of particle coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>domain_origin</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List[float]</span></code>) – Origin coordinates of the domain</p></li>
+<li><p><strong>domain_length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List[float]</span></code>) – Length of domain in each dimension</p></li>
+<li><p><strong>cell_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List[float]</span></code>) – Size of cells in each dimension</p></li>
+<li><p><strong>n_particle_per_cell</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of particles per cell per dimension</p></li>
+<li><p><strong>ndims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of dimensions (2 or 3)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Contains:</dt><dd><ul class="simple">
+<li><p>particles (np.ndarray): Array of particle coordinates</p></li>
+<li><p>particle_distance (float): Distance between particles</p></li>
+<li><p>particle_offset_distance (float): Offset distance from domain boundaries</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_cell_entity">
+<span class="sig-name descname"><span class="pre">add_cell_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_cell_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_cell_entity" title="Link to this definition"></a></dt>
+<dd><p>Add a cell entity set based on coordinate ranges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nset_id</strong> – Node set ID to assign to this entity set. Must be &gt; 5 since 0-5 are reserved.</p></li>
+<li><p><strong>ranges</strong> – List of coordinate ranges [[x_min, x_max], [y_min, y_max], [z_min, z_max]]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If nset_id &lt;= 5 or if ranges length doesn’t match domain dimensions</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The cell entity set is stored in self.entity_sets[“node_sets”] and contains all nodes
+within the specified coordinate ranges.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nset_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>)</p></li>
+<li><p><strong>ranges</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_external_loadings">
+<span class="sig-name descname"><span class="pre">add_external_loadings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loadings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_external_loadings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_external_loadings" title="Link to this definition"></a></dt>
+<dd><p>Add external loading conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loadings</strong> – Dictionary containing loading conditions, including:
+- gravity: List of gravity components matching domain dimensions</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If loading dimensions don’t match domain dimensions</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The loadings are stored in self.mpm_json[“external_loading_conditions”].</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_friction_constrains">
+<span class="sig-name descname"><span class="pre">add_friction_constrains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraints_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_friction_constrains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_friction_constrains" title="Link to this definition"></a></dt>
+<dd><p>Add friction constraints to boundary nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraints_info</strong> – List of constraint dictionaries, each containing:
+- ‘axis’: Direction to constrain (‘x’, ‘y’, or ‘z’)
+- ‘bound_loc’: Boundary location (‘start’ or ‘end’)
+- ‘sign_n’: Normal direction sign (-1 or 1)
+- ‘friction’: Friction coefficient</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The constraints are added to self.mpm_json[“mesh”][“boundary_conditions”]
+under the “friction_constraints” key.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_initial_stress">
+<span class="sig-name descname"><span class="pre">add_initial_stress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undeformed_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_initial_stress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_initial_stress" title="Link to this definition"></a></dt>
+<dd><p>Add initial stress state to particles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option</strong> – Method to calculate initial stress (‘k0’ or ‘stabilized_stress_data’)</p></li>
+<li><p><strong>top_surface</strong> – Mesh defining the top surface topography</p></li>
+<li><p><strong>density</strong> – Material density</p></li>
+<li><p><strong>k0</strong> – Lateral earth pressure coefficient (required if option=’k0’)</p></li>
+<li><p><strong>undeformed_data</strong> – Data for stabilized stress calculation (required if option=’stabilized_stress_data’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If used with 2D domain or if required parameters are missing</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If option is not implemented</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The initial stresses are stored in self.initial_stresses and written to
+‘particles_stresses.txt’ when the configuration is saved.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>top_surface</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trimesh</span></code></span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_materials">
+<span class="sig-name descname"><span class="pre">add_materials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">materials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_materials"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_materials" title="Link to this definition"></a></dt>
+<dd><p>Add materials to the MPM simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>materials</strong> – List of material dictionaries with properties. Required unless using a special option.</p></li>
+<li><p><strong>option</strong> – Special material generation option. One of: {None, “random_field”}</p></li>
+<li><p><strong>material_type</strong> – Type of material model. One of: {None, “MohrCoulomb2D”}</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Special Options:</dt><dd><dl class="simple">
+<dt>random_field: Generates materials with random field values for each cell particle group.</dt><dd><p>Requires material_type=”MohrCoulomb2D”</p>
+</dd>
+<dt>Random field generation:</dt><dd><p>mpm.add_materials(option=”random_field”, material_type=”MohrCoulomb2D”)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If arguments are invalid or incompatible with model dimensions</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>materials</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>]]</span>)</p></li>
+<li><p><strong>option</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>)</p></li>
+<li><p><strong>material_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_mesh">
+<span class="sig-name descname"><span class="pre">add_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells_per_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outer_cell_thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_mesh" title="Link to this definition"></a></dt>
+<dd><p>Make mesh coordinate array &amp; cell group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_cells_per_dim</strong> – Number of cells per dimension [nx, ny, nz]</p></li>
+<li><p><strong>outer_cell_thickness</strong> – Thickness of outer mesh layer. If provided, adds outer mesh
+beyond domain_ranges. If 0, mesh matches domain_ranges exactly.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If outer_cell_thickness is negative</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_cells_per_dim</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>)</p></li>
+<li><p><strong>outer_cell_thickness</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particle_constraints">
+<span class="sig-name descname"><span class="pre">add_particle_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraints_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particle_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particle_constraints" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraints_info</strong> – List of constraint dictionaries, each containing:
+- ‘pset_id’: Particle set ID to constrain
+- ‘axis’: Direction to constrain (‘x’, ‘y’, or ‘z’)
+- ‘velocity’: Velocity value to apply</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The constraints are added to self.mpm_json[“mesh”][“boundary_conditions”]
+under the “particles_velocity_constraints” key.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraints_info</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>]</span>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_csv">
+<span class="sig-name descname"><span class="pre">add_particles_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_csv" title="Link to this definition"></a></dt>
+<dd><p>Add particles from a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – Path to CSV file containing particle coordinates</p></li>
+<li><p><strong>material_id</strong> – Material ID to associate with these particles</p></li>
+<li><p><strong>particle_group_id</strong> – Optional particle group ID, auto-increments if None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_cube">
+<span class="sig-name descname"><span class="pre">add_particles_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cube_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_cube" title="Link to this definition"></a></dt>
+<dd><p>Add a group of particles within a defined cubic region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cube_origin</strong> – Lower edge coordinates of cube [x_min, y_min, (z_min)]</p></li>
+<li><p><strong>cube_length</strong> – Lengths of cube along each axis [x_len, y_len, (z_len)]</p></li>
+<li><p><strong>material_id</strong> – Material ID to assign to this particle group</p></li>
+<li><p><strong>n_particle_per_cell</strong> – Number of particles per dimension in each cell</p></li>
+<li><p><strong>randomness</strong> – Factor to randomly perturb particle positions</p></li>
+<li><p><strong>particle_group_id</strong> – ID to assign to this particle group</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If domain dimensions are not 2D or 3D</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The particles are stored in self.particle_groups with the specified particle_group_id.
+If particle_group_id is None, it will be auto-incremented.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>randomness</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_lines">
+<span class="sig-name descname"><span class="pre">add_particles_from_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_lines" title="Link to this definition"></a></dt>
+<dd><p>Add particles in layers defined by line segments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer_info</strong> – List of dictionaries containing:
+- line_points: Points defining upper boundary line of layer
+- material_id: Material ID for this layer
+- particle_group_id: (Optional) Group ID for these particles
+- randomness: (Optional) Factor for particle position randomization</p></li>
+<li><p><strong>n_particle_per_cell</strong> – Number of particles per cell per dimension</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If used with 3D domain</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Line points should span entire x-domain range.
+First layer assumes y=0 as lower boundary.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer_info</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></span>)</p></li>
+<li><p><strong>n_particle_per_cell</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_polygon">
+<span class="sig-name descname"><span class="pre">add_particles_from_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_polygon" title="Link to this definition"></a></dt>
+<dd><p>Add particles within defined polygons.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>polygon_info</strong> – List of dictionaries containing:
+- polygon_points: List of points defining polygon vertices
+- material_id: Material ID for particles in this polygon
+- particle_group_id: (Optional) Group ID for these particles</p></li>
+<li><p><strong>n_particle_per_cell</strong> – Number of particles per cell per dimension</p></li>
+<li><p><strong>randomness</strong> – Factor for random perturbation of particle positions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If used with 3D domain</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>polygon_info</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></span>)</p></li>
+<li><p><strong>n_particle_per_cell</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>)</p></li>
+<li><p><strong>randomness</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_random_field">
+<span class="sig-name descname"><span class="pre">add_particles_from_random_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygons_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_random_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_random_field" title="Link to this definition"></a></dt>
+<dd><p>Add particles within polygons with random field values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>polygons_params</strong> – List of dictionaries containing:
+- polygon_points: List of points defining polygon vertices
+- random_params: Dict with random field parameters (mean, std, len_scale)</p></li>
+<li><p><strong>n_particle_per_cell</strong> – Number of particles per cell per dimension</p></li>
+<li><p><strong>randomness</strong> – Factor for random perturbation of particle positions</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike other add_particles methods, this automatically sets particle_group_id based
+on the particles’ associated cell id, and material_id equals particle_group_id.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If used with 3D domain or if no particles found in polygon</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>polygons_params</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></span>)</p></li>
+<li><p><strong>n_particle_per_cell</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>)</p></li>
+<li><p><strong>randomness</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_particles_from_topography">
+<span class="sig-name descname"><span class="pre">add_particles_from_topography</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower_topography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_topography</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particle_per_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_find_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_fill_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simple'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_group_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_particles_from_topography"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_particles_from_topography" title="Link to this definition"></a></dt>
+<dd><p>Add particles between two topographic surfaces.</p>
+<p>This method fills the space between two topographic surfaces with particles. The particles
+are placed in a regular grid pattern and can optionally be randomly perturbed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower_topography</strong> – Mesh defining the lower surface topography</p></li>
+<li><p><strong>upper_topography</strong> – Mesh defining the upper surface topography</p></li>
+<li><p><strong>n_particle_per_cell</strong> – Number of particles per cell per dimension</p></li>
+<li><p><strong>material_id</strong> – ID of material to assign to this particle set</p></li>
+<li><p><strong>z_find_method</strong> – Method to find z-coordinate of mesh (’’ or ‘’)</p></li>
+<li><p><strong>base_find_method</strong> – Method to find base area where surfaces overlap
+‘alphashape’: Estimates x-y projection area using alphashape
+‘simple’: Uses max/min x,y values, restricted to square shape</p></li>
+<li><p><strong>z_fill_method</strong> – Method to fill between lower and upper z-coordinates
+‘simple’: Uses exact z-coordinate of mesh
+‘round’: Uses nearest particle grid points</p></li>
+<li><p><strong>randomness</strong> – Factor to randomly perturb particle positions</p></li>
+<li><p><strong>overlap_tolerance</strong> – Maximum distance to consider particles as overlapping</p></li>
+<li><p><strong>particle_group_id</strong> – ID to assign to this particle group</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If used with 2D domain (only supports 3D)</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The particles are stored in self.particle_groups with the specified particle_group_id.
+If particle_group_id is None, it will be auto-incremented.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower_topography</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trimesh</span></code></span>)</p></li>
+<li><p><strong>upper_topography</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trimesh</span></code></span>)</p></li>
+<li><p><strong>n_particle_per_cell</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>)</p></li>
+<li><p><strong>material_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>)</p></li>
+<li><p><strong>z_find_method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>base_find_method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>z_fill_method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>randomness</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>)</p></li>
+<li><p><strong>overlap_tolerance</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span>)</p></li>
+<li><p><strong>particle_group_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.add_velocity_constraints">
+<span class="sig-name descname"><span class="pre">add_velocity_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraints_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.add_velocity_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.add_velocity_constraints" title="Link to this definition"></a></dt>
+<dd><p>Add velocity constraints to boundary nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraints_info</strong> – List of constraint dictionaries, each containing:
+- ‘axis’: Direction to constrain (‘x’, ‘y’, or ‘z’)
+- ‘bound_loc’: Boundary location (‘start’ or ‘end’)
+- ‘velocity’: Velocity value to apply</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The constraints are added to self.mpm_json[“mesh”][“boundary_conditions”]
+under the “velocity_constraints” key.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>constraints_info</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>]</span>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.analysis">
+<span class="sig-name descname"><span class="pre">analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.analysis" title="Link to this definition"></a></dt>
+<dd><p>Configure analysis settings for the MPM simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>) – Dictionary containing analysis configuration parameters including:
+- type: Analysis type (e.g. ‘MPMExplicit2D’, ‘MPMExplicit3D’)
+- Other analysis-specific parameters</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If analysis type dimensionality doesn’t match domain dimensions</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The analysis settings are stored in self.mpm_json[“analysis”].
+Analysis type must match domain dimensionality (2D/3D).</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.define_boundary_entity">
+<span class="sig-name descname"><span class="pre">define_boundary_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.define_boundary_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.define_boundary_entity" title="Link to this definition"></a></dt>
+<dd><p>Define boundary entity sets for each boundary plane.</p>
+<p>Creates node sets for each boundary plane of the domain. The node sets are stored in
+self.entity_sets[“node_sets”] with IDs 0-5 reserved for boundaries.</p>
+<dl class="simple">
+<dt>Each node set dictionary contains:</dt><dd><ul class="simple">
+<li><p>id: Node set ID (0-5)</p></li>
+<li><p>set: List of node indices</p></li>
+<li><p>axis: Boundary axis (‘x’, ‘y’, ‘z’)</p></li>
+<li><p>bound_loc: Boundary location (‘start’ or ‘end’)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Node set IDs 0-5 are hardcoded for boundaries. Other entity sets should use IDs &gt; 5.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.define_particle_entity">
+<span class="sig-name descname"><span class="pre">define_particle_entity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.define_particle_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.define_particle_entity" title="Link to this definition"></a></dt>
+<dd><p>Define particle entity sets for the MPM solver.</p>
+<p>This method creates particle entity sets that define different materials for each particle set.
+The entity sets are used as input to the MPM solver to specify material properties.
+Each particle set is assigned a unique ID and contains a list of particle indices.</p>
+<p class="rubric">Example</p>
+<p>For two particle groups with indices [0,1,2] and [3,4,5], the entity sets would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;particle_sets&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]},</span>
+        <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The particle sets are stored in self.entity_sets[‘particle_sets’] as a list of
+dictionaries. Each dictionary contains:</p>
+<ul class="simple">
+<li><p>id: Unique identifier for the particle set (int)</p></li>
+<li><p>set: List of particle indices belonging to this set (List[int])</p></li>
+</ul>
+<p>For more details on entity set format, see:
+<a class="reference external" href="https://mpm.cb-geo.com/#/user/preprocess/entity-sets">https://mpm.cb-geo.com/#/user/preprocess/entity-sets</a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.post_processing">
+<span class="sig-name descname"><span class="pre">post_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.post_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.post_processing" title="Link to this definition"></a></dt>
+<dd><p>Configure post-processing settings for the MPM simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>) – Dictionary containing post-processing configuration parameters.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The post-processing settings are stored in self.mpm_json[“post_processing”].</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.remove_overlapping_particles">
+<span class="sig-name descname"><span class="pre">remove_overlapping_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overlap_tolerance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.remove_overlapping_particles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.remove_overlapping_particles" title="Link to this definition"></a></dt>
+<dd><p>Remove overlapping particles between different particle groups.</p>
+<p>This method iterates through particle groups in order and removes any particles
+that overlap with particles from previous groups. A particle is considered overlapping
+if it is within the overlap_tolerance distance of any existing particle.</p>
+<p>The particle IDs are reordered after removing overlaps to maintain consecutive numbering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>overlap_tolerance</strong> – Maximum distance between particles to consider them as overlapping.
+Particles closer than this distance will be considered overlapping
+and one will be removed.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If no particle groups exist</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This modifies the particle_groups dictionary in place, updating both the particles
+and their IDs for each group.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>overlap_tolerance</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.visualize_mesh">
+<span class="sig-name descname"><span class="pre">visualize_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.visualize_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.visualize_mesh" title="Link to this definition"></a></dt>
+<dd><p>Visualize the mesh configuration in 3D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to save the visualization HTML file</p></li>
+<li><p><strong>node_indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether to display node indices in the visualization</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Creates an interactive 3D plot using Plotly showing mesh nodes.
+The plot is saved as an HTML file at the specified path.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.visualize_particles">
+<span class="sig-name descname"><span class="pre">visualize_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.visualize_particles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.visualize_particles" title="Link to this definition"></a></dt>
+<dd><p>Visualize particle groups in 3D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to save the visualization HTML file</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If attempting to visualize 2D particle configuration</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Creates an interactive 3D plot using Plotly showing particles from all groups.
+Each particle group is plotted in a different color.
+The plot is saved as an HTML file at the specified path.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mpm.MPMConfig.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpm.json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.write" title="Link to this definition"></a></dt>
+<dd><p>Write MPM configuration and data files to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Directory path to save the MPM input files</p></li>
+<li><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Name of the MPM JSON input file with extension</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method writes several files:
+- mesh.txt: Contains mesh node coordinates and cell groups
+- particles_*.txt: Particle coordinates for each particle group
+- entity_sets.json: Entity set definitions
+- particles_stresses.txt: Initial particle stresses if defined
+- mpm.json: Main configuration file</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mpm.find_material_property">
+<span class="sig-prename descclassname"><span class="pre">mpm.</span></span><span class="sig-name descname"><span class="pre">find_material_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#find_material_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.find_material_property" title="Link to this definition"></a></dt>
+<dd><p>Find a specific property of a material by its ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Material ID to search for</p></li>
+<li><p><strong>field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Name of the material property to retrieve</p></li>
+<li><p><strong>material_list</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List[dict]</span></code>) – List of material dictionaries</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the specified field for the material with matching ID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mpm.get_h5">
+<span class="sig-prename descclassname"><span class="pre">mpm.</span></span><span class="sig-name descname"><span class="pre">get_h5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#get_h5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.get_h5" title="Link to this definition"></a></dt>
+<dd><p>Read and combine HDF5 particle data files from MPI processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Directory containing the HDF5 files</p></li>
+<li><p><strong>timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Timestep to read</p></li>
+<li><p><strong>mpi</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of MPI processes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Combined particle data from all MPI processes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.3)">pandas.DataFrame</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
