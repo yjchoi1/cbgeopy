@@ -8,10 +8,13 @@ import trimesh
 import utils
 import random
 import argparse
+import gstools as gs
 from scipy.spatial import cKDTree, KDTree
 from scipy import interpolate
-from typing import List, Dict, Callable
-import shapely.geometry
+from typing import List, Dict, Callable, Optional
+import shapely
+import shapely.geometry as geom
+
 
 # Define constants for axes
 AXES_3D = ["x", "y", "z"]
@@ -27,7 +30,7 @@ class MPMConfig:
     ):
         # Mesh
         self.initial_stresses = None
-        self.materials = None
+        self.materials = []
         self.cell_size = None
         self.n_cells_per_dim = None
         self.nnode = None
@@ -248,12 +251,146 @@ class MPMConfig:
         
     def add_particles_from_random_field(
         self,
-        random_params: Dict,
+        polygons_params: List,
         n_particle_per_cell: int,
         randomness: float = None
     ):
-        pass
-    
+        """
+        Add particles within polygons with random field values assigned to each particle.
+        
+        Args:
+            polygons_params (List): List of dictionaries containing:
+                - "polygon_points": List of points defining polygon vertices
+                - "random_params": Dict with random field parameters (mean, std, len_scale)
+            n_particle_per_cell (int): Number of particles per cell per dimension
+            randomness (float, optional): Factor for random perturbation of particle positions
+            
+        Note:
+            Unlike other `add_particles` methods, it automatically set `particle_group_id` based 
+            on the particles associated cell id, and "material_id" is the same as `particle_group_id`.
+        """
+        if self.ndims == 3:
+            raise ValueError("This feature is only for 2D domain")
+
+        # Generate particle grid
+        candidate_particles, _, particle_offset_distance = self._generate_particle_grid(
+            self.domain_origin,
+            self.domain_length,
+            self.cell_size,
+            n_particle_per_cell,
+            self.ndims
+        )
+        
+        # Get mesh grid coordinates
+        x = self.mesh_coord_base[0]  # node coordinates in x direction
+        y = self.mesh_coord_base[1]  # node coordinates in y direction
+        
+        # make cell-particle mapping
+        self.cell_particle_field_groups = []
+        
+        for region in polygons_params:            
+            poly = shapely.geometry.Polygon(region["polygon_points"])
+            random_params = region["random_params"]
+            
+            # Generate random field for cells
+            model = gs.Gaussian(
+                dim=2, 
+                var=random_params["std"]**2, 
+                len_scale=random_params["len_scale"]
+            )
+            srf = gs.SRF(model, mean=random_params["mean"])
+            field_values = srf.structured((x[:-1], y[:-1]))  # Generate values for cell corners
+            
+            # Create points for all candidate particles
+            points = [shapely.geometry.Point(p) for p in candidate_particles]
+            
+            # Filter particles inside polygon
+            mask = [poly.contains(point) for point in points]
+            particles = candidate_particles[mask]
+            
+            if len(particles) == 0:
+                raise ValueError("No particles found within the polygon")
+                                
+            # Disturb particles if randomness is specified
+            if randomness is not None:
+                particles += np.random.uniform(
+                    -particle_offset_distance * randomness,
+                    particle_offset_distance * randomness,
+                    particles.shape
+                )
+                
+            ################## Start to make cell-particle-field mapping ##################
+            # We need to map which particles are associated with which cell since 
+            #   the randomfield values are cell-based. If the particles in a certain cell, the corresponding
+            #   material property should follow the cell's field value. 
+            
+            # Find cell indices for each particle
+            particle_cell_ids_x = np.searchsorted(x, particles[:, 0]) - 1
+            particle_cell_ids_y = np.searchsorted(y, particles[:, 1]) - 1
+            
+            # Get field values for each particle's cell
+            particle_field_values = field_values[particle_cell_ids_y, particle_cell_ids_x]
+            
+            # Convert to linear cell indices
+            particle_cell_ids = particle_cell_ids_y * (len(x) - 1) + particle_cell_ids_x
+            
+            unique_cells = np.unique(particle_cell_ids)
+            
+            # Define cell-particle-field mapping and make materials for each cell
+            for cell_id in unique_cells:
+                # Get indices of particles in this cell
+                particle_mask = (particle_cell_ids == cell_id)
+                particle_ids = np.where(particle_mask)[0]
+                current_particles = np.array(particles[particle_mask])
+                
+                # Get field values for particles in this cell
+                cell_field_values = particle_field_values[particle_mask]
+                
+                # Store the cell-particle mapping
+                self.cell_particle_field_groups.append({
+                    "cell_id": int(cell_id),
+                    "particle_ids": particle_ids.tolist(),
+                    "particles": current_particles,
+                    "field_values": cell_field_values.tolist()
+                })
+                
+            ################## End of cell-particle-field mapping ##################
+
+        # Set config
+        for cpf_map in self.cell_particle_field_groups:
+            # Before assigning particle groups, find the next available ID
+            if len(self.particle_groups) == 0:
+                next_id = 0
+            else:
+                next_id = max(self.particle_groups.keys()) + 1
+
+            # Use this ID directly without adding cell_id
+            self.particle_group_id = next_id
+                
+            # Store particles and field values
+            self.particle_groups[self.particle_group_id] = {}
+            self.particle_groups[self.particle_group_id]['particles'] = cpf_map["particles"]
+            self.particle_groups[self.particle_group_id]['id'] = cpf_map["particle_ids"]
+            self.particle_groups[self.particle_group_id]['field_values'] = cpf_map["field_values"]
+            
+            # Update current particle count
+            self.particles_count += len(cpf_map["particles"])
+            
+            # Set particle generator config
+            self.mpm_json["particles"].append(
+                {
+                    "generator": {
+                        "check_duplicates": True,
+                        "location": f"particles_{self.particle_group_id}.txt",
+                        "io_type": "Ascii3D" if self.ndims == 3 else "Ascii2D",
+                        "pset_id": self.particle_group_id,
+                        "particle_type": "P3D" if self.ndims == 3 else "P2D",
+                        "material_id": self.particle_group_id,
+                        "type": "file"
+                    }
+                }
+            )
+            
     def add_particles_from_polygon(
         self,
         polygon_info: List,
@@ -275,23 +412,14 @@ class MPMConfig:
         if self.ndims == 3:
             raise ValueError("This feature is only for 2D domain")
 
-        # Particle config
-        particle_distance = self.cell_size[0] / n_particle_per_cell
-        particle_offset_distance = particle_distance / 2
-
-        # Create particle range arrays that cover the whole domain
-        particle_ranges = [
-            (origin + particle_offset_distance, origin + length - particle_offset_distance)
-            for origin, length in zip(self.domain_origin, self.domain_length)]
-        
-        x_coords = np.arange(
-            particle_ranges[0][0], particle_ranges[0][1] + particle_offset_distance, particle_distance)
-        y_coords = np.arange(
-            particle_ranges[1][0], particle_ranges[1][1] + particle_offset_distance, particle_distance)
-
-        # Generate candidate particles grid
-        xx, yy = np.meshgrid(x_coords, y_coords)
-        candidate_particles = np.vstack((xx.ravel(), yy.ravel())).T
+        # Generate particle grid
+        candidate_particles, _, particle_offset_distance = self._generate_particle_grid(
+            self.domain_origin,
+            self.domain_length,
+            self.cell_size,
+            n_particle_per_cell,
+            self.ndims
+        )
 
         # Process each polygon
         for poly in polygon_info:
@@ -564,27 +692,69 @@ class MPMConfig:
         )
 
     def define_particle_entity(self):
-        """
-        Write the indices of particle set & indices of particles for current particle set.
-        It is used for mpm input to define different materials for each particle set in mpm solver.
-        """
+        """Define particle entity sets for the MPM solver.
+
+        This method creates particle entity sets that define different materials for each particle set.
+        The entity sets are used as input to the MPM solver to specify material properties.
+        Each particle set is assigned a unique ID and contains a list of particle indices.
+
+        For example, if we have two particle groups:
+        - Group 1: particles with indices [0,1,2] 
+        - Group 2: particles with indices [3,4,5]
+
+        The resulting entity sets would be:
+        ```python
+        entity_sets = {
+            'particle_sets': [
+                {'id': 0, 'set': [0,1,2]},
+                {'id': 1, 'set': [3,4,5]} 
+            ]
+        }
+        ```
+
+        The particle sets are defined based on the existing particle groups, where each group
+        represents a set of particles with the same material properties.
+
+        Note:
+            The particle sets are stored in self.entity_sets['particle_sets'] as a list of
+            dictionaries. Each dictionary contains:
+            - id: Unique identifier for the particle set (int)
+            - set: List of particle indices belonging to this set (List[int])
+
+            For more details on entity set format, see:
+            https://mpm.cb-geo.com/#/user/preprocess/entity-sets
+        """        
         self.entity_sets['particle_sets'] = []
         for set_id, particle_dict in self.particle_groups.items():
             self.entity_sets["particle_sets"].append({
                 "id": set_id,  # index of particle set
                 "set": particle_dict['id'],  # index of particles for current set
             })
-
-    def remove_overlapping_particles(self, overlap_tolerance):
+                
+    def remove_overlapping_particles(self, overlap_tolerance: float):
         """
-        Iterate over all particles in particle groups and remove the overlapping particles
-            when the particles in the current group overlaps the previous cumulative particles
-        This reorders the particle ids, i.e., `particle_groups['particle_group_id']['id']`
+        Remove overlapping particles between different particle groups.
+        
+        This method iterates through particle groups in order and removes any particles 
+        that overlap with particles from previous groups. A particle is considered overlapping
+        if it is within the overlap_tolerance distance of any existing particle.
+        
+        The particle IDs are reordered after removing overlaps to maintain consecutive numbering.
+        
         Args:
-            overlap_tolerance ():
-
+            overlap_tolerance (float): Maximum distance between particles to consider them as overlapping.
+                                     Particles closer than this distance will be considered overlapping
+                                     and one will be removed.
+        
         Returns:
-
+            None
+            
+        Raises:
+            ValueError: If no particle groups exist
+            
+        Note:
+            This modifies the particle_groups dictionary in place, updating both the particles
+            and their IDs for each group.
         """
 
         if len(self.particle_groups) == 0:
@@ -931,22 +1101,101 @@ class MPMConfig:
 
         self.mpm_json["mesh"]["boundary_conditions"]["friction_constraints"] = friction_constraints
 
-    def add_materials(self, materials):
-        """
-
+    def add_materials(
+        self, 
+        materials: Optional[List[Dict]] = None, *,  # end of positional argument
+        option: Optional[str] = None,  # after `*`, it is keyword argument
+        material_type: Optional[str] = None
+        ):
+        """Add materials to the MPM simulation.
+        
         Args:
-            materials (list): list of materials defined in dictionary.
-
-        Returns:
-
+            materials: List of material dictionaries with properties. Required unless using a special option.
+            option: Special material generation option. One of: {None, "random_field"}
+            material_type: Type of material model. One of: {None, "MohrCoulomb2D"}
+            
+        Special Options:
+            random_field: Generates materials with random field values for each cell particle group.
+                Requires material_type="MohrCoulomb2D"
+            
+        Examples:
+            # Standard material definition
+            mpm.add_materials([{
+                "id": 0,
+                "type": "MohrCoulomb2D",
+                "density": 1800,
+                ...
+            }])
+            
+            # Random field generation
+            mpm.add_materials(option="random_field", material_type="MohrCoulomb2D")
+        
+        Raises:
+            ValueError: If arguments are invalid or incompatible with model dimensions
         """
-        self.materials = materials
-        self.mpm_json["materials"] = materials
-
-        # Check if the material model has a proper dimensionality
+        # Define valid options
+        VALID_OPTIONS = {None, "random_field"}
+        VALID_TYPES = {None, "MohrCoulomb2D"}
+        
+        # Validate inputs
+        if option not in VALID_OPTIONS:
+            raise ValueError(f"Invalid option: {option}. Must be one of: {VALID_OPTIONS}")
+        if material_type not in VALID_TYPES:
+            raise ValueError(f"Invalid material_type: {material_type}. Must be one of: {VALID_TYPES}")
+        
+        # Handle special options
+        if option == "random_field":
+            if material_type != "MohrCoulomb2D":
+                raise ValueError(
+                    "random_field option requires material_type='MohrCoulomb2D'")
+            if not hasattr(self, 'particle_groups'):
+                raise ValueError(
+                    "random_field option requires particle_groups to be defined")
+            
+            # Generate materials for each cell group
+            materials = []
+            for group_id, particle_group_info in self.particle_groups.items():
+                if "field_values" in particle_group_info:
+                    materials.append({
+                        "id": group_id,
+                        "type": material_type,
+                        "density": 1800,
+                        "youngs_modulus": 20000000.0,
+                        "poisson_ratio": 0.3,
+                        "friction": particle_group_info["field_values"][0],
+                        "dilation": 0.0,
+                        "cohesion": 100,
+                        "tension_cutoff": 50,
+                        "softening": False,
+                        "peak_pdstrain": 0.0,
+                        "residual_friction": 30.0,
+                        "residual_dilation": 0.0,
+                        "residual_cohesion": 0.0,
+                        "residual_pdstrain": 0.0
+                    })
+        
+        # Standard material definition
+        else:
+            if not materials:
+                raise ValueError(
+                    "materials argument is required when not using a special option")
+        
+        # Validate material dimensionality
         for material in materials:
+            if "type" not in material:
+                raise ValueError(f"Material missing required 'type' field: {material}")
             if (self.ndims == 3 and "2D" in material["type"]) or (self.ndims == 2 and "3D" in material["type"]):
                 raise ValueError(f"Material '{material['type']}' is not compatible with a {self.ndims}D model.")
+        
+        # Store the materials
+        if not hasattr(self, 'materials') or self.materials is None:
+            self.materials = []
+        self.materials.extend(materials)
+        
+        # Update MPM JSON config
+        if "materials" not in self.mpm_json:
+            self.mpm_json["materials"] = []
+        self.mpm_json["materials"].extend(materials)
 
     def add_initial_stress(
             self,
@@ -1231,6 +1480,51 @@ class MPMConfig:
 
         fig.write_html(save_path)
         print(f"Plot saved to {save_path}")
+
+    @staticmethod
+    def _generate_particle_grid(
+        domain_origin, 
+        domain_length, 
+        cell_size, 
+        n_particle_per_cell, 
+        ndims
+        ):
+        """
+        Generates a uniform grid of particle coordinates.
+        
+        Args:
+            domain_origin (List[float]): Origin coordinates of the domain
+            domain_length (List[float]): Length of domain in each dimension
+            cell_size (List[float]): Size of cells in each dimension
+            n_particle_per_cell (int): Number of particles per cell per dimension
+            ndims (int): Number of dimensions (2 or 3)
+            
+        Returns:
+            tuple: (particle_coordinates, particle_distance, particle_offset_distance)
+        """
+        particle_distance = cell_size[0] / n_particle_per_cell
+        particle_offset_distance = particle_distance / 2
+        
+        # Create particle range arrays that cover the whole domain
+        particle_ranges = [
+            (origin + particle_offset_distance, origin + length - particle_offset_distance)
+            for origin, length in zip(domain_origin, domain_length)]
+        
+        # Generate coordinate arrays for each dimension
+        coords = [
+            np.arange(prange[0], prange[1] + particle_offset_distance, particle_distance)
+            for prange in particle_ranges[:ndims]
+        ]
+        
+        # Generate particle grid using meshgrid
+        if ndims == 2:
+            xx, yy = np.meshgrid(coords[0], coords[1])
+            particles = np.vstack((xx.ravel(), yy.ravel())).T
+        else:  # ndims == 3
+            xx, yy, zz = np.meshgrid(coords[0], coords[1], coords[2])
+            particles = np.vstack((xx.ravel(), yy.ravel(), zz.ravel())).T
+        
+        return particles, particle_distance, particle_offset_distance
 
 
 def find_material_property(id, field, material_list):

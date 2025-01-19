@@ -5,6 +5,84 @@ import vtk
 from vtk.util import numpy_support
 
 
+def plot_random_field_data(
+    particle_groups, domain_ranges, save_path, 
+    figsize=(10, 8), dpi=600, cmap='viridis', 
+    title='Random Field Data'
+    ):
+    """Plot particle data with associated field values using a color map.
+
+    Args:
+        particle_groups: Dictionary containing particle groups with their positions
+            and field values.
+        domain_ranges: List containing (min, max) ranges for each dimension.
+        save_path: Path where the plot will be saved.
+        figsize: Figure size in inches (width, height). Defaults to (10, 8).
+        dpi: Resolution of the output figure. Defaults to 600.
+        cmap: Colormap name to use for field values. Defaults to 'viridis'.
+        title: Title of the plot. Defaults to 'Random Field Data'.
+    """
+    # Input validation
+    if not particle_groups:
+        raise ValueError("particle_groups dictionary cannot be empty")
+    if len(domain_ranges) < 2:
+        raise ValueError("domain_ranges must contain at least x and y ranges")
+        
+    fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
+    
+    # Collect all field values first to set consistent color scale
+    all_field_values = []
+    for group in particle_groups.values():
+        if 'field_values' in group and len(group['field_values']) > 0:
+            all_field_values.extend(group['field_values'])
+    
+    # Set color scale limits if field values exist
+    vmin = vmax = None
+    if all_field_values:
+        vmin, vmax = np.nanmin(all_field_values), np.nanmax(all_field_values)
+    
+    # Plot each particle group
+    scatter_with_field = None
+    for group_id, group in particle_groups.items():
+        particles = group['particles']
+        if particles.shape[1] < 2:
+            raise ValueError(f"Group {group_id} particles must have at least 2 dimensions")
+            
+        if 'field_values' in group and len(group['field_values']) > 0:
+            scatter_with_field = ax.scatter(
+                particles[:, 0], particles[:, 1],
+                c=group['field_values'],
+                cmap=cmap,
+                vmin=vmin,
+                vmax=vmax,
+            )
+        else:
+            ax.scatter(
+                particles[:, 0], particles[:, 1],
+                color='black',
+                label=f'Group {group_id}',
+            )
+    
+    # Add colorbar if field values were plotted
+    if scatter_with_field is not None:
+        plt.colorbar(scatter_with_field, label='Field Value', ax=ax)
+    
+    # Set plot properties
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_xlim(domain_ranges[0])
+    ax.set_ylim(domain_ranges[1])
+    ax.set_title(title)
+    ax.set_aspect('equal', 'box')
+    ax.grid(True, linestyle='--', alpha=0.3)
+    ax.legend()
+    
+    # Save and close
+    plt.tight_layout()
+    plt.savefig(save_path, bbox_inches='tight')
+    plt.close()
+
+
 def plot_scatter(particle_groups, domain_ranges, save_path):
     """
     Plots the particles for each set_id with different colors.
@@ -31,7 +109,7 @@ def plot_scatter(particle_groups, domain_ranges, save_path):
 
     for set_id, value in particle_groups.items():
         particles = value['particles']
-        marker = markers[set_id]  # Use a marker shape based on index
+        marker = markers[set_id % len(markers)]  # Use modulo to wrap around if there are more sets than markers
 
         if particles.shape[1] == 2:
             ax.scatter(
