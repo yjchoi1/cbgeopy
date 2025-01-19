@@ -746,32 +746,26 @@ class MPMConfig:
         The entity sets are used as input to the MPM solver to specify material properties.
         Each particle set is assigned a unique ID and contains a list of particle indices.
 
-        For example, if we have two particle groups:
-        - Group 1: particles with indices [0,1,2] 
-        - Group 2: particles with indices [3,4,5]
+        Example:
+            For two particle groups with indices [0,1,2] and [3,4,5], the entity sets would be::
 
-        The resulting entity sets would be:
-        ```python
-        entity_sets = {
-            'particle_sets': [
-                {'id': 0, 'set': [0,1,2]},
-                {'id': 1, 'set': [3,4,5]} 
-            ]
-        }
-        ```
-
-        The particle sets are defined based on the existing particle groups, where each group
-        represents a set of particles with the same material properties.
+                {
+                    'particle_sets': [
+                        {'id': 0, 'set': [0,1,2]},
+                        {'id': 1, 'set': [3,4,5]} 
+                    ]
+                }
 
         Note:
             The particle sets are stored in self.entity_sets['particle_sets'] as a list of
             dictionaries. Each dictionary contains:
+            
             - id: Unique identifier for the particle set (int)
             - set: List of particle indices belonging to this set (List[int])
 
             For more details on entity set format, see:
             https://mpm.cb-geo.com/#/user/preprocess/entity-sets
-        """        
+        """
         self.entity_sets['particle_sets'] = []
         for set_id, particle_dict in self.particle_groups.items():
             self.entity_sets["particle_sets"].append({
@@ -970,7 +964,8 @@ class MPMConfig:
         self.particle_groups[self.particle_group_id] = {}
         self.particle_groups[self.particle_group_id]['particles'] = particles
         self.particle_groups[self.particle_group_id]['id'] = list(
-            range(self.particles_count, self.particles_count + len(particles)))
+            range(self.particles_count, self.particles_count + len(particles))
+        )
         self.particle_groups[self.particle_group_id]['material_id'] = material_id
 
         # Update current particle count
@@ -1155,33 +1150,23 @@ class MPMConfig:
 
     def add_materials(
         self, 
-        materials: Optional[List[Dict]] = None, *,  # end of positional argument
-        option: Optional[str] = None,  # after `*`, it is keyword argument
+        materials: Optional[List[Dict]] = None, *, 
+        option: Optional[str] = None,
         material_type: Optional[str] = None
-        ):
+    ):
         """Add materials to the MPM simulation.
         
         Args:
             materials: List of material dictionaries with properties. Required unless using a special option.
             option: Special material generation option. One of: {None, "random_field"}
             material_type: Type of material model. One of: {None, "MohrCoulomb2D"}
-            
+
         Special Options:
             random_field: Generates materials with random field values for each cell particle group.
-                Requires material_type="MohrCoulomb2D"
-            
-        Examples:
-            # Standard material definition
-            mpm.add_materials([{
-                "id": 0,
-                "type": "MohrCoulomb2D",
-                "density": 1800,
-                ...
-            }])
-            
-            # Random field generation
-            mpm.add_materials(option="random_field", material_type="MohrCoulomb2D")
-        
+                Requires material_type="MohrCoulomb2D"  
+            Random field generation:
+                mpm.add_materials(option="random_field", material_type="MohrCoulomb2D")
+
         Raises:
             ValueError: If arguments are invalid or incompatible with model dimensions
         """
@@ -1587,7 +1572,8 @@ class MPMConfig:
         # Create particle range arrays that cover the whole domain
         particle_ranges = [
             (origin + particle_offset_distance, origin + length - particle_offset_distance)
-            for origin, length in zip(domain_origin, domain_length)]
+            for origin, length in zip(domain_origin, domain_length)
+        ]
         
         # Generate coordinate arrays for each dimension
         coords = [
