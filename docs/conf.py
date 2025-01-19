@@ -24,6 +24,9 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints',
     'myst_parser',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
 ]
 
 # Configure MyST-Parser
@@ -41,16 +44,30 @@ autodoc_default_options = {
     'undoc-members': True,
     'private-members': True,
     'show-inheritance': True,
+    'special-members': '__init__',
 }
 
 napoleon_google_docstring = True
+napoleon_numpy_docstring = True
 napoleon_use_param = False
 napoleon_use_ivar = True
+napoleon_use_rtype = True
+napoleon_preprocess_types = True
+napoleon_attr_annotations = True
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# Add intersphinx mapping to link to external docs
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'pandas': ('https://pandas.pydata.org/docs/', None),
+}
 
+# Add type hints options
+typehints_fully_qualified = False
+always_document_param_types = True
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
