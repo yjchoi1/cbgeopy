@@ -102,19 +102,34 @@
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>base_find_method</strong> (<em>str</em>) – method to find the base of the area where two surfaces overlap (‘alphashape’ or ‘simple’)</p></li>
-<li><p><strong>z_find_method</strong> (<em>str</em>) – method to find z-coordinate of mesh</p></li>
-<li><p><strong>z_fill_method</strong> (<em>str</em>) – method to fill between lower and upper z-coordinates</p></li>
-<li><p><strong>lower_mesh</strong> (<em>trimesh.Trimesh</em>)</p></li>
-<li><p><strong>upper_mesh</strong> (<em>trimesh.Trimesh</em>)</p></li>
-<li><p><strong>cell_size</strong> (<em>list</em>)</p></li>
-<li><p><strong>initial_alpha</strong> (<em>float</em>) – = 0.1</p></li>
-<li><p><strong>alpha_decay</strong> (<em>float</em>)</p></li>
-<li><p><strong>n_particles_per_dim</strong> (<em>int</em>)</p></li>
+<li><p><strong>base_find_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – method to find the base of the area where two surfaces overlap (‘alphashape’ or ‘simple’)</p></li>
+<li><p><strong>z_find_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – method to find z-coordinate of mesh</p></li>
+<li><p><strong>z_fill_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – method to fill between lower and upper z-coordinates</p></li>
+<li><p><strong>lower_mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">trimesh.Trimesh</span></code>)</p></li>
+<li><p><strong>upper_mesh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">trimesh.Trimesh</span></code>)</p></li>
+<li><p><strong>cell_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>)</p></li>
+<li><p><strong>initial_alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – = 0.1</p></li>
+<li><p><strong>alpha_decay</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>)</p></li>
+<li><p><strong>n_particles_per_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>)</p></li>
 </ul>
 </dd>
 </dl>
 <p>Returns:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower_mesh</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trimesh</span></code></span>)</p></li>
+<li><p><strong>upper_mesh</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trimesh</span></code></span>)</p></li>
+<li><p><strong>cell_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></span>)</p></li>
+<li><p><strong>n_particles_per_dim</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>)</p></li>
+<li><p><strong>z_find_method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>base_find_method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>z_fill_method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>initial_alpha</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>)</p></li>
+<li><p><strong>alpha_decay</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -123,17 +138,27 @@
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>xy_coords</strong> (<em>np.array</em>) – shape=(n_coords, 2)</p></li>
-<li><p><strong>z_ranges</strong> (<em>np.array</em>) – shape=(n_xy_coords, 2) where z_ranges[:, 0] is the lower bound &amp; z_ranges[:, 1] is upper bound</p></li>
-<li><p><strong>cell_size</strong> (<em>list</em>) – [x_len, y_len, z_len]</p></li>
-<li><p><strong>particle_distance</strong> (<em>float</em>) – default distance between particles</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – method to fill particles between z_ranges: “simple”, “round”
+<li><p><strong>xy_coords</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.array</span></code>) – shape=(n_coords, 2)</p></li>
+<li><p><strong>z_ranges</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">np.array</span></code>) – shape=(n_xy_coords, 2) where z_ranges[:, 0] is the lower bound &amp; z_ranges[:, 1] is upper bound</p></li>
+<li><p><strong>cell_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>) – [x_len, y_len, z_len]</p></li>
+<li><p><strong>particle_distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – default distance between particles</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – method to fill particles between z_ranges: “simple”, “round”
 If <cite>simple</cite>, it uses the exact z-coordinate of mesh.
 If <cite>round</cite>, it uses the nearest particle grid points for particle generation.</p></li>
 </ul>
 </dd>
 </dl>
 <p>Returns:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy_coords</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></span>)</p></li>
+<li><p><strong>z_ranges</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></span>)</p></li>
+<li><p><strong>particle_distance</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>)</p></li>
+<li><p><strong>method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -142,13 +167,19 @@ If <cite>round</cite>, it uses the nearest particle grid points for particle gen
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ranges</strong> (<em>list</em>) – [[x_min, x_max], [y_min, y_max] [z_min, z_max]]</p></li>
-<li><p><strong>distance</strong> (<em>float</em>)</p></li>
-<li><p><strong>round_unit</strong> (<em>float</em>)</p></li>
+<li><p><strong>ranges</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>) – [[x_min, x_max], [y_min, y_max] [z_min, z_max]]</p></li>
+<li><p><strong>distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>)</p></li>
+<li><p><strong>round_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>coordinate of points with shape=(n_points, n_dims)</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ranges</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></span>)</p></li>
+<li><p><strong>distance</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -168,6 +199,15 @@ If <cite>round</cite>, it uses the nearest particle grid points for particle gen
 - find_method: ‘kdtree’, ‘linear’</p>
 <p>Returns:
 - np.array of shape (n,), array of z-coordinate values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trimesh</span></code></span>)</p></li>
+<li><p><strong>xy_coords</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></span>)</p></li>
+<li><p><strong>find_method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
