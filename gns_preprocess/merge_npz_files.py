@@ -1,22 +1,23 @@
 import numpy as np
 import json
 from tqdm import tqdm
+from gns_preprocess import utils
 
 # Inputs
-bounds = [[0, 300], [0, 150]]
-sequence_length = 400
-default_connectivity_radius = 2.5
+bounds = [[0, 400], [0, 152]]
+sequence_length = 600
+default_connectivity_radius = 6.0
 dim = int(2)
-material_feature_len = int(1)
+material_feature_len = int(2)
 dt_mpm = 0.375  # 0.0025
 mpm_cell_size = 4  # [0.0125, 0.0125]
 nparticles_per_cell = 4  # int(16)
 dt_gns = 1.0  # 1.0 is default
 
-result_root_dir = "/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand2d_layers-random/"  # "./mpm"
+result_root_dir = "/scratch1/08264/baagee/cbgeopy-scratch/simulations/sand2d_layers_cohesion_test/"  # "./mpm"
 result_subdir = "/"
 npz_name = "trajectory"  # "mpm-9k-train"
-data_tags = [i for i in range(744, 745)] \
+data_tags = [i for i in range(10, 30)]
             # + [i for i in range(180, 210)] \
             # + [i for i in range(360, 390)] \
             # + [i for i in range(540, 570)] \
@@ -24,7 +25,11 @@ data_tags = [i for i in range(744, 745)] \
 # excluded_data_tags = [179]
 # data_tags = [i for i in data_tags if i not in excluded_data_tags]
 save_dir = './'
-save_name = "sand2d-layer"
+save_name = "sand2d-cohesion"
+
+modify_data = False
+static_particle_feature = np.tan(np.deg2rad(1))
+static_particle_feature_to = 1.0
 
 # data containers
 trajectories = {}
@@ -41,6 +46,7 @@ for id in tqdm(data_tags, total=len(data_tags)):
 
     data_ids.append(id)
     npz_path = f"{result_root_dir}/sim-{id}/{result_subdir}/{npz_name}.npz"  # f"{mpm_dir}/{data_name}/{data_name}.npz"
+    # npz_path = "/work2/08264/baagee/frontera/gns-mpm-data/gns-data/datasets/sand2d-landslide2-base-c/sand2d_fundao-gns_test4.npz"
     data = np.load(npz_path, allow_pickle=True)
     # get trajectory info
     if 'gns_data' in data:
@@ -52,7 +58,16 @@ for id in tqdm(data_tags, total=len(data_tags)):
             trajectories[simulation_id] = trajectory
         except:
             trajectory = data['gns_data'][0]
-            trajectories[f"simulation_trajectory_{id}"] = trajectory
+
+            if modify_data:
+                updated_trajectory = utils.modify_data(
+                    trajectory,
+                    static_particle_feature,
+                    static_particle_feature_to
+                )
+                trajectories[f"simulation_trajectory_{id}"] = (updated_trajectory)
+            else:
+                trajectories[f"simulation_trajectory_{id}"] = trajectory
     else:
         # for previous npz data
         for simulation_id, trajectory in data.items():  # note, only one trajectory exists, so no need to iterate

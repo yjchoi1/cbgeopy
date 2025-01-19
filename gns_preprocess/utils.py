@@ -1,6 +1,58 @@
 from typing import List, Dict, Tuple
+import numpy as np
 import pandas as pd
 import os
+
+
+def modify_data(
+        trajectory,
+        static_particle_feature,
+        static_particle_feature_to,
+        cohesion_normalization_factor=100e3
+):
+    """
+    Change the material feature of a npz trajectory data to specified value
+    Args:
+        trajectory (tuple): npz data
+        static_particle_feature (float): the material feature for static particles
+        static_particle_feature_to (float): the material feature to change to for static particles
+        cohesion_normalization_factor (float): a factor used for cohesion normalization
+
+    Returns:
+    updated_trajectory (tuple)
+    """
+    positions = trajectory[0]
+    particle_types = trajectory[1]
+    material_feature = trajectory[2]
+    n_particles = positions.shape[1]
+    updated_material_feature = np.zeros((n_particles, 2))
+
+    # Friction
+    updated_material_feature[:, 0] = material_feature
+
+    # Cohesion
+    updated_material_feature[:, 1] = 0.01
+    # updated_material_feature[:, 1] = np.where(
+    #     particle_types != 3,
+    #     1000/100000, static_particle_feature_to
+    # )
+
+    # Friction
+    # updated_material_feature = np.where(
+    #     particle_types != 3,
+    #     material_feature, static_particle_feature_to
+    # )
+    # updated_material_feature = np.column_stack(
+    #     (updated_material_feature, np.full(n_particles, 0.01))
+    # )
+
+    updated_trajectory = (
+        positions,
+        particle_types,
+        updated_material_feature
+    )
+
+    return updated_trajectory
 
 
 def scale_positions(positions, origin, scaling_factor):

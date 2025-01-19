@@ -4,19 +4,20 @@ from mpm import MPMConfig
 import vis_utils
 import os
 from tools import random_generator
+import copy
 
 
 # Random parameters
-sim_id_range = range(913, 1000)
+sim_id_range = range(674, 700)
 n_soil_range = [2, 3]
-friction_range = [10, 45]
+friction_range = [10, 40]
 
 for i in sim_id_range:
     print(f"Generate mpm inputs for simulation {i}...")
     save_dir = f'./sim-{i}'
 
     # Set config
-    lx, ly = 300.0, 150.0
+    lx, ly = 300.0, 152.0
     origin_x, origin_y = 0, 0
     mpm = MPMConfig(domain_origin=[origin_x, origin_y], domain_length=[lx, ly])
 
@@ -52,14 +53,15 @@ for i in sim_id_range:
             {
                 "line_points": bedrock_line_points,
                 "material_id": 0,
-                "particle_group_id": 0
+                "particle_group_id": 0,
+                "randomness": 0
             }
         ],
         n_particle_per_cell=2
     )
 
     cubes = random_generator.generate_cubes(
-        mpm.domain_ranges, [30, 30, 30], [90, 90, 90], len(soils))
+        mpm.domain_ranges, [40, 40, 40], [90, 90, 90], len(soils))
     for j, (origin, length) in enumerate(cubes):
         mpm.add_particles_cube(
             cube_origin=origin,
@@ -70,7 +72,7 @@ for i in sim_id_range:
             particle_group_id=1 + j
         )
 
-    mpm.remove_overlapping_particles(overlap_tolerance=1.5)
+    mpm.remove_overlapping_particles(overlap_tolerance=2)
     mpm.define_particle_entity()
 
     # Boundary constraints
@@ -130,12 +132,12 @@ for i in sim_id_range:
             "damping_factor": 0.05
         },
         "resume": {
-            "resume": False,
+            "resume": True,
             "step": 0,
             "uuid": "sand2d"
         },
         "velocity_update": False,
-        "nsteps": int(1.8e5),
+        "nsteps": 180000,
         "type": "MPMExplicit2D",
         "uuid": "sand2d"
     })
@@ -145,20 +147,24 @@ for i in sim_id_range:
         "path": "results/",
         "output_steps": 375,
         "vtk": [
-            "displacements"
+            "displacements",
+            "stresses"
         ]
     })
 
-    mpm.write(save_dir=save_dir)
-    # # Update input json for resuming without particle velocity constraints
-    # current_particle_constraints = mpm.mpm_json['mesh']['boundary_conditions']['particles_velocity_constraints']
-    # # Only fix the velocities for the bedrock
-    # new_constraints = [constraint for constraint in current_particle_constraints if constraint['pset_id'] == 0]
-    # mpm.mpm_json['mesh']['boundary_conditions']['particles_velocity_constraints'] = new_constraints
+    # Save mpm json without particle velocity constraints
+    original_particle_constraints = copy.deepcopy(
+        mpm.mpm_json['mesh']['boundary_conditions']['particles_velocity_constraints'])
     mpm.mpm_json['mesh']['boundary_conditions'].pop('particles_velocity_constraints')
-    mpm.mpm_json['analysis']['resume']['resume'] = True
-    # Overwrite
     mpm.write(save_dir=save_dir, file_name='mpm-resume.json')
+
+    # Save mpm json with particle velocity constraints for initial state
+    mpm.mpm_json['mesh']['boundary_conditions'][
+        'particles_velocity_constraints'] = original_particle_constraints
+    mpm.mpm_json['analysis']['resume']['resume'] = False
+    mpm.mpm_json["analysis"]["nsteps"] = 180000
+    # Overwrite
+    mpm.write(save_dir=save_dir, file_name='mpm.json')
 
     vis_utils.plot_scatter(mpm.particle_groups, mpm.domain_ranges, f'{save_dir}/particle_config.png')
 

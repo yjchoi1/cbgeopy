@@ -4,19 +4,21 @@ from mpm import MPMConfig
 import vis_utils
 import os
 from tools import random_generator
+import numpy as np
+import copy
 
 
 # Random parameters
-sim_id_range = range(0, 200)
-n_soil_range = [2, 2]
-friction_range = [10, 45]
+sim_id_range = range(2500, 2800)
+n_soil_range = [3, 3]
+friction_range = [5, 35]
 
 for i in sim_id_range:
     print(f"Generate mpm inputs for simulation {i}...")
     save_dir = f'./sim-{i}'
 
     # Set config
-    lx, ly = 300.0, 150.0
+    lx, ly = 300.0, 152.0
     origin_x, origin_y = 0, 0
     mpm = MPMConfig(domain_origin=[origin_x, origin_y], domain_length=[lx, ly])
 
@@ -42,59 +44,51 @@ for i in sim_id_range:
 
     # Particle
     soil_material_ids = [soil['id'] for soil in soils]
+    bedrock_line_points = random_generator.generate_bedrock_line(
+        [origin_x, origin_x + lx], [cell_size, 50],
+        n_middle_points=random.randint(1, 5)
+    )
+
+    x_offset = random.uniform(-50, 50)
+    y_offset = np.array(bedrock_line_points).mean(axis=0)[-1]
     mpm.add_particles_from_lines(
         layer_info=[
             {
-                "line_points": [
-                    [origin_x, random.uniform(4, 50)] if i % 2 == 0 else
-                    [origin_x, 4],
-                    [random.uniform(60, 100), 4] if i % 2 == 0 else
-                    [random.uniform(200, 240), 4],
-                    [origin_x + lx, 4] if i % 2 == 0 else
-                    [origin_x + lx, random.uniform(4, 50)],
-                ],
+                "line_points": bedrock_line_points,
                 "material_id": 0,
-                "particle_group_id": 0
+                "particle_group_id": 0,
+                "randomness": 0
             },
             {
                 "line_points": [
-                    [origin_x, random.uniform(30, 100)] if i % 2 == 0 else
-                    [origin_x, cell_size],
-
-                    [random.uniform(10, 80), random.uniform(70, 100)] if i % 2 == 0 else
-                    [random.uniform(180, 220), cell_size],
-
-                    [random.uniform(80, 120), cell_size] if i % 2 == 0 else
-                    [random.uniform(220, 290), random.uniform(70, 100)],
-
-                    [origin_x + lx, cell_size] if i % 2 == 0 else
-                    [300, random.uniform(30, 100)]
+                    [0, 0],
+                    [random.uniform(50, 70) + x_offset, 0],
+                    [random.uniform(90, 120) + x_offset, random.uniform(30, 60) + y_offset],
+                    [random.uniform(180, 210) + x_offset, random.uniform(30, 60) + y_offset],
+                    [random.uniform(230, 250) + x_offset, 0],
+                    [300, 0]
                 ],
-                "material_id": soil_material_ids[0],
-                "particle_group_id": 1
+                "material_id": random.choice(soil_material_ids),
+                "particle_group_id": 1,
+                "randomness": 0.3
             },
             {
                 "line_points": [
-                    [origin_x, random.uniform(120, 140)] if i % 2 == 0 else
-                    [origin_x, cell_size],
-
-                    [random.uniform(10, 80), random.uniform(80, 120)] if i % 2 == 0 else
-                    [random.uniform(170, 220), cell_size],
-
-                    [random.uniform(80, 130), 4] if i % 2 == 0 else
-                    [random.uniform(220, 290), random.uniform(80, 120)],
-
-                    [origin_x + lx, cell_size] if i % 2 == 0 else
-                    [300, random.uniform(120, 140)]
+                    [0, 0],
+                    [random.uniform(50, 60) + x_offset, 0],
+                    [random.uniform(80, 110) + x_offset, random.uniform(50, 90) + y_offset],
+                    [random.uniform(190, 220) + x_offset, random.uniform(50, 90) + y_offset],
+                    [random.uniform(240, 250) + x_offset, 0],
+                    [300, 0]
                 ],
-                "material_id": soil_material_ids[1],
-                "particle_group_id": 2
-            },
+                "material_id": random.choice(soil_material_ids),
+                "particle_group_id": 2,
+                "randomness": 0.3
+            }
         ],
-        n_particle_per_cell=2,
-        randomness=0.8
+        n_particle_per_cell=2
     )
-    mpm.remove_overlapping_particles(overlap_tolerance=0.001)
+    mpm.remove_overlapping_particles(overlap_tolerance=1)
     mpm.define_particle_entity()
 
     # Boundary constraints
@@ -119,25 +113,6 @@ for i in sim_id_range:
             {"axis": "z", "bound_loc": "end", "sign_n": 1, "friction": 0.38}
         ]
     )
-    mpm.add_particle_constraints(
-        [
-            {
-                "pset_id": pid,
-                "axis": 'x',
-                "velocity": round(random.uniform(0, 0), 2)
-            }
-            for pid in range(1, len(mpm.particle_groups))
-        ]
-        +
-        [
-            {
-                "pset_id": pid,
-                "axis": 'y',
-                "velocity": 0.0
-            }
-            for pid in range(1, len(mpm.particle_groups))
-        ]
-    )
 
     # External loading conditions
     mpm.add_external_loadings(
@@ -159,7 +134,7 @@ for i in sim_id_range:
             "uuid": "sand2d"
         },
         "velocity_update": False,
-        "nsteps": int(1.8e5),
+        "nsteps": 180000,
         "type": "MPMExplicit2D",
         "uuid": "sand2d"
     })
@@ -169,20 +144,26 @@ for i in sim_id_range:
         "path": "results/",
         "output_steps": 375,
         "vtk": [
-            "displacements"
+            "displacements",
+            "stresses"
         ]
     })
 
-    mpm.write(save_dir=save_dir)
-    # # Update input json for resuming without particle velocity constraints
-    # current_particle_constraints = mpm.mpm_json['mesh']['boundary_conditions']['particles_velocity_constraints']
-    # # Only fix the velocities for the bedrock
-    # new_constraints = [constraint for constraint in current_particle_constraints if constraint['pset_id'] == 0]
-    # mpm.mpm_json['mesh']['boundary_conditions']['particles_velocity_constraints'] = new_constraints
-    mpm.mpm_json['mesh']['boundary_conditions'].pop('particles_velocity_constraints')
-    mpm.mpm_json['analysis']['resume']['resume'] = True
-    # Overwrite
+    # Save mpm json that will be used after stress initialization
+    mpm.mpm_json["mesh"]["particles_stresses"] = "particles-stresses.txt"
     mpm.write(save_dir=save_dir, file_name='mpm-resume.json')
+
+    # mpm json for stress initialization
+    mpm.mpm_json["mesh"].pop("particles_stresses")
+    mpm.mpm_json["analysis"]["uuid"] = "sand2d-le"
+    for particle in mpm.mpm_json["particles"]:
+        # Set all materials to bedrock
+        particle["generator"]["material_id"] = 0
+    mpm.mpm_json["analysis"]["resume"]["resume"] = False
+    mpm.mpm_json["analysis"]["resume"]["uuid"] = "sand2d-le"
+    mpm.mpm_json["analysis"]["nsteps"] = 70001
+    # Overwrite
+    mpm.write(save_dir=save_dir, file_name='mpm-le.json')
 
     vis_utils.plot_scatter(mpm.particle_groups, mpm.domain_ranges, f'{save_dir}/particle_config.png')
 

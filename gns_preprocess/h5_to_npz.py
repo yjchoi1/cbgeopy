@@ -128,7 +128,7 @@ def convert_hd5_to_npz(
                     particle_type_mapping[material["id"]] = KINEMATIC_PARTICLE
                 elif "LinearElastic" in material["type"]:
                     # Set an arbitrary feature for the LE model. Here, we use 1.0.
-                    particle_material_mapping[material["id"]] = [LINEAR_ELASTIC_FEATURE, 0]
+                    particle_material_mapping[material["id"]] = [LINEAR_ELASTIC_FEATURE, max_cohesion]
                     particle_type_mapping[material["id"]] = NON_KINEMATIC_PARTICLE
                 else:
                     raise NotImplemented("Not supported material")
