@@ -22,6 +22,16 @@ distinguishes the layers.
 :language: python
 ```
 
+## Make MP model based on polygon
+
+This example generates material point method model from user-defined polygons.
+
+![output example for 3d](img/mp2d-polygon.png "Material point output example for 2d slope")
+
+```{literalinclude} ../examples/sand_polygon_2d/input_script.py
+:language: python
+```
+
 ## Make MP model for sand cube collision
 
 This example generates material point method model from two colliding cubes. 
@@ -30,6 +40,16 @@ This saves
 ![output example for 3d](img/sand_cubes2d.png "Material point output example for 2d slope")
 
 ```{literalinclude} ../examples/sand_layers-2d/input_script.py
+:language: python
+```
+
+## Make MP model for sand random field
+
+This example generates material point method model from user-defined polygons and random field parameters.
+
+![output example for 3d](img/sand_randomfield2d.png "Material point output example for 2d slope")
+
+```{literalinclude} ../examples/sand_random_field/input_script.py
 :language: python
 ```
 
