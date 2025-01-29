@@ -6,7 +6,7 @@ from collections import defaultdict
 import concurrent.futures
 from typing import List, Dict, Tuple
 import argparse
-import utils
+from . import utils
 
 
 LINEAR_ELASTIC_FEATURE = 45
@@ -61,7 +61,12 @@ def convert_hd5_to_npz(
     # Group the file names by the same timestep
     for files_name in files_names:
         # Extract the time component from the filename
-        time = files_name.split('particles')[-1].split('-')[-1].split('.')[0]
+        if '-' in files_name:
+            # MPI format: particles-{mpi}_{n_mpi}-{time}.h5
+            time = files_name.split('particles')[-1].split('-')[-1].split('.')[0]
+        else:
+            # Non-MPI format: particles{time}.h5
+            time = files_name.split('particles')[-1].split('.')[0]
         if max_time is not None:
             if int(time) <= int(max_time):
                 # Add the file to the corresponding time group
@@ -145,7 +150,7 @@ def convert_hd5_to_npz(
         material_properties = df['material_id'].map(particle_material_mapping).to_numpy()
         # Normalize friction angle and cohesion
         if n_material_props == 2:
-            if max_cohesion in None:
+            if max_cohesion is None:
                 raise ValueError("Max cohesion should be passed when you consider cohesion")
             material_feature = np.array([
                 [np.tan(np.deg2rad(prop[0])), prop[1]/max_cohesion] for prop in material_properties])
