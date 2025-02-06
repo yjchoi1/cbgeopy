@@ -1136,7 +1136,6 @@ This saves</p>
 <p>This example generates material point method model from user-defined polygons and random field parameters.</p>
 <p><img alt="output example for 3d" src="_images/sand_randomfield2d.png" /></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/home/yj/works/cbgeopy&#39;</span><span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">trimesh</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">utils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mpm</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPMConfig</span>
@@ -1148,14 +1147,7 @@ This saves</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">trimesh</span>
 
 
-<span class="n">save_dir</span> <span class="o">=</span> <span class="s1">&#39;./examples/sand_random_field&#39;</span>
-
-<span class="c1"># Random parameters</span>
-<span class="n">random_params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;phi_mean&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
-    <span class="s2">&quot;phi_std&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
-    <span class="s2">&quot;len_scale&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
-<span class="p">}</span>
+<span class="n">save_dir</span> <span class="o">=</span> <span class="s1">&#39;./sand_random_field&#39;</span>
 
 <span class="c1"># Set config</span>
 <span class="n">lx</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">60.0</span>
@@ -1194,7 +1186,7 @@ This saves</p>
     <span class="n">polygons_params</span><span class="o">=</span><span class="p">[</span>
         <span class="p">{</span>
             <span class="s2">&quot;polygon_points&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">]],</span>
-            <span class="s2">&quot;random_params&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;len_scale&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">},</span>
+            <span class="s2">&quot;random_params&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;len_scale&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">},</span>
         <span class="p">},</span>
         <span class="p">{</span>
             <span class="s2">&quot;polygon_points&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">]],</span>
@@ -1230,40 +1222,6 @@ This saves</p>
         <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;bound_loc&quot;</span><span class="p">:</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;sign_n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;friction&quot;</span><span class="p">:</span> <span class="mf">0.38</span><span class="p">}</span>
-    <span class="p">]</span>
-<span class="p">)</span>
-<span class="n">mpm</span><span class="o">.</span><span class="n">add_particle_constraints</span><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">10.0</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">10.0</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;pset_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
-        <span class="p">}</span>
     <span class="p">]</span>
 <span class="p">)</span>
 
