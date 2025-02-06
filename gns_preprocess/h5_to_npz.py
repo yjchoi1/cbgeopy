@@ -6,7 +6,7 @@ from collections import defaultdict
 import concurrent.futures
 from typing import List, Dict, Tuple
 import argparse
-from . import utils
+import utils
 
 
 LINEAR_ELASTIC_FEATURE = 45

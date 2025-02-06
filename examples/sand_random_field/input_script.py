@@ -1,5 +1,4 @@
 import sys
-sys.path.append('/home/yj/works/cbgeopy')
 import trimesh
 import utils
 from mpm import MPMConfig
@@ -11,14 +10,7 @@ import os
 import trimesh
 
 
-save_dir = './examples/sand_random_field'
-
-# Random parameters
-random_params = {
-    "phi_mean": 10.0,
-    "phi_std": 2.0,
-    "len_scale": 1.0
-}
+save_dir = './sand_random_field'
 
 # Set config
 lx, ly = 200.0, 60.0
@@ -57,7 +49,7 @@ mpm.add_particles_from_random_field(
     polygons_params=[
         {
             "polygon_points": [[0, 4], [60, 4], [60, 20], [0, 20]],
-            "random_params": {"mean": 10.0, "std": 2.0, "len_scale": 10.0},
+            "random_params": {"mean": 12.0, "std": 2.0, "len_scale": 10.0},
         },
         {
             "polygon_points": [[0, 20], [60, 20], [0, 40]],
@@ -93,40 +85,6 @@ mpm.add_friction_constrains(
         {"axis": "y", "bound_loc": "end", "sign_n": 1, "friction": 0.38},
         {"axis": "z", "bound_loc": "start", "sign_n": -1, "friction": 0.38},
         {"axis": "z", "bound_loc": "end", "sign_n": 1, "friction": 0.38}
-    ]
-)
-mpm.add_particle_constraints(
-    [
-        {
-            "pset_id": 0,
-            "axis": 'x',
-            "velocity": 0.0
-        },
-        {
-            "pset_id": 0,
-            "axis": 'y',
-            "velocity": 0.0
-        },
-        {
-            "pset_id": 1,
-            "axis": 'x',
-            "velocity": 10.0
-        },
-        {
-            "pset_id": 1,
-            "axis": 'y',
-            "velocity": 0.0
-        },
-        {
-            "pset_id": 2,
-            "axis": 'x',
-            "velocity": -10.0
-        },
-        {
-            "pset_id": 2,
-            "axis": 'y',
-            "velocity": 0.0
-        }
     ]
 )
 
