@@ -779,19 +779,32 @@ The plot is saved as an HTML file at the specified path.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mpm.MPMConfig.write">
-<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpm.json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.write" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpm.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpm.html#MPMConfig.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpm.MPMConfig.write" title="Link to this definition"></a></dt>
 <dd><p>Write MPM configuration and data files to disk.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dd class="field-odd"><ul>
 <li><p><strong>save_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Directory path to save the MPM input files</p></li>
 <li><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Name of the MPM JSON input file with extension</p></li>
+<li><p><strong>save_options</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict,</span> <span class="pre">optional</span></code>) – Dictionary controlling which files to save.
+Keys are file types, values are booleans. Available options:
+{</p>
+<blockquote>
+<div><p>‘mesh’: True,           # mesh.txt
+‘particles’: True,      # particles_*.txt
+‘entity_sets’: True,    # entity_sets.json
+‘stresses’: True,       # particles_stresses.txt
+‘config’: True          # mpm.json</p>
+</div></blockquote>
+<p>}
+If None, all files will be saved.</p>
+</li>
 </ul>
 </dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This method writes several files:
+<p>This method writes several files based on save_options:
 - mesh.txt: Contains mesh node coordinates and cell groups
 - particles_*.txt: Particle coordinates for each particle group
 - entity_sets.json: Entity set definitions
