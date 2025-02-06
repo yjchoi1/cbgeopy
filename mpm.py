@@ -1363,61 +1363,87 @@ class MPMConfig:
         """
         self.mpm_json["post_processing"] = config
 
-    def write(self, save_dir, file_name='mpm.json'):
+    def write(self, save_dir, file_name='mpm.json', save_options=None):
         """Write MPM configuration and data files to disk.
 
         Args:
             save_dir (str): Directory path to save the MPM input files
             file_name (str): Name of the MPM JSON input file with extension
+            save_options (dict, optional): Dictionary controlling which files to save.
+                Keys are file types, values are booleans. Available options:
+                {
+                    'mesh': True,           # mesh.txt
+                    'particles': True,      # particles_*.txt
+                    'entity_sets': True,    # entity_sets.json
+                    'stresses': True,       # particles_stresses.txt
+                    'config': True          # mpm.json
+                }
+                If None, all files will be saved.
 
         Note:
-            This method writes several files:
+            This method writes several files based on save_options:
             - mesh.txt: Contains mesh node coordinates and cell groups
             - particles_*.txt: Particle coordinates for each particle group
             - entity_sets.json: Entity set definitions
             - particles_stresses.txt: Initial particle stresses if defined
             - mpm.json: Main configuration file
         """
+        # Default save options
+        default_options = {
+            'mesh': True,
+            'particles': True,
+            'entity_sets': True,
+            'stresses': True,
+            'config': True
+        }
+        
+        # Use provided options or defaults
+        save_options = save_options or default_options
+        save_options = {**default_options, **save_options}  # Merge with defaults
+
         # Set save directory
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
         # --- Mesh
-        print(f"Write `mesh.txt` at {save_dir}")
-        mesh_file_path = os.path.join(save_dir, "mesh.txt")
+        if save_options['mesh']:
+            print(f"Write `mesh.txt` at {save_dir}")
+            mesh_file_path = os.path.join(save_dir, "mesh.txt")
 
-        # Function to write mesh array data to file
-        def append_array_to_file(file_path, array):
-            with open(file_path, "a") as f:
-                np.savetxt(f, array, delimiter='\t', fmt='%g')
+            # Function to write mesh array data to file
+            def append_array_to_file(file_path, array):
+                with open(file_path, "a") as f:
+                    np.savetxt(f, array, delimiter='\t', fmt='%g')
 
-        # Write the number of nodes and elements
-        with open(mesh_file_path, "w") as f:
-            f.write(f"{int(self.nnode)}\t{int(self.nele)}\n")
+            # Write the number of nodes and elements
+            with open(mesh_file_path, "w") as f:
+                f.write(f"{int(self.nnode)}\t{int(self.nele)}\n")
 
-        # Append coordinate values of nodes and cell groups to 'mesh.txt'
-        append_array_to_file(mesh_file_path, self.mesh_info["node_coords"])
-        append_array_to_file(mesh_file_path, self.mesh_info["cell_groups"])
+            # Append coordinate values of nodes and cell groups to 'mesh.txt'
+            append_array_to_file(mesh_file_path, self.mesh_info["node_coords"])
+            append_array_to_file(mesh_file_path, self.mesh_info["cell_groups"])
 
         # --- Particles
-        # Function to write particle coordinates to file
-        def write_coordinates_to_file(file_path, coordinates):
-            with open(file_path, "w") as f:
-                f.write(f"{coordinates.shape[0]} \n")
-                np.savetxt(f, coordinates, delimiter='\t', fmt='%.4f')
+        if save_options['particles']:
+            # Function to write particle coordinates to file
+            def write_coordinates_to_file(file_path, coordinates):
+                with open(file_path, "w") as f:
+                    f.write(f"{coordinates.shape[0]} \n")
+                    np.savetxt(f, coordinates, delimiter='\t', fmt='%.4f')
 
-        for pid, particle_dict in self.particle_groups.items():
-            file_path = os.path.join(save_dir, f"particles_{pid}.txt")
-            print(f"Write `particles_{pid}.txt` at {save_dir}")
-            write_coordinates_to_file(file_path, particle_dict['particles'])
+            for pid, particle_dict in self.particle_groups.items():
+                file_path = os.path.join(save_dir, f"particles_{pid}.txt")
+                print(f"Write `particles_{pid}.txt` at {save_dir}")
+                write_coordinates_to_file(file_path, particle_dict['particles'])
 
         # --- Entity
-        print(f"Save `entity_sets.json`at {save_dir}")
-        with open(f"{save_dir}/entity_sets.json", "w") as f:
-            json.dump(self.entity_sets, f, indent=2)
+        if save_options['entity_sets']:
+            print(f"Save `entity_sets.json`at {save_dir}")
+            with open(f"{save_dir}/entity_sets.json", "w") as f:
+                json.dump(self.entity_sets, f, indent=2)
 
         # --- particles_stresses.txt
-        if self.initial_stresses is not None:
+        if save_options['stresses'] and self.initial_stresses is not None:
             print(f"Save `particles_stresses.txt` at {save_dir}")
             with open(f"{save_dir}/particles_stresses.txt", "w") as f:
                 f.write(f"{self.initial_stresses.shape[0]}\n")
@@ -1425,9 +1451,10 @@ class MPMConfig:
             print('saved')
 
         # --- `mpm.json` config
-        print(f"Save `{file_name}`at {save_dir}")
-        with open(f"{save_dir}/{file_name}", "w") as f:
-            json.dump(self.mpm_json, f, indent=2)
+        if save_options['config']:
+            print(f"Save `{file_name}`at {save_dir}")
+            with open(f"{save_dir}/{file_name}", "w") as f:
+                json.dump(self.mpm_json, f, indent=2)
 
     # TODO: option to save as img
     def visualize_mesh(
