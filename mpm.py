@@ -299,6 +299,7 @@ class MPMConfig:
             polygons_params: List of dictionaries containing:
                 - polygon_points: List of points defining polygon vertices
                 - random_params: Dict with random field parameters (mean, std, len_scale)
+                - custom_correlation: Custom correlation function (gstools.CovModel)
             n_particle_per_cell: Number of particles per cell per dimension
             randomness: Factor for random perturbation of particle positions
 
@@ -333,13 +334,21 @@ class MPMConfig:
             random_params = region["random_params"]
             
             # Generate random field for cells
-            model = gs.Gaussian(
-                dim=2, 
-                var=random_params["std"]**2, 
-                len_scale=random_params["len_scale"]
-            )
+            if region["custom_correlation"] is not None:
+                # Create instance of custom correlation and set parameters
+                model = region["custom_correlation"]
+                model.dim = self.ndims
+                model.var = random_params["std"]**2
+                model.len_scale = random_params["len_scale"]
+            else:
+                model = gs.Gaussian(
+                    dim=self.ndims, 
+                    var=random_params["std"]**2, 
+                    len_scale=random_params["len_scale"]
+                )
             srf = gs.SRF(model, mean=random_params["mean"])
-            field_values = srf.structured((x[:-1], y[:-1]))  # Generate values for cell corners
+            # Generate values for cell corners
+            field_values = srf.structured((x[:-1], y[:-1]))
             
             # Create points for all candidate particles
             points = [shapely.geometry.Point(p) for p in candidate_particles]
@@ -369,7 +378,7 @@ class MPMConfig:
             particle_cell_ids_y = np.searchsorted(y, particles[:, 1]) - 1
             
             # Get field values for each particle's cell
-            particle_field_values = field_values[particle_cell_ids_y, particle_cell_ids_x]
+            particle_field_values = field_values[particle_cell_ids_x, particle_cell_ids_y]
             
             # Convert to linear cell indices
             particle_cell_ids = particle_cell_ids_y * (len(x) - 1) + particle_cell_ids_x
