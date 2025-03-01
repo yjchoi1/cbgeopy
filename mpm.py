@@ -20,6 +20,7 @@ from scipy import interpolate
 from typing import List, Dict, Callable, Optional
 import shapely
 import shapely.geometry as geom
+from cbgeopy.utils import generate_random_field
 
 
 # Define constants for axes
@@ -291,7 +292,8 @@ class MPMConfig:
         self,
         polygons_params: List,
         n_particle_per_cell: int,
-        randomness: float = None
+        randomness: float = None,
+        random_field_method: str = "gstools"
     ):
         """Add particles within polygons with random field values.
 
@@ -299,9 +301,10 @@ class MPMConfig:
             polygons_params: List of dictionaries containing:
                 - polygon_points: List of points defining polygon vertices
                 - random_params: Dict with random field parameters (mean, std, len_scale)
-                - custom_correlation: Custom correlation function (gstools.CovModel)
+                - custom_correlation: (Optional) Custom correlation function (gstools.CovModel)
             n_particle_per_cell: Number of particles per cell per dimension
             randomness: Factor for random perturbation of particle positions
+            random_field_method: Method to generate random field ("gstools" or "utils")
 
         Note:
             Unlike other add_particles methods, this automatically sets particle_group_id based
@@ -329,26 +332,61 @@ class MPMConfig:
         # make cell-particle mapping
         self.cell_particle_field_groups = []
         
-        for region in polygons_params:            
+        for region in polygons_params:
+            # Validate required keys
+            if "polygon_points" not in region:
+                raise ValueError("Missing required 'polygon_points' in polygon parameters")
+            if "random_params" not in region:
+                raise ValueError("Missing required 'random_params' in polygon parameters")
+                
+            # Validate random_params structure
+            required_params = ["mean", "std", "len_scale"]
+            for param in required_params:
+                if param not in region["random_params"]:
+                    raise ValueError(f"Missing required '{param}' in random_params")
+            
             poly = shapely.geometry.Polygon(region["polygon_points"])
             random_params = region["random_params"]
             
             # Generate random field for cells
-            if region["custom_correlation"] is not None:
+            if "custom_correlation" in region and region["custom_correlation"] is not None:
                 # Create instance of custom correlation and set parameters
                 model = region["custom_correlation"]
                 model.dim = self.ndims
                 model.var = random_params["std"]**2
                 model.len_scale = random_params["len_scale"]
+                
+                # Use GSTools for custom correlation
+                srf = gs.SRF(model, mean=random_params["mean"])
+                # Generate values for cell corners
+                field_values = srf.structured((x[:-1], y[:-1]))
             else:
-                model = gs.Gaussian(
-                    dim=self.ndims, 
-                    var=random_params["std"]**2, 
-                    len_scale=random_params["len_scale"]
-                )
-            srf = gs.SRF(model, mean=random_params["mean"])
-            # Generate values for cell corners
-            field_values = srf.structured((x[:-1], y[:-1]))
+                # Choose between GSTools and utils.generate_random_field
+                if random_field_method.lower() == "gstools":
+                    # Use GSTools with Gaussian model
+                    model = gs.Gaussian(
+                        dim=self.ndims, 
+                        var=random_params["std"]**2, 
+                        len_scale=random_params["len_scale"]
+                    )
+                    srf = gs.SRF(model, mean=random_params["mean"])
+                    # Generate values for cell corners
+                    field_values = srf.structured((x[:-1], y[:-1]))
+                elif random_field_method.lower() == "utils":                    
+                    # Generate the random field using the function from utils
+                    field_values, _, _ = generate_random_field(
+                        x_range=(x[0], x[-2]),
+                        y_range=(y[0], y[-2]),
+                        nx=len(x) - 1,
+                        ny=len(y) - 1,
+                        lx=random_params["len_scale"][0] if isinstance(random_params["len_scale"], (list, tuple)) else random_params["len_scale"],
+                        ly=random_params["len_scale"][1] if isinstance(random_params["len_scale"], (list, tuple)) else random_params["len_scale"],
+                        sigma2=random_params["std"]**2,
+                        mean_value=random_params["mean"],
+                        seed=random_params.get("seed", None)
+                    )
+                else:
+                    raise ValueError(f"Invalid random_field_method: {random_field_method}. Choose 'gstools' or 'utils'")
             
             # Create points for all candidate particles
             points = [shapely.geometry.Point(p) for p in candidate_particles]

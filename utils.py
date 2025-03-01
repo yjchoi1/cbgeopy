@@ -11,6 +11,75 @@ import pandas as pd
 import demo_utils
 
 
+def generate_random_field(
+    x_range, 
+    y_range, 
+    nx, 
+    ny, 
+    lx, 
+    ly, 
+    sigma2, 
+    mean_value, 
+    seed=None):
+    """Generate a random field with anisotropic exponential correlation.
+    
+    Args:
+        x_range: Range of x coordinates (x_min, x_max).
+        y_range: Range of y coordinates (y_min, y_max).
+        nx: Number of grid points in x direction.
+        ny: Number of grid points in y direction.
+        lx: Correlation length in x direction.
+        ly: Correlation length in y direction.
+        sigma2: Variance of the random field.
+        mean_value: Mean value of the random field.
+        seed: Random seed for reproducibility.
+    
+    Returns:
+        field_2D: 2D array containing the random field values.
+        x: Array of x coordinates.
+        y: Array of y coordinates.
+    """
+    # Set random seed if provided
+    if seed is not None:
+        np.random.seed(seed)
+    
+    # Create spatial grid with custom ranges
+    x = np.linspace(x_range[0], x_range[1], nx)
+    y = np.linspace(y_range[0], y_range[1], ny)
+    gx, gy = np.meshgrid(x, y, indexing='ij')
+    points = np.vstack([gx.ravel(), gy.ravel()]).T  # Flattened grid points
+    
+    # Construct covariance matrix (vectorized implementation)
+    num_points = points.shape[0]
+    
+    # Compute all pairwise distances at once (more efficient)
+    dx = np.subtract.outer(points[:, 0], points[:, 0]) * (2/lx)
+    dy = np.subtract.outer(points[:, 1], points[:, 1]) * (2/ly)
+    r = np.sqrt(dx**2 + dy**2)
+    
+    # Compute covariance matrix
+    C = sigma2 * np.exp(-r)
+    
+    try:
+        # Perform Cholesky decomposition with small noise for numerical stability
+        L = np.linalg.cholesky(C + 1e-6 * np.eye(num_points))
+        
+        # Generate random field
+        z = np.random.randn(num_points)  # Standard normal samples
+        field = L @ z  # Apply Cholesky factor
+        
+        # Add mean value to the field
+        field += mean_value
+        
+        # Reshape to 2D grid
+        field_2D = field.reshape(nx, ny)
+        
+        return field_2D, x, y
+    
+    except np.linalg.LinAlgError:
+        raise ValueError("Cholesky decomposition failed. Try increasing the regularization parameter.")
+
+
 def save_script(current_script_path, save_path):
     # Read the content of the specified script
     with open(current_script_path, 'r') as script_file:
