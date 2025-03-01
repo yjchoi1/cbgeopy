@@ -52,6 +52,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#utils.fill_particles_between_mesh"><code class="docutils literal notranslate"><span class="pre">fill_particles_between_mesh()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#utils.fill_particles_inbetween"><code class="docutils literal notranslate"><span class="pre">fill_particles_inbetween()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#utils.generate_points"><code class="docutils literal notranslate"><span class="pre">generate_points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.generate_random_field"><code class="docutils literal notranslate"><span class="pre">generate_random_field()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#utils.get_h5"><code class="docutils literal notranslate"><span class="pre">get_h5()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#utils.get_z_coordinates"><code class="docutils literal notranslate"><span class="pre">get_z_coordinates()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#utils.obj2mesh"><code class="docutils literal notranslate"><span class="pre">obj2mesh()</span></code></a></li>
@@ -180,6 +181,35 @@ If <cite>round</cite>, it uses the nearest particle grid points for particle gen
 <li><p><strong>ranges</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></span>)</p></li>
 <li><p><strong>distance</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span>)</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.generate_random_field">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">generate_random_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#generate_random_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.generate_random_field" title="Link to this definition"></a></dt>
+<dd><p>Generate a random field with anisotropic exponential correlation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_range</strong> – Range of x coordinates (x_min, x_max).</p></li>
+<li><p><strong>y_range</strong> – Range of y coordinates (y_min, y_max).</p></li>
+<li><p><strong>nx</strong> – Number of grid points in x direction.</p></li>
+<li><p><strong>ny</strong> – Number of grid points in y direction.</p></li>
+<li><p><strong>lx</strong> – Correlation length in x direction.</p></li>
+<li><p><strong>ly</strong> – Correlation length in y direction.</p></li>
+<li><p><strong>sigma2</strong> – Variance of the random field.</p></li>
+<li><p><strong>mean_value</strong> – Mean value of the random field.</p></li>
+<li><p><strong>seed</strong> – Random seed for reproducibility.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2D array containing the random field values.
+x: Array of x coordinates.
+y: Array of y coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>field_2D</p>
 </dd>
 </dl>
 </dd></dl>
