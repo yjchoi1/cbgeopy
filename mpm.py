@@ -20,7 +20,7 @@ from scipy import interpolate
 from typing import List, Dict, Callable, Optional
 import shapely
 import shapely.geometry as geom
-from cbgeopy.utils import generate_random_field
+from utils import generate_random_field
 
 
 # Define constants for axes

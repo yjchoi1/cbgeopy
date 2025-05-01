@@ -86,42 +86,59 @@ def plot_random_field_data(
 def plot_scatter(particle_groups, domain_ranges, save_path):
     """
     Plots the particles for each set_id with different colors.
-
     Parameters:
-    - data (dict): A dictionary where keys are set_ids and values are dictionaries with a key "particles"
-                   that contains a numpy array of shape (nparticles, ndims).
-
+    - particle_groups (dict): A dictionary where keys are set_ids and values are dictionaries with a key "particles"
+                              that contains a numpy array of shape (nparticles, ndims).
+    - domain_ranges (list): List of tuples specifying the (min, max) range for each dimension.
+    - save_path (str): Path to save the resulting plot.
     Returns:
     - None
     """
-    colors = plt.cm.get_cmap('hsv', len(particle_groups))  # Create a colormap with a different color for each set_id
-    markers = ['o', 's', '^', 'D', '*', '+', 'x', '|', '_']  # List of marker shapes
+    # Create a colormap with a different color for each set_id
+    # Using tab20 which provides 20 distinct colors, or viridis for continuous
+    num_groups = len(particle_groups)
+    if num_groups <= 20:
+        colors = plt.cm.get_cmap('tab20', num_groups)
+    else:
+        colors = plt.cm.get_cmap('hsv', num_groups)
+    
+    # Expanded marker list to support more groups
+    markers = ['o', 's', 'D', '^', 'v', '<', '>', 'p', '*', 'h', '+', 'x', '|', '_']
 
     fig = plt.figure(figsize=(15, 8), dpi=600)
 
     # Check if any set has 3D data
     is_3d = any(value['particles'].shape[1] == 3 for value in particle_groups.values())
-
     if is_3d:
         ax = fig.add_subplot(111, projection='3d')
     else:
         ax = fig.add_subplot(111)
 
-    for set_id, value in particle_groups.items():
+    # Sort keys to ensure consistent order
+    sorted_keys = sorted(particle_groups.keys())
+    
+    for i, set_id in enumerate(sorted_keys):
+        value = particle_groups[set_id]
         particles = value['particles']
-        marker = markers[set_id % len(markers)]  # Use modulo to wrap around if there are more sets than markers
+        marker = markers[i % len(markers)]  # Use modulo to wrap around if there are more sets than markers
+        color = colors(i)  # Use the index i instead of set_id for consistent color assignment
+        
+        # Add name to label if available
+        label = f'Set {set_id}'
+        if 'name' in value:
+            label = f'{value["name"]} (Set {set_id})'
 
         if particles.shape[1] == 2:
             ax.scatter(
                 particles[:, 0], particles[:, 1],
-                color=colors(set_id), marker=marker, facecolors='none', edgecolors=colors(set_id), s=0.5,
-                label=f'Set {set_id}')
+                color=color, marker=marker, s=1.0,
+                label=label)
 
         elif particles.shape[1] == 3:
             ax.scatter(
                 particles[:, 0], particles[:, 1], particles[:, 2],
-                color=colors(set_id), marker=marker, facecolors='none', edgecolors=colors(set_id), s=0.5,
-                label=f'Set {set_id}')
+                color=color, marker=marker, s=1.0,
+                label=label)
         else:
             raise ValueError("Only 2D and 3D particle arrays are supported.")
 
@@ -137,7 +154,9 @@ def plot_scatter(particle_groups, domain_ranges, save_path):
         ax.set_zlabel('Z')
         ax.set_zlim(domain_ranges[2])
 
-    plt.legend()
+    # Improve legend
+    plt.legend(loc='best', fontsize='small')
+    plt.tight_layout()
     plt.savefig(save_path)
 
 
