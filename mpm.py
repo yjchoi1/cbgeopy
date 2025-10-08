@@ -427,7 +427,7 @@ class MPMConfig:
             for cell_id in unique_cells:
                 # Get indices of particles in this cell
                 particle_mask = (particle_cell_ids == cell_id)
-                particle_ids = np.where(particle_mask)[0]
+                particle_ids = np.where(particle_mask)[0] + self.particles_count
                 current_particles = np.array(particles[particle_mask])
                 
                 # Get field values for particles in this cell
